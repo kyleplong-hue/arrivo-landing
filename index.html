@@ -31,180 +31,180 @@ function Ct({end,suffix="",dur=1.5}){const[r,v]=useV();const[n,sN]=useState(0);u
 
 function Nav(){const[s,sS]=useState(false);useEffect(()=>{const h=()=>sS(window.scrollY>30);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h);},[]);
 return<nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:s?"rgba(253,252,249,.95)":"transparent",backdropFilter:s?"blur(20px)":"none",borderBottom:s?"1px solid "+C.bdr:"none",transition:"all .3s"}}>
- <div style={{maxWidth:1100,margin:"0 auto",padding:"0 28px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
- <div style={{display:"flex",alignItems:"center",gap:7}}><div style={{width:26,height:26,borderRadius:7,background:C.dark,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13,fontWeight:600,fontFamily:"'Newsreader',serif"}}>A</div><span style={{fontFamily:"'Newsreader',serif",fontSize:19,fontWeight:500}}>Arrivo</span></div>
- <div style={{display:"flex",alignItems:"center",gap:24}}>
- {["How it Works","Pricing"].map(l=><a key={l} href={"#"+l.toLowerCase().replace(/\s/g,"")} style={{fontSize:13,color:C.sub,textDecoration:"none"}}>{l}</a>)}
- <a href="#cta" style={{padding:"7px 18px",background:C.dark,color:"#fff",borderRadius:8,fontSize:13,fontWeight:500,textDecoration:"none"}}>Get Early Access</a>
- </div>
- </div>
+  <div style={{maxWidth:1100,margin:"0 auto",padding:"0 28px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    <div style={{display:"flex",alignItems:"center",gap:7}}><div style={{width:26,height:26,borderRadius:7,background:C.dark,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13,fontWeight:600,fontFamily:"'Newsreader',serif"}}>A</div><span style={{fontFamily:"'Newsreader',serif",fontSize:19,fontWeight:500}}>Arrivo</span></div>
+    <div style={{display:"flex",alignItems:"center",gap:24}}>
+      {["How it Works","Pricing"].map(l=><a key={l} href={"#"+l.toLowerCase().replace(/\s/g,"")} style={{fontSize:13,color:C.sub,textDecoration:"none"}}>{l}</a>)}
+      <a href="#cta" style={{padding:"7px 18px",background:C.dark,color:"#fff",borderRadius:8,fontSize:13,fontWeight:500,textDecoration:"none"}}>Get Early Access</a>
+    </div>
+  </div>
 </nav>;}
 
 function Hero(){
- const msgs=["What's the WiFi password?","Any restaurant tips for tonight?","How do we get to the house?","Is there a grocery store nearby?","Best winery that's close?","What should we do tomorrow?","Can you book us a restaurant?","Where's the nearest bakery?"];
- const[mi,sMi]=useState(0);
- useEffect(()=>{const iv=setInterval(()=>sMi(p=>(p+1)%msgs.length),2000);return()=>clearInterval(iv);},[]);
+  const msgs=["What's the WiFi password?","Any restaurant tips for tonight?","How do we get to the house?","Is there a grocery store nearby?","Best winery that's close?","What should we do tomorrow?","Can you book us a restaurant?","Where's the nearest bakery?"];
+  const[mi,sMi]=useState(0);
+  useEffect(()=>{const iv=setInterval(()=>sMi(p=>(p+1)%msgs.length),2000);return()=>clearInterval(iv);},[]);
 
 return<section style={{paddingTop:100,paddingBottom:72}}>
- <div style={{maxWidth:1100,margin:"0 auto",padding:"0 28px"}}>
- <div style={{maxWidth:680,margin:"0 auto",textAlign:"center"}}>
- <F><div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",background:C.grn+"12",borderRadius:20,marginBottom:24,border:"1px solid "+C.grn+"20"}}><span style={{width:5,height:5,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,color:C.grn,fontWeight:600,letterSpacing:.8}}>EARLY ACCESS</span></div></F>
- <F d={.06}><h1 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(36px, 5.5vw, 56px)",lineHeight:1.1,fontWeight:400,marginBottom:20}}>Answer every guest question<br/><em style={{fontStyle:"italic",color:C.gold}}>before they ask it.</em></h1></F>
- <F d={.12}><p style={{fontSize:18,lineHeight:1.65,color:C.sub,fontWeight:300,maxWidth:500,margin:"0 auto 32px"}}>Send guests a personalized trip planner built from your insider knowledge. They arrive prepared. You stop repeating yourself.</p></F>
- <F d={.18}><div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
- <a href="#cta" style={{padding:"14px 28px",background:C.dark,color:"#fff",borderRadius:10,fontSize:15,fontWeight:500,textDecoration:"none"}}>Create Your First Guide</a>
- <a href="#howitworks" style={{padding:"14px 28px",color:C.sub,borderRadius:10,fontSize:15,textDecoration:"none",border:"1px solid "+C.bdr}}>See How It Works</a>
- </div></F>
- </div>
+  <div style={{maxWidth:1100,margin:"0 auto",padding:"0 28px"}}>
+    <div style={{maxWidth:680,margin:"0 auto",textAlign:"center"}}>
+      <F><div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",background:C.grn+"12",borderRadius:20,marginBottom:24,border:"1px solid "+C.grn+"20"}}><span style={{width:5,height:5,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,color:C.grn,fontWeight:600,letterSpacing:.8}}>EARLY ACCESS</span></div></F>
+      <F d={.06}><h1 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(36px, 5.5vw, 56px)",lineHeight:1.1,fontWeight:400,marginBottom:20}}>Answer every guest question<br/><em style={{fontStyle:"italic",color:C.gold}}>before they ask it.</em></h1></F>
+      <F d={.12}><p style={{fontSize:18,lineHeight:1.65,color:C.sub,fontWeight:300,maxWidth:500,margin:"0 auto 32px"}}>Send guests a personalized trip planner built from your insider knowledge. They arrive prepared. You stop repeating yourself.</p></F>
+      <F d={.18}><div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
+        <a href="#cta" style={{padding:"14px 28px",background:C.dark,color:"#fff",borderRadius:10,fontSize:15,fontWeight:500,textDecoration:"none"}}>Create Your First Guide</a>
+        <a href="#howitworks" style={{padding:"14px 28px",color:C.sub,borderRadius:10,fontSize:15,textDecoration:"none",border:"1px solid "+C.bdr}}>See How It Works</a>
+      </div></F>
+    </div>
 
- <F d={.25}><div style={{display:"grid",gridTemplateColumns:"1fr 40px 1fr",gap:0,alignItems:"start",marginTop:56,maxWidth:860,margin:"56px auto 0"}}>
- <div style={{background:"#FFF8F6",borderRadius:16,padding:24,border:"1px solid #F0D8D0"}}>
- <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:16}}><span style={{width:8,height:8,borderRadius:"50%",background:C.red,animation:"blink 1.5s ease infinite"}}/><span style={{fontSize:11,fontWeight:600,color:C.red,letterSpacing:.5}}>YOUR PHONE RIGHT NOW</span></div>
- <div style={{minHeight:170,position:"relative",overflow:"hidden"}}>
- {msgs.map((m,i)=><div key={i} style={{position:"absolute",left:0,right:0,opacity:i===mi?1:0,transform:i===mi?"translateY(0)":"translateY(6px)",transition:"all .3s"}}>
- <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:6,border:"1px solid #eee",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
- <div style={{fontSize:10,color:C.dim,marginBottom:3}}>Guest · just now</div>
- <div style={{fontSize:14,color:C.text}}>{m}</div>
- </div>
- </div>)}
- </div>
- <div style={{fontSize:13,fontWeight:600,color:C.red,textAlign:"center",marginTop:8}}>× Same 8 questions, every booking</div>
- </div>
- <div style={{display:"flex",alignItems:"center",justifyContent:"center",alignSelf:"center"}}><span style={{fontSize:24,color:C.dim}}>→</span></div>
- <div style={{background:C.dark,borderRadius:16,padding:24,color:"#F5F0E8"}}>
- <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:16}}><span style={{width:8,height:8,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,fontWeight:600,color:C.grn,letterSpacing:.5}}>WITH ARRIVO</span></div>
- <div style={{background:"#1A1816",borderRadius:12,padding:14,marginBottom:8}}>
- <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:10}}>
- <div style={{width:24,height:24,borderRadius:"50%",background:"linear-gradient(135deg,"+C.gold+",#C17246)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>🏡</div>
- <div><div style={{fontSize:12,fontWeight:600}}>Your Villa · Day 3</div><div style={{fontSize:9,color:"#8A8279"}}>Thu, Jun 12</div></div>
- </div>
- {[{t:"9:00 AM",l:"Caffè Poliziano",c:"#E8A88A"},{t:"11:00 AM",l:"Montepulciano stroll",c:"#8BB4D9"},{t:"1:00 PM",l:"L'Altro Cantuccio",c:"#E8A88A"},{t:"3:30 PM",l:"Pienza & pecorino",c:"#8BB4D9"}].map((x,i)=>
- <div key={i} style={{display:"flex",gap:8,marginBottom:4,alignItems:"center"}}>
- <span style={{fontSize:9,color:"#8A8279",width:46,textAlign:"right",flexShrink:0}}>{x.t}</span>
- <span style={{width:5,height:5,borderRadius:"50%",background:x.c}}/>
- <span style={{fontSize:12,color:"#E8D5A3"}}>{x.l}</span>
- </div>)}
- </div>
- <div style={{display:"flex",gap:4}}>
- {["📍 Maps","📞 Book","↻ Swap"].map((t,i)=><span key={i} style={{fontSize:9,padding:"4px 8px",background:"#2A2520",borderRadius:6,color:C.gL,border:"1px solid #3D3832"}}>{t}</span>)}
- </div>
- <div style={{fontSize:13,fontWeight:600,color:C.grn,textAlign:"center",marginTop:12}}>✓ They planned their whole trip already</div>
- </div>
- </div></F>
- </div>
+    <F d={.25}><div style={{display:"grid",gridTemplateColumns:"1fr 40px 1fr",gap:0,alignItems:"start",marginTop:56,maxWidth:860,margin:"56px auto 0"}}>
+      <div style={{background:"#FFF8F6",borderRadius:16,padding:24,border:"1px solid #F0D8D0"}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:16}}><span style={{width:8,height:8,borderRadius:"50%",background:C.red,animation:"blink 1.5s ease infinite"}}/><span style={{fontSize:11,fontWeight:600,color:C.red,letterSpacing:.5}}>YOUR PHONE RIGHT NOW</span></div>
+        <div style={{minHeight:170,position:"relative",overflow:"hidden"}}>
+          {msgs.map((m,i)=><div key={i} style={{position:"absolute",left:0,right:0,opacity:i===mi?1:0,transform:i===mi?"translateY(0)":"translateY(6px)",transition:"all .3s"}}>
+            <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:6,border:"1px solid #eee",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+              <div style={{fontSize:10,color:C.dim,marginBottom:3}}>Guest · just now</div>
+              <div style={{fontSize:14,color:C.text}}>{m}</div>
+            </div>
+          </div>)}
+        </div>
+        <div style={{fontSize:13,fontWeight:600,color:C.red,textAlign:"center",marginTop:8}}>× Same 8 questions, every booking</div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",alignSelf:"center"}}><span style={{fontSize:24,color:C.dim}}>→</span></div>
+      <div style={{background:C.dark,borderRadius:16,padding:24,color:"#F5F0E8"}}>
+        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:16}}><span style={{width:8,height:8,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,fontWeight:600,color:C.grn,letterSpacing:.5}}>WITH ARRIVO</span></div>
+        <div style={{background:"#1A1816",borderRadius:12,padding:14,marginBottom:8}}>
+          <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:10}}>
+            <div style={{width:24,height:24,borderRadius:"50%",background:"linear-gradient(135deg,"+C.gold+",#C17246)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>🏡</div>
+            <div><div style={{fontSize:12,fontWeight:600}}>Your Villa · Day 3</div><div style={{fontSize:9,color:"#8A8279"}}>Thu, Jun 12</div></div>
+          </div>
+          {[{t:"9:00 AM",l:"Caffè Poliziano",c:"#E8A88A"},{t:"11:00 AM",l:"Montepulciano stroll",c:"#8BB4D9"},{t:"1:00 PM",l:"L'Altro Cantuccio",c:"#E8A88A"},{t:"3:30 PM",l:"Pienza & pecorino",c:"#8BB4D9"}].map((x,i)=>
+            <div key={i} style={{display:"flex",gap:8,marginBottom:4,alignItems:"center"}}>
+              <span style={{fontSize:9,color:"#8A8279",width:46,textAlign:"right",flexShrink:0}}>{x.t}</span>
+              <span style={{width:5,height:5,borderRadius:"50%",background:x.c}}/>
+              <span style={{fontSize:12,color:"#E8D5A3"}}>{x.l}</span>
+            </div>)}
+        </div>
+        <div style={{display:"flex",gap:4}}>
+          {["📍 Maps","📞 Book","↻ Swap"].map((t,i)=><span key={i} style={{fontSize:9,padding:"4px 8px",background:"#2A2520",borderRadius:6,color:C.gL,border:"1px solid #3D3832"}}>{t}</span>)}
+        </div>
+        <div style={{fontSize:13,fontWeight:600,color:C.grn,textAlign:"center",marginTop:12}}>✓ They planned their whole trip already</div>
+      </div>
+    </div></F>
+  </div>
 </section>;}
 
 function Stats(){return<section style={{padding:"36px 28px",background:C.bgS,borderTop:"1px solid "+C.bdr,borderBottom:"1px solid "+C.bdr}}>
- <div style={{maxWidth:800,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24,textAlign:"center"}}>
- {[{n:80,s:"%",l:"fewer guest messages"},{n:5,s:" min",l:"setup time"},{n:47,s:"",l:"questions per stay — pre-answered"}].map((x,i)=><F key={i} d={i*.08}><div>
- <div style={{fontFamily:"'Newsreader',serif",fontSize:44,fontWeight:300}}><Ct end={x.n} suffix={x.s}/></div>
- <div style={{fontSize:12,color:C.sub,marginTop:4}}>{x.l}</div>
- </div></F>)}
- </div>
+  <div style={{maxWidth:800,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24,textAlign:"center"}}>
+    {[{n:80,s:"%",l:"fewer guest messages"},{n:5,s:" min",l:"setup time"},{n:47,s:"",l:"questions per stay — pre-answered"}].map((x,i)=><F key={i} d={i*.08}><div>
+      <div style={{fontFamily:"'Newsreader',serif",fontSize:44,fontWeight:300}}><Ct end={x.n} suffix={x.s}/></div>
+      <div style={{fontSize:12,color:C.sub,marginTop:4}}>{x.l}</div>
+    </div></F>)}
+  </div>
 </section>;}
 
 function How(){return<section id="howitworks" style={{padding:"80px 28px"}}>
- <div style={{maxWidth:900,margin:"0 auto"}}>
- <F><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",textAlign:"center",marginBottom:8}}>How It Works</p>
- <h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(28px, 4vw, 38px)",textAlign:"center",fontWeight:400,marginBottom:48}}>Five minutes of setup.<br/><em style={{fontStyle:"italic",color:C.sub}}>Weeks of silence.</em></h2></F>
- <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:40}}>
- {[
- {n:"01",t:"Drop in your knowledge",d:"Paste your guidebook, upload a PDF, or type your favorite spots. We organize everything into a trip planner."},
- {n:"02",t:"Personalize per guest",d:"Add their name and dates. Tweak the itinerary based on what they've told you. Clone from past guests in one click."},
- {n:"03",t:"Send before they arrive",d:"Guests get a beautiful, editable trip planner with your recommendations, Maps links, and booking buttons. Pre-arrival, not post-panic."},
- ].map((x,i)=><F key={i} d={i*.1}><div>
- <div style={{fontFamily:"'Newsreader',serif",fontSize:64,fontWeight:300,color:C.bdr,lineHeight:1,marginBottom:12}}>{x.n}</div>
- <h3 style={{fontFamily:"'Newsreader',serif",fontSize:20,fontWeight:500,marginBottom:8}}>{x.t}</h3>
- <p style={{fontSize:14,color:C.sub,lineHeight:1.6,fontWeight:300}}>{x.d}</p>
- </div></F>)}
- </div>
- </div>
+  <div style={{maxWidth:900,margin:"0 auto"}}>
+    <F><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",textAlign:"center",marginBottom:8}}>How It Works</p>
+    <h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(28px, 4vw, 38px)",textAlign:"center",fontWeight:400,marginBottom:48}}>Five minutes of setup.<br/><em style={{fontStyle:"italic",color:C.sub}}>Weeks of silence.</em></h2></F>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:40}}>
+      {[
+        {n:"01",t:"Drop in your knowledge",d:"Paste your guidebook, upload a PDF, or type your favorite spots. We organize everything into a trip planner."},
+        {n:"02",t:"Personalize per guest",d:"Add their name and dates. Tweak the itinerary based on what they've told you. Clone from past guests in one click."},
+        {n:"03",t:"Send before they arrive",d:"Guests get a beautiful, editable trip planner with your recommendations, Maps links, and booking buttons. Pre-arrival, not post-panic."},
+      ].map((x,i)=><F key={i} d={i*.1}><div>
+        <div style={{fontFamily:"'Newsreader',serif",fontSize:64,fontWeight:300,color:C.bdr,lineHeight:1,marginBottom:12}}>{x.n}</div>
+        <h3 style={{fontFamily:"'Newsreader',serif",fontSize:20,fontWeight:500,marginBottom:8}}>{x.t}</h3>
+        <p style={{fontSize:14,color:C.sub,lineHeight:1.6,fontWeight:300}}>{x.d}</p>
+      </div></F>)}
+    </div>
+  </div>
 </section>;}
 
 function Core(){return<section style={{padding:"72px 28px",background:C.dark,color:"#F5F0E8"}}>
- <div style={{maxWidth:900,margin:"0 auto"}}>
- <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(26px, 4vw, 36px)",fontWeight:400,textAlign:"center",lineHeight:1.3,marginBottom:48}}>Not a guidebook. Not a chatbot.<br/><em style={{fontStyle:"italic",color:C.gL}}>A pre-arrival experience.</em></h2></F>
- <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
- {[
- {i:"📅",t:"Trip planner, not a PDF",d:"Guests drag, drop, and customize a real itinerary — not skim a static doc they'll forget."},
- {i:"🧠",t:"Your knowledge, not generic tips",d:"Every recommendation is yours. Your restaurants, your shortcuts, your insider spots."},
- {i:"📋",t:"Booking requests, not text threads",d:"Guests tap to request a restaurant or tour. You confirm from a dashboard."},
- {i:"🔄",t:"Reusable, not one-time",d:"Clone your best itineraries. Tweak per guest in one click. Your knowledge compounds."},
- {i:"📍",t:"One-tap everything",d:"Maps links, driving routes, and call buttons baked into every recommendation."},
- {i:"✏️",t:"Guest-editable, not read-only",d:"They swap activities, reorder days, delete what doesn't fit. Their trip, your expertise."},
- ].map((x,i)=><F key={i} d={(i%2)*.06}><div style={{background:"#1A1816",borderRadius:12,padding:20,border:"1px solid #2A2622"}}>
- <div style={{fontSize:20,marginBottom:8}}>{x.i}</div>
- <h3 style={{fontFamily:"'Newsreader',serif",fontSize:17,fontWeight:500,marginBottom:4}}>{x.t}</h3>
- <p style={{fontSize:13,color:"#9E9689",lineHeight:1.55,fontWeight:300}}>{x.d}</p>
- </div></F>)}
- </div>
- </div>
+  <div style={{maxWidth:900,margin:"0 auto"}}>
+    <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(26px, 4vw, 36px)",fontWeight:400,textAlign:"center",lineHeight:1.3,marginBottom:48}}>Not a guidebook. Not a chatbot.<br/><em style={{fontStyle:"italic",color:C.gL}}>A pre-arrival experience.</em></h2></F>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+      {[
+        {i:"📅",t:"Trip planner, not a PDF",d:"Guests drag, drop, and customize a real itinerary — not skim a static doc they'll forget."},
+        {i:"🧠",t:"Your knowledge, not generic tips",d:"Every recommendation is yours. Your restaurants, your shortcuts, your insider spots."},
+        {i:"📋",t:"Booking requests, not text threads",d:"Guests tap to request a restaurant or tour. You confirm from a dashboard."},
+        {i:"🔄",t:"Reusable, not one-time",d:"Clone your best itineraries. Tweak per guest in one click. Your knowledge compounds."},
+        {i:"📍",t:"One-tap everything",d:"Maps links, driving routes, and call buttons baked into every recommendation."},
+        {i:"✏️",t:"Guest-editable, not read-only",d:"They swap activities, reorder days, delete what doesn't fit. Their trip, your expertise."},
+      ].map((x,i)=><F key={i} d={(i%2)*.06}><div style={{background:"#1A1816",borderRadius:12,padding:20,border:"1px solid #2A2622"}}>
+        <div style={{fontSize:20,marginBottom:8}}>{x.i}</div>
+        <h3 style={{fontFamily:"'Newsreader',serif",fontSize:17,fontWeight:500,marginBottom:4}}>{x.t}</h3>
+        <p style={{fontSize:13,color:"#9E9689",lineHeight:1.55,fontWeight:300}}>{x.d}</p>
+      </div></F>)}
+    </div>
+  </div>
 </section>;}
 
 function Quote(){return<section style={{padding:"64px 28px",background:C.bgS}}>
- <div style={{maxWidth:560,margin:"0 auto",textAlign:"center"}}>
- <F><blockquote style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(20px, 3vw, 28px)",lineHeight:1.45,fontStyle:"italic",marginBottom:20}}>"Our guests arrive with a full plan. We get maybe one message the whole trip — to say thank you."</blockquote>
- <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
- <div style={{width:36,height:36,borderRadius:"50%",background:C.dark,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:600,color:"#fff"}}>K</div>
- <div style={{textAlign:"left"}}><div style={{fontSize:13,fontWeight:500}}>Kyle & Charles</div><div style={{fontSize:11,color:C.dim}}>Molino Nobile · Montepulciano, IT</div></div>
- </div></F>
- </div>
+  <div style={{maxWidth:560,margin:"0 auto",textAlign:"center"}}>
+    <F><blockquote style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(20px, 3vw, 28px)",lineHeight:1.45,fontStyle:"italic",marginBottom:20}}>"Our guests arrive with a full plan. We get maybe one message the whole trip — to say thank you."</blockquote>
+    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
+      <div style={{width:36,height:36,borderRadius:"50%",background:C.dark,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:600,color:"#fff"}}>K</div>
+      <div style={{textAlign:"left"}}><div style={{fontSize:13,fontWeight:500}}>Kyle & Charles</div><div style={{fontSize:11,color:C.dim}}>Molino Nobile · Montepulciano, IT</div></div>
+    </div></F>
+  </div>
 </section>;}
 
 function Compare(){return<section style={{padding:"64px 28px"}}>
- <div style={{maxWidth:680,margin:"0 auto"}}>
- <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:28,fontWeight:400,textAlign:"center",marginBottom:32}}>The difference one link makes.</h2></F>
- <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
- <F><div style={{borderRadius:14,padding:24,background:"#FFF8F6",border:"1px solid #F0D8D0"}}>
- <div style={{fontSize:12,fontWeight:600,color:C.red,marginBottom:16,letterSpacing:.5}}>WITHOUT ARRIVO</div>
- {["47 messages per booking","Same questions every guest","Typing at 10pm on vacation","Guests arrive unprepared","'Where should we eat?' ×12","Lost reservations & missed spots","Reviews mention lack of info"].map((t,i)=>
- <div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"5px 0",fontSize:13,color:C.sub,fontWeight:300}}><span style={{color:C.red,fontSize:12,flexShrink:0}}>✗</span>{t}</div>)}
- </div></F>
- <F d={.08}><div style={{borderRadius:14,padding:24,background:"#F6FBF8",border:"1px solid #D0E8DA"}}>
- <div style={{fontSize:12,fontWeight:600,color:C.grn,marginBottom:16,letterSpacing:.5}}>WITH ARRIVO</div>
- {["3-5 messages per booking","Questions answered pre-arrival","Your phone stays quiet","Guests arrive with a plan","They booked their own dinners","Every spot has Maps + booking","Reviews praise your hospitality"].map((t,i)=>
- <div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"5px 0",fontSize:13,color:C.sub,fontWeight:300}}><span style={{color:C.grn,fontSize:12,flexShrink:0}}>✓</span>{t}</div>)}
- </div></F>
- </div>
- </div>
+  <div style={{maxWidth:680,margin:"0 auto"}}>
+    <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:28,fontWeight:400,textAlign:"center",marginBottom:32}}>The difference one link makes.</h2></F>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+      <F><div style={{borderRadius:14,padding:24,background:"#FFF8F6",border:"1px solid #F0D8D0"}}>
+        <div style={{fontSize:12,fontWeight:600,color:C.red,marginBottom:16,letterSpacing:.5}}>WITHOUT ARRIVO</div>
+        {["47 messages per booking","Same questions every guest","Typing at 10pm on vacation","Guests arrive unprepared","'Where should we eat?' ×12","Lost reservations & missed spots","Reviews mention lack of info"].map((t,i)=>
+          <div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"5px 0",fontSize:13,color:C.sub,fontWeight:300}}><span style={{color:C.red,fontSize:12,flexShrink:0}}>✗</span>{t}</div>)}
+      </div></F>
+      <F d={.08}><div style={{borderRadius:14,padding:24,background:"#F6FBF8",border:"1px solid #D0E8DA"}}>
+        <div style={{fontSize:12,fontWeight:600,color:C.grn,marginBottom:16,letterSpacing:.5}}>WITH ARRIVO</div>
+        {["3-5 messages per booking","Questions answered pre-arrival","Your phone stays quiet","Guests arrive with a plan","They booked their own dinners","Every spot has Maps + booking","Reviews praise your hospitality"].map((t,i)=>
+          <div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"5px 0",fontSize:13,color:C.sub,fontWeight:300}}><span style={{color:C.grn,fontSize:12,flexShrink:0}}>✓</span>{t}</div>)}
+      </div></F>
+    </div>
+  </div>
 </section>;}
 
 function Pricing(){return<section id="pricing" style={{padding:"72px 28px",background:C.bgS,borderTop:"1px solid "+C.bdr}}>
- <div style={{maxWidth:900,margin:"0 auto"}}>
- <F><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",textAlign:"center",marginBottom:8}}>Pricing</p>
- <h2 style={{fontFamily:"'Newsreader',serif",fontSize:32,textAlign:"center",fontWeight:400,marginBottom:40}}>Start free. Scale when ready.</h2></F>
- <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
- {[
- {n:"Starter",p:"Free",pr:"forever",f:["1 property","Pre-built itineraries","Maps & booking links","House essentials hub","Guest-facing guide"],c:"Get Started",hi:false},
- {n:"Professional",p:"$29",pr:"/mo",f:["Up to 5 properties","Per-guest personalization","Booking request dashboard","Clone past itineraries","Custom branding","PMS auto-send"],c:"Start Free Trial",hi:true},
- {n:"Portfolio",p:"$79",pr:"/mo",f:["Unlimited properties","Everything in Pro","White-label","Team accounts","API access","Priority support"],c:"Contact Sales",hi:false},
- ].map((x,i)=><F key={i} d={i*.06}><div style={{background:x.hi?C.dark:"#fff",color:x.hi?"#F5F0E8":C.text,borderRadius:14,padding:28,border:x.hi?"none":"1px solid "+C.bdr,position:"relative",display:"flex",flexDirection:"column",height:"100%",boxShadow:x.hi?"0 16px 48px rgba(0,0,0,.1)":"none"}}>
- {x.hi&&<div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",background:C.gold,color:C.dark,fontSize:10,fontWeight:700,padding:"3px 12px",borderRadius:10}}>MOST POPULAR</div>}
- <div style={{fontSize:12,fontWeight:600,color:x.hi?C.gL:C.sub,marginBottom:8}}>{x.n}</div>
- <div style={{display:"flex",alignItems:"baseline",gap:2,marginBottom:20}}><span style={{fontFamily:"'Newsreader',serif",fontSize:40,fontWeight:300}}>{x.p}</span><span style={{fontSize:13,color:x.hi?"#8A8279":C.dim}}>{x.pr}</span></div>
- <div style={{flex:1}}>{x.f.map((f,j)=><div key={j} style={{display:"flex",gap:7,alignItems:"center",padding:"4px 0",fontSize:13,color:x.hi?"#D4D0C8":C.sub,fontWeight:300}}><span style={{color:x.hi?C.gL:C.grn,fontSize:12}}>✓</span>{f}</div>)}</div>
- <a href="#cta" style={{display:"block",textAlign:"center",marginTop:20,padding:"11px 0",background:x.hi?C.gold:"transparent",color:x.hi?C.dark:C.text,border:x.hi?"none":"1px solid "+C.bdr,borderRadius:9,fontSize:13,fontWeight:500,textDecoration:"none"}}>{x.c}</a>
- </div></F>)}
- </div>
- </div>
+  <div style={{maxWidth:900,margin:"0 auto"}}>
+    <F><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",textAlign:"center",marginBottom:8}}>Pricing</p>
+    <h2 style={{fontFamily:"'Newsreader',serif",fontSize:32,textAlign:"center",fontWeight:400,marginBottom:40}}>Start free. Scale when ready.</h2></F>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
+      {[
+        {n:"Starter",p:"Free",pr:"forever",f:["1 property","Pre-built itineraries","Maps & booking links","House essentials hub","Guest-facing guide"],c:"Get Started",hi:false},
+        {n:"Professional",p:"$29",pr:"/mo",f:["Up to 5 properties","Per-guest personalization","Booking request dashboard","Clone past itineraries","Custom branding","PMS auto-send"],c:"Start Free Trial",hi:true},
+        {n:"Portfolio",p:"$79",pr:"/mo",f:["Unlimited properties","Everything in Pro","White-label","Team accounts","API access","Priority support"],c:"Contact Sales",hi:false},
+      ].map((x,i)=><F key={i} d={i*.06}><div style={{background:x.hi?C.dark:"#fff",color:x.hi?"#F5F0E8":C.text,borderRadius:14,padding:28,border:x.hi?"none":"1px solid "+C.bdr,position:"relative",display:"flex",flexDirection:"column",height:"100%",boxShadow:x.hi?"0 16px 48px rgba(0,0,0,.1)":"none"}}>
+        {x.hi&&<div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",background:C.gold,color:C.dark,fontSize:10,fontWeight:700,padding:"3px 12px",borderRadius:10}}>MOST POPULAR</div>}
+        <div style={{fontSize:12,fontWeight:600,color:x.hi?C.gL:C.sub,marginBottom:8}}>{x.n}</div>
+        <div style={{display:"flex",alignItems:"baseline",gap:2,marginBottom:20}}><span style={{fontFamily:"'Newsreader',serif",fontSize:40,fontWeight:300}}>{x.p}</span><span style={{fontSize:13,color:x.hi?"#8A8279":C.dim}}>{x.pr}</span></div>
+        <div style={{flex:1}}>{x.f.map((f,j)=><div key={j} style={{display:"flex",gap:7,alignItems:"center",padding:"4px 0",fontSize:13,color:x.hi?"#D4D0C8":C.sub,fontWeight:300}}><span style={{color:x.hi?C.gL:C.grn,fontSize:12}}>✓</span>{f}</div>)}</div>
+        <a href="#cta" style={{display:"block",textAlign:"center",marginTop:20,padding:"11px 0",background:x.hi?C.gold:"transparent",color:x.hi?C.dark:C.text,border:x.hi?"none":"1px solid "+C.bdr,borderRadius:9,fontSize:13,fontWeight:500,textDecoration:"none"}}>{x.c}</a>
+      </div></F>)}
+    </div>
+  </div>
 </section>;}
 
 function CTA(){const[e,sE]=useState("");const[d,sD]=useState(false);
 return<section id="cta" style={{padding:"80px 28px",background:C.dark}}>
- <div style={{maxWidth:480,margin:"0 auto",textAlign:"center"}}>
- <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(28px, 4vw, 38px)",fontWeight:400,color:"#F5F0E8",lineHeight:1.2,marginBottom:12}}>Your guests deserve<br/>more than a PDF.</h2>
- <p style={{fontSize:15,color:"#9E9689",fontWeight:300,marginBottom:28}}>First 100 hosts get Pro free for 6 months.</p>
- {!d?<div style={{display:"flex",gap:8,maxWidth:400,margin:"0 auto"}}><input value={e} onChange={v=>sE(v.target.value)} placeholder="you@email.com" style={{flex:1,padding:"12px 16px",background:"#1A1816",border:"1px solid #2A2622",borderRadius:9,color:"#F5F0E8",fontSize:13,outline:"none",fontFamily:"'Outfit',sans-serif"}} onFocus={v=>v.target.style.borderColor=C.gold} onBlur={v=>v.target.style.borderColor="#2A2622"}/><button onClick={()=>e&&sD(true)} style={{padding:"12px 20px",background:C.gold,color:C.dark,border:"none",borderRadius:9,fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>Get Access</button></div>
- :<div style={{padding:"14px",background:"#1A2418",borderRadius:11,border:"1px solid #2A3A22"}}><span style={{fontSize:13,color:"#A8D5BA"}}>✓ You're on the list!</span></div>}
- <p style={{fontSize:11,color:"#6E6860",marginTop:14}}>Born in a flour mill in Tuscany.</p></F>
- </div>
+  <div style={{maxWidth:480,margin:"0 auto",textAlign:"center"}}>
+    <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(28px, 4vw, 38px)",fontWeight:400,color:"#F5F0E8",lineHeight:1.2,marginBottom:12}}>Your guests deserve<br/>more than a PDF.</h2>
+    <p style={{fontSize:15,color:"#9E9689",fontWeight:300,marginBottom:28}}>First 100 hosts get Pro free for 6 months.</p>
+    {!d?<div style={{display:"flex",gap:8,maxWidth:400,margin:"0 auto"}}><input value={e} onChange={v=>sE(v.target.value)} placeholder="you@email.com" style={{flex:1,padding:"12px 16px",background:"#1A1816",border:"1px solid #2A2622",borderRadius:9,color:"#F5F0E8",fontSize:13,outline:"none",fontFamily:"'Outfit',sans-serif"}} onFocus={v=>v.target.style.borderColor=C.gold} onBlur={v=>v.target.style.borderColor="#2A2622"}/><button onClick={()=>e&&sD(true)} style={{padding:"12px 20px",background:C.gold,color:C.dark,border:"none",borderRadius:9,fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>Get Access</button></div>
+      :<div style={{padding:"14px",background:"#1A2418",borderRadius:11,border:"1px solid #2A3A22"}}><span style={{fontSize:13,color:"#A8D5BA"}}>✓ You're on the list!</span></div>}
+    <p style={{fontSize:11,color:"#6E6860",marginTop:14}}>Born in a flour mill in Tuscany.</p></F>
+  </div>
 </section>;}
 
 function Footer(){return<footer style={{padding:"24px 28px",background:C.dark,borderTop:"1px solid #2A2622"}}>
- <div style={{maxWidth:900,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
- <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:20,borderRadius:5,background:C.gold,display:"flex",alignItems:"center",justifyContent:"center",color:C.dark,fontSize:10,fontWeight:700,fontFamily:"'Newsreader',serif"}}>A</div><span style={{fontFamily:"'Newsreader',serif",fontSize:14,color:"#6E6860"}}>Arrivo</span></div>
- <p style={{fontSize:11,color:"#6E6860"}}>© 2025 Arrivo</p>
- </div>
+  <div style={{maxWidth:900,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+    <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:20,borderRadius:5,background:C.gold,display:"flex",alignItems:"center",justifyContent:"center",color:C.dark,fontSize:10,fontWeight:700,fontFamily:"'Newsreader',serif"}}>A</div><span style={{fontFamily:"'Newsreader',serif",fontSize:14,color:"#6E6860"}}>Arrivo</span></div>
+    <p style={{fontSize:11,color:"#6E6860"}}>© 2025 Arrivo</p>
+  </div>
 </footer>;}
 
 function App(){return<div style={{background:C.bg,minHeight:"100vh"}}><Nav/><Hero/><Stats/><How/><Core/><Quote/><Compare/><Pricing/><CTA/><Footer/></div>;}

@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Shanghai Food Guide</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body,#root{min-height:100vh;background:#FAFAF8;color:#1A1A1A;font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#D4D0C8;border-radius:3px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s ease both}
+a{color:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#222!important;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+button{font-family:'Plus Jakarta Sans',sans-serif}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useRef,useEffect}=React;
+const C={bg:"#FAFAF8",bgS:"#F5F4F0",wh:"#FFF",fg:"#1A1A1A",fgS:"#484540",mt:"#9B958A",mtL:"#C4BFB5",bd:"#E8E5DE",bdL:"#F0EDE6",cr:"#E8634A",crS:"#FFF0ED",crD:"#C94E38",sg:"#6B8F6B",sgS:"#F0F5ED",sk:"#5B8DB8",skS:"#EDF4FA",wm:"#8B7355",wmS:"#F8F4EE"};
+const MB="https://www.google.com/maps/search/?api=1&query=";
+const PIN="untour2024";
+const DEF_ORIGIN=[31.2200,121.4580]; // Central Shanghai
+const DRIVE_SPD=25; // km/h avg Shanghai traffic
+
+const PL={"Jia Jia Tangbao":"Jia+Jia+Tangbao+Shanghai","Dong Tai Xiang":"Dong+Tai+Xiang+Shanghai","Wei Xiang Zhai":"Wei+Xiang+Zhai+Shanghai","FU 1088":"FU+1088+Shanghai","Jianguo 328":"Jianguo+328+Shanghai","Old Jesse":"Lao+Ji+Shi+Old+Jesse+Shanghai","Pengyuan Guotie":"Pengyuan+Guotie+Shanghai","Ben Zhen":"Ben+Zhen+Sichuan+Shanghai","Liu Tang Men":"Liu+Tang+Men+Shanghai","Lotus Eatery":"Lotus+Eatery+Shanghai","Four Seasons Dumpling King":"Si+Ji+Minfu+Dumpling+Shanghai","Yanji Old Beijing Hotpot":"Yanji+Old+Beijing+Hotpot+Shanghai","Lazy Monkey Paomo":"Lazy+Monkey+Paomo+Shanghai","Maolago":"Maolago+Shanghai","Bastard":"Bastard+Shanghai+Restaurant","Oha":"Oha+Anfu+Rd+Shanghai","Canton Table":"Canton+Table+Three+on+the+Bund+Shanghai","Imperial Treasure":"Imperial+Treasure+Shanghai","Seventh Son":"Seventh+Son+Shanghai","Highline":"Highline+Shanghai+Ascott","Avenue Joffre":"Avenue+Joffre+Shanghai","Union Trading Company":"Union+Trading+Company+Shanghai","The Captain":"The+Captain+Bar+Shanghai","Flair":"Flair+Ritz+Carlton+Pudong","KEV":"KEV+Bund+18+Shanghai","Mr & Mrs Bund":"Mr+Mrs+Bund+Shanghai","Tai'An Table":"Tai+An+Table+Shanghai"};
+
+// Venue coordinates [lat, lng]
+const COORDS={
+"Jia+Jia+Tangbao+Shanghai":[31.2350,121.4690],
+"Dong+Tai+Xiang+Shanghai":[31.2340,121.4700],
+"Wei+Xiang+Zhai+Shanghai":[31.2230,121.4650],
+"FU+1088+Shanghai":[31.2200,121.4400],
+"Jianguo+328+Shanghai":[31.2050,121.4500],
+"Lao+Ji+Shi+Old+Jesse+Shanghai":[31.2150,121.4520],
+"Pengyuan+Guotie+Shanghai":[31.2130,121.4450],
+"Ben+Zhen+Sichuan+Shanghai":[31.2180,121.4480],
+"Liu+Tang+Men+Shanghai":[31.2100,121.4350],
+"Lotus+Eatery+Shanghai":[31.2160,121.4530],
+"Si+Ji+Minfu+Dumpling+Shanghai":[31.2300,121.4750],
+"Yanji+Old+Beijing+Hotpot+Shanghai":[31.2180,121.4550],
+"Lazy+Monkey+Paomo+Shanghai":[31.2140,121.4470],
+"Maolago+Shanghai":[31.2170,121.4510],
+"Bastard+Shanghai+Restaurant":[31.2120,121.4430],
+"Oha+Anfu+Rd+Shanghai":[31.2140,121.4400],
+"Canton+Table+Three+on+the+Bund+Shanghai":[31.2400,121.4900],
+"Imperial+Treasure+Shanghai":[31.2380,121.4870],
+"Seventh+Son+Shanghai":[31.2250,121.4600],
+"Highline+Shanghai+Ascott":[31.2210,121.4580],
+"Avenue+Joffre+Shanghai":[31.2170,121.4460],
+"Union+Trading+Company+Shanghai":[31.2160,121.4480],
+"The+Captain+Bar+Shanghai":[31.2410,121.4910],
+"Flair+Ritz+Carlton+Pudong":[31.2350,121.5050],
+"KEV+Bund+18+Shanghai":[31.2420,121.4900],
+"Mr+Mrs+Bund+Shanghai":[31.2430,121.4890],
+"Tai+An+Table+Shanghai":[31.2100,121.4350],
+"Jianbing+1370+Xikang+Rd+Shanghai":[31.2280,121.4380],
+"Yili+Baozi+Shanghai":[31.2050,121.4400],
+"Egg+Cafe+Shanghai":[31.2200,121.4550],
+"A+Niang+Mian+Shanghai":[31.2180,121.4500],
+"Propaganda+Poster+Museum+Shanghai":[31.2070,121.4380],
+"Wukang+Mansion+Shanghai":[31.2100,121.4370],
+"Yu+Garden+Shanghai":[31.2270,121.4920],
+"Tianzifang+Shanghai":[31.2100,121.4680],
+"The+Bund+Shanghai":[31.2400,121.4900],
+"Xintiandi+Shanghai":[31.2190,121.4730],
+};
+
+// Haversine distance in km
+function hav(a,b){
+const R=6371,toR=Math.PI/180;
+const dLat=(b[0]-a[0])*toR,dLon=(b[1]-a[1])*toR;
+const x=Math.sin(dLat/2)**2+Math.cos(a[0]*toR)*Math.cos(b[0]*toR)*Math.sin(dLon/2)**2;
+return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+function travelTime(origin,mapQ){
+if(!mapQ)return null;
+const dest=COORDS[mapQ];if(!dest)return null;
+const km=hav(origin,dest);if(km<0.15)return null;
+const walkMin=Math.round(km/5*60/5)*5;
+const driveMin=Math.max(5,Math.round(km/DRIVE_SPD*60/5)*5);
+return{km,walkMin,driveMin};
+}
+
+function linkP(t){if(!t)return[t];let p=[],r=t;const sk=Object.keys(PL).sort((a,b)=>b.length-a.length);while(r.length>0){let b={i:Infinity,k:null};for(const k of sk){const i=r.indexOf(k);if(i!==-1&&i<b.i)b={i:i,k:k};}if(!b.k){p.push(r);break;}if(b.i>0)p.push(r.slice(0,b.i));p.push({n:b.k,q:PL[b.k]});r=r.slice(b.i+b.k.length);}return p;}
+const CT={breakfast:{bg:"#FBF6EC",a:"#C49A3C",i:"\u2600\uFE0F",l:"Morning"},lunch:{bg:"#F0F5ED",a:"#6B8F6B",i:"\uD83E\uDD62",l:"Midday"},dinner:{bg:"#FFF0ED",a:"#E8634A",i:"\uD83C\uDF77",l:"Evening"},drinks:{bg:"#F3EEF8",a:"#8B6BAF",i:"\uD83C\uDF78",l:"Night Out"},sightseeing:{bg:"#EDF4FA",a:"#5B8DB8",i:"\uD83D\uDCCD",l:"Explore"},tour:{bg:"#FFF0ED",a:"#E8634A",i:"\uD83D\uDEB6",l:"Tour"},brunch:{bg:"#F0F5ED",a:"#6B8F6B",i:"\uD83E\uDD42",l:"Brunch"}};
+
+const ALTS=[
+{l:"Jia Jia Tangbao",d:"Best soup dumplings. Pork XLB, salted egg yolk. 127 Huanghe Rd.",c:"breakfast",m:"Jia+Jia+Tangbao+Shanghai"},
+{l:"Yili Baozi",d:"Juicy pork buns & egg custard near Shanghai Library.",c:"breakfast",m:"Yili+Baozi+Shanghai"},
+{l:"Jianbing Stall",d:"Best Chinese crepe. 1370 Xikang Rd, 7-11am.",c:"breakfast",m:"Jianbing+1370+Xikang+Rd+Shanghai"},
+{l:"Dong Tai Xiang",d:"Fried soup dumplings. 24hr at 188 Chongqing North Rd.",c:"breakfast",m:"Dong+Tai+Xiang+Shanghai"},
+{l:"Egg Cafe",d:"Western all-day breakfast. 12 Xiangyang North Rd.",c:"breakfast",m:"Egg+Cafe+Shanghai"},
+{l:"Jianguo 328",d:"Clean Shanghainese. Noodles, red-braised pork, spring rolls.",c:"lunch",m:"Jianguo+328+Shanghai"},
+{l:"A Niang Mian",d:"Ningbo seafood noodles. Yellow croaker fish-bone broth.",c:"lunch",m:"A+Niang+Mian+Shanghai"},
+{l:"Wei Xiang Zhai",d:"Legendary sesame-peanut noodles. 14 Yandang Rd.",c:"lunch",m:"Wei+Xiang+Zhai+Shanghai"},
+{l:"Liu Tang Men",d:"Fiery Sichuan noodles. Mark your spice level!",c:"lunch",m:"Liu+Tang+Men+Shanghai"},
+{l:"Pengyuan Guotie",d:"Best potstickers. Husband-wife stall. 102 Gao'an Rd.",c:"lunch",m:"Pengyuan+Guotie+Shanghai"},
+{l:"Old Jesse",d:"Best Shanghainese. Pre-order codfish head & pork shank!",c:"dinner",m:"Lao+Ji+Shi+Old+Jesse+Shanghai",b:true},
+{l:"FU 1088",d:"Celebrity chef's art deco villa. Smoked fish, wasabi shrimp.",c:"dinner",m:"FU+1088+Shanghai",b:true},
+{l:"Ben Zhen",d:"Spicy Sichuan + craft beer. Peppercorn fish is a must.",c:"dinner",m:"Ben+Zhen+Sichuan+Shanghai"},
+{l:"Lotus Eatery",d:"Yunnan: fried insects, edible flowers, goat cheese.",c:"dinner",m:"Lotus+Eatery+Shanghai"},
+{l:"Maolago",d:"Guizhou food. Sour tomato fish hotpot & cocktails.",c:"dinner",m:"Maolago+Shanghai"},
+{l:"Canton Table",d:"High-end Cantonese, Bund views, tea sommelier.",c:"dinner",m:"Canton+Table+Three+on+the+Bund+Shanghai",b:true},
+{l:"Tai'An Table",d:"Three Michelin stars. THE splurge.",c:"dinner",m:"Tai+An+Table+Shanghai",b:true},
+{l:"Yanji Hotpot",d:"Coal steamboat, thin-sliced lamb, sesame dip.",c:"dinner",m:"Yanji+Old+Beijing+Hotpot+Shanghai"},
+{l:"Highline",d:"Best brunch. Southern hospitality, fireplace patio.",c:"brunch",m:"Highline+Shanghai+Ascott",b:true},
+{l:"Flair",d:"58th floor. Highest patio bar. Pearl Tower views.",c:"drinks",m:"Flair+Ritz+Carlton+Pudong"},
+{l:"The Captain",d:"Cheapest Bund skyline drink since 2005.",c:"drinks",m:"The+Captain+Bar+Shanghai"},
+{l:"KEV",d:"Top of Bund 18. Champagne, DJs, terrace.",c:"drinks",m:"KEV+Bund+18+Shanghai"},
+{l:"Avenue Joffre",d:"Japanese cocktail perfection. 8pm-2am.",c:"drinks",m:"Avenue+Joffre+Shanghai"},
+{l:"UnTour Street Eats",d:"French Concession street food crawl.",c:"tour",b:true},
+{l:"The Bund Walk",d:"Iconic waterfront. Best at sunset.",c:"sightseeing",m:"The+Bund+Shanghai"},
+{l:"French Concession",d:"Tree-lined streets, boutiques, cafes.",c:"sightseeing",m:"Wukang+Mansion+Shanghai"},
+{l:"Yu Garden",d:"Classic Chinese garden & bazaar.",c:"sightseeing",m:"Yu+Garden+Shanghai"},
+{l:"Tianzifang",d:"Artsy laneways in old shikumen houses.",c:"sightseeing",m:"Tianzifang+Shanghai"},
+];
+
+const IW=[
+{title:"Dumpling Day",emoji:"\uD83E\uDD5F",items:[
+{l:"Jia Jia Tangbao",d:"Best soup dumplings. Pork XLB, salted duck egg yolk. 127 Huanghe Rd.",c:"breakfast",m:"Jia+Jia+Tangbao+Shanghai"},
+{l:"French Concession Walk",d:"Stroll tree-lined streets from Wukang Mansion through boutiques.",c:"sightseeing",m:"Wukang+Mansion+Shanghai"},
+{l:"Pengyuan Guotie",d:"Best potstickers. Husband-wife stall. 102 Gao'an Rd.",c:"lunch",m:"Pengyuan+Guotie+Shanghai"},
+{l:"Yu Garden",d:"Classic Chinese garden & bazaar. Nanxiang dumplings nearby.",c:"sightseeing",m:"Yu+Garden+Shanghai"},
+{l:"Old Jesse",d:"Best Shanghainese. Pre-order codfish head & red-braised pork shank!",c:"dinner",m:"Lao+Ji+Shi+Old+Jesse+Shanghai",b:true},
+]},
+{title:"Street Food & Noodles",emoji:"\uD83C\uDF5C",items:[
+{l:"Jianbing Stall",d:"Best Chinese crepe. 1370 Xikang Rd, 7-11am. Say 'bula' no chili.",c:"breakfast",m:"Jianbing+1370+Xikang+Rd+Shanghai"},
+{l:"UnTour Street Eats",d:"Guided street food crawl through the French Concession.",c:"tour",b:true},
+{l:"Wei Xiang Zhai",d:"Legendary sesame-peanut noodles. 14 Yandang Rd.",c:"lunch",m:"Wei+Xiang+Zhai+Shanghai"},
+{l:"Tianzifang",d:"Artsy laneways. Great for souvenirs and coffee.",c:"sightseeing",m:"Tianzifang+Shanghai"},
+{l:"Liu Tang Men",d:"Fiery Sichuan noodles. Start at mild! 419-1 Xinhua Rd.",c:"dinner",m:"Liu+Tang+Men+Shanghai"},
+]},
+{title:"Regional Flavors",emoji:"\uD83C\uDF36\uFE0F",items:[
+{l:"Dong Tai Xiang",d:"Sheng jian bao (fried soup dumplings). Open 24hrs!",c:"breakfast",m:"Dong+Tai+Xiang+Shanghai"},
+{l:"Lotus Eatery",d:"Yunnan: fried insects, edible flowers, goat cheese.",c:"lunch",m:"Lotus+Eatery+Shanghai"},
+{l:"Propaganda Poster Museum",d:"Hidden gem. Fascinating Cold War-era collection.",c:"sightseeing",m:"Propaganda+Poster+Museum+Shanghai"},
+{l:"Ben Zhen",d:"Spicy Sichuan in style. Craft beer to cool the burn.",c:"dinner",m:"Ben+Zhen+Sichuan+Shanghai"},
+{l:"Avenue Joffre",d:"Japanese cocktail bar. Classics done to perfection.",c:"drinks",m:"Avenue+Joffre+Shanghai"},
+]},
+{title:"The Bund & Fine Dining",emoji:"\u2728",items:[
+{l:"Egg Cafe",d:"Western all-day breakfast & great coffee.",c:"breakfast",m:"Egg+Cafe+Shanghai"},
+{l:"The Bund Walk",d:"Iconic waterfront. Art Deco meets Pudong skyline.",c:"sightseeing",m:"The+Bund+Shanghai"},
+{l:"Canton Table",d:"High-end dim sum with Bund views & tea sommelier.",c:"lunch",m:"Canton+Table+Three+on+the+Bund+Shanghai",b:true},
+{l:"Nanjing Road",d:"Pedestrian street, then cab to Jing'an for upscale shopping.",c:"sightseeing"},
+{l:"Tai'An Table",d:"Three Michelin stars. THE Shanghai splurge.",c:"dinner",m:"Tai+An+Table+Shanghai",b:true},
+]},
+{title:"Hotpot & Nightlife",emoji:"\uD83E\uDE98",items:[
+{l:"Highline",d:"Shanghai's best brunch. Southern hospitality, fireplace patio.",c:"brunch",m:"Highline+Shanghai+Ascott",b:true},
+{l:"Xintiandi",d:"Restored shikumen neighborhood. Wandering, shopping.",c:"sightseeing",m:"Xintiandi+Shanghai"},
+{l:"Yanji Old Beijing Hotpot",d:"Coal steamboat, thin-sliced lamb, sesame dip.",c:"dinner",m:"Yanji+Old+Beijing+Hotpot+Shanghai"},
+{l:"Flair at the Ritz",d:"58th floor \u2014 highest patio bar. Pearl Tower views.",c:"drinks",m:"Flair+Ritz+Carlton+Pudong"},
+{l:"KEV or INS",d:"KEV: Bund 18 champagne. INS: six floors of clubs.",c:"drinks",m:"KEV+Bund+18+Shanghai"},
+]},
+];
+
+const TRIPS=[
+{title:"Dumpling Deep Dive",emoji:"\uD83E\uDD5F",d:"XLB \u2192 sheng jian \u2192 potstickers \u2192 boiled dumplings.",spots:["Jia Jia Tangbao","Dong Tai Xiang","Pengyuan Guotie","Four Seasons Dumpling King"]},
+{title:"Spice Route",emoji:"\uD83C\uDF36\uFE0F",d:"Sichuan \u2192 Guizhou \u2192 Xi'an. Start mild, end sweating.",spots:["Liu Tang Men","Ben Zhen","Maolago","Lazy Monkey Paomo"]},
+{title:"Modern Chinese Bistros",emoji:"\uD83C\uDF77",d:"Chinese food meets wine bar. English menus.",spots:["Bastard","Oha","Maolago"]},
+{title:"Bund Bar Crawl",emoji:"\uD83C\uDF78",d:"Budget to bougie: The Captain \u2192 KEV \u2192 Flair.",spots:["The Captain","Mr & Mrs Bund","KEV","Flair"]},
+{title:"Fine Dining Circuit",emoji:"\u2B50",d:"Imperial Treasure \u2192 Seventh Son \u2192 Tai'An Table.",spots:["Imperial Treasure","Seventh Son","Tai'An Table"]},
+];
+
+const INF=[
+{title:"Getting Around",icon:"\uD83D\uDE95",items:[{t:"Didi",d:"China's Uber. Download, set English. Alipay/WeChat to pay."},{t:"Metro",d:"Clean, cheap, extensive. Alipay QR at gates."},{t:"Walking",d:"French Concession & Bund very walkable."}]},
+{title:"Essential Apps",icon:"\uD83D\uDCF1",items:[{t:"WeChat",d:"China's everything app. Set up before arrival."},{t:"Alipay",d:"Link international card for QR payments."},{t:"VPN",d:"Needed for Google, Instagram, WhatsApp. Download first!"}]},
+{title:"Food Tips",icon:"\uD83E\uDD62",items:[{t:"Ordering",d:"Point at other tables! Show Chinese from this guide."},{t:"Spice",d:"'b\u00FAl\u00E0' (\u4E0D\u8FA3) = none \u00B7 'w\u0113il\u00E0' (\u5FAE\u8FA3) = mild."},{t:"Chopsticks",d:"Never stick upright in rice. Lay across bowl."},{t:"Water",d:"Don't drink tap. Hot water (\u5F00\u6C34) always free."},{t:"Tipping",d:"Not expected in China."}]},
+{title:"Contacts",icon:"\uD83D\uDCDE",items:[{t:"UnTour Food Tours",d:"info@untourfoodtours.com \u00B7 WeChat: UnTour"},{t:"Emergency",d:"Police 110 \u00B7 Ambulance 120 \u00B7 Fire 119"}]},
+];
+
+function fD(s){if(!s)return"";return new Date(s+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});}
+function aD(s,n){const d=new Date(s+"T12:00:00");d.setDate(d.getDate()+n);return d;}
+
+// UTF-8 safe base64 using TextEncoder
+function toB64(s){
+const bytes=new TextEncoder().encode(s);
+let bin="";for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+return btoa(bin);
+}
+function fromB64(s){
+const bin=atob(s);
+const bytes=new Uint8Array(bin.length);
+for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+return new TextDecoder().decode(bytes);
+}
+
+// Clipboard with fallback + prompt as last resort
+function copyText(text){
+try{
+const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;top:0;left:0;opacity:0";
+document.body.appendChild(ta);ta.focus();ta.select();
+const ok=document.execCommand("copy");
+document.body.removeChild(ta);
+if(!ok)throw new Error("execCommand failed");
+}catch(e){
+try{navigator.clipboard.writeText(text)}catch(e2){
+window.prompt("Copy this link:",text);
+}
+}
+}
+
+function Header({tab,setTab,isO,setIsO,gi}){
+const[sp,setSp]=useState(false);const[p,setP]=useState("");
+const gt=[{id:"week",l:"Your Week",i:"\uD83D\uDCC5"},{id:"crawls",l:"Food Crawls",i:"\uD83D\uDDFA\uFE0F"},{id:"essentials",l:"Essentials",i:"\uD83D\uDCF1"},{id:"bookings",l:"Bookings",i:"\uD83D\uDCCB"},{id:"chat",l:"Ask Us",i:"\uD83D\uDCAC"}];
+const tabs=isO?[...gt,{id:"owner",l:"Dashboard",i:"\u2699\uFE0F"}]:gt;
+return(
+<header style={{background:"rgba(250,250,248,.92)",backdropFilter:"blur(20px)",borderBottom:"1px solid "+C.bd,position:"sticky",top:0,zIndex:100}}>
+<div style={{maxWidth:680,margin:"0 auto",padding:"16px 20px 0"}}>
+<div style={{display:"flex",alignItems:"center",gap:12,marginBottom:gi?10:14}}>
+<div style={{width:38,height:38,borderRadius:12,background:C.crS,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>{"\uD83E\uDD5F"}</div>
+<div style={{flex:1}}>
+<h1 style={{fontFamily:"'DM Serif Display',serif",fontSize:19,fontWeight:400,lineHeight:1.1}}>UnTour Food Tours</h1>
+<p style={{fontSize:11,color:C.mt,marginTop:1}}>Your personal Shanghai food guide</p>
+</div>
+{!isO&&!sp&&!gi&&<button onClick={()=>setSp(true)} style={{fontSize:11,color:C.mt,background:C.wh,border:"1px solid "+C.bd,borderRadius:20,padding:"6px 14px",cursor:"pointer"}}>Host</button>}
+{sp&&!isO&&<div style={{display:"flex",gap:4}}>
+<input value={p} onChange={e=>setP(e.target.value)} placeholder="PIN" type="password" style={{width:70,padding:"6px 10px",background:C.wh,border:"1px solid "+C.bd,borderRadius:20,fontSize:11,outline:"none",textAlign:"center"}} onKeyDown={e=>{if(e.key==="Enter"&&p===PIN){setIsO(true);setSp(false);setP("");}}}/>
+<button onClick={()=>{if(p===PIN){setIsO(true);setSp(false);setP("");}}} style={{fontSize:11,color:C.cr,background:"none",border:"1px solid rgba(232,99,74,.2)",borderRadius:20,padding:"6px 10px",cursor:"pointer"}}>{"\u2192"}</button>
+</div>}
+{isO&&<button onClick={()=>setIsO(false)} style={{fontSize:11,color:C.sg,background:C.sgS,border:"1px solid rgba(107,143,107,.2)",borderRadius:20,padding:"6px 14px",cursor:"pointer",fontWeight:600}}>Owner</button>}
+</div>
+{gi&&<div style={{background:C.wmS,borderRadius:14,padding:"10px 16px",marginBottom:12,display:"flex",alignItems:"center",gap:10,border:"1px solid "+C.bd}}>
+<span style={{fontSize:20}}>{"\uD83D\uDC4B"}</span>
+<div style={{flex:1}}>
+<span style={{fontSize:14,fontWeight:600}}>Welcome, {gi.name}</span>
+<span style={{fontSize:12,color:C.mt,marginLeft:8}}>{fD(gi.ci)} {"\u2192"} {fD(gi.co)}</span>
+</div>
+</div>}
+<nav style={{display:"flex",gap:2,overflowX:"auto"}}>
+{tabs.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{flex:"0 0 auto",padding:"10px 14px 12px",background:"none",border:"none",borderBottom:tab===t.id?"2px solid "+C.cr:"2px solid transparent",color:tab===t.id?C.fg:C.mt,fontSize:12,fontWeight:tab===t.id?600:400,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'Plus Jakarta Sans',sans-serif"}}>{t.i} {t.l}</button>)}
+</nav>
+</div>
+</header>);
+}
+
+function TravelBadge({item,origin}){
+const tt=travelTime(origin,item.m);
+if(!tt)return null;
+const showWalk=tt.walkMin<=30;
+return(<>
+{showWalk&&<span style={{fontSize:10,padding:"3px 8px",background:"#F0F5ED",color:"#6B8F6B",borderRadius:20,fontWeight:600}}>{"\uD83D\uDEB6"} {tt.walkMin} min</span>}
+{tt.driveMin>10&&<span style={{fontSize:10,padding:"3px 8px",background:C.bgS,color:C.mt,borderRadius:20,fontWeight:600}}>{"\uD83D\uDE95"} {tt.driveMin} min</span>}
+</>);
+}
+
+function Card({item,idx,di,onSw,onDl,onEdit,origin,isOwner}){
+const ct=CT[item.c]||CT.dinner;const ps=linkP(item.d);const[o,setO]=useState(false);const[ed,setEd]=useState(false);const[ef,setEf]=useState({});
+const catOpts=["breakfast","lunch","dinner","brunch","drinks","sightseeing","tour"];
+const iS={width:"100%",padding:"7px 10px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:8,fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"};
+return(
+<div className="fade-up" style={{background:C.wh,borderRadius:16,border:ed?"2px solid "+C.cr:"1px solid "+C.bd,overflow:"hidden",marginBottom:8,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+{ed?<div style={{padding:"12px 16px"}}>
+<div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:8,marginBottom:6}}>
+<div><label style={{fontSize:10,color:C.mt}}>Name</label><input value={ef.l||""} onChange={e=>setEf({...ef,l:e.target.value})} style={iS}/></div>
+<div><label style={{fontSize:10,color:C.mt}}>Category</label><select value={ef.c||""} onChange={e=>setEf({...ef,c:e.target.value})} style={{...iS,cursor:"pointer",width:110}}>{catOpts.map(c=><option key={c} value={c}>{c}</option>)}</select></div>
+</div>
+<div style={{marginBottom:6}}><label style={{fontSize:10,color:C.mt}}>Description</label><input value={ef.d||""} onChange={e=>setEf({...ef,d:e.target.value})} style={iS}/></div>
+<div style={{display:"grid",gridTemplateColumns:"1fr auto auto",gap:6,alignItems:"end",marginBottom:6}}>
+<div><label style={{fontSize:10,color:C.mt}}>Maps query</label><input value={ef.m||""} onChange={e=>setEf({...ef,m:e.target.value})} placeholder="Place+Name+City" style={iS}/></div>
+<label style={{fontSize:10,color:C.mt,display:"flex",alignItems:"center",gap:3,padding:"7px 0"}}><input type="checkbox" checked={!!ef.b} onChange={e=>setEf({...ef,b:e.target.checked})}/> Book</label>
+</div>
+<div style={{display:"flex",gap:4}}>
+<button onClick={()=>{onEdit(di,idx,ef);setEd(false);}} style={{padding:"6px 14px",background:C.sg,color:"#fff",border:"none",borderRadius:10,fontSize:11,fontWeight:600,cursor:"pointer"}}>Save</button>
+<button onClick={()=>setEd(false)} style={{padding:"6px 10px",background:C.bgS,color:C.mt,border:"1px solid "+C.bd,borderRadius:10,fontSize:11,cursor:"pointer"}}>Cancel</button>
+</div>
+</div>:<>
+<div style={{display:"flex",gap:12,padding:"14px 16px",alignItems:"flex-start"}}>
+<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,paddingTop:2}}>
+<div style={{width:36,height:36,borderRadius:10,background:ct.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>{ct.i}</div>
+<span style={{fontSize:9,color:ct.a,fontWeight:600,letterSpacing:.5,textTransform:"uppercase"}}>{ct.l}</span>
+</div>
+<div style={{flex:1,minWidth:0}}>
+<div style={{fontSize:15,fontWeight:600,lineHeight:1.3,marginBottom:3}}>{item.l}</div>
+<div style={{fontSize:13,color:C.fgS,lineHeight:1.55}}>
+{ps.map((p,i)=>typeof p==="string"?<span key={i}>{p}</span>:<a key={i} href={MB+p.q} target="_blank" rel="noopener" style={{color:C.sk,textDecoration:"none",borderBottom:"1px solid rgba(91,141,184,.3)",fontWeight:500}}>{p.n}</a>)}
+</div>
+<div style={{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}}>
+{item.b&&<span style={{fontSize:10,padding:"3px 8px",background:C.crS,color:C.cr,borderRadius:20,fontWeight:600}}>Reservation needed</span>}
+{item.m&&<a href={MB+item.m} target="_blank" rel="noopener" style={{fontSize:10,padding:"3px 8px",background:C.skS,color:C.sk,borderRadius:20,fontWeight:600,textDecoration:"none"}}>{"\uD83D\uDCCD"} Map</a>}
+<TravelBadge item={item} origin={origin}/>
+</div>
+</div>
+<div style={{display:"flex",flexDirection:"column",gap:4,flexShrink:0,paddingTop:2}}>
+{isOwner&&<button onClick={()=>{setEf({l:item.l,d:item.d,c:item.c,m:item.m||"",b:!!item.b});setEd(true);}} style={{width:28,height:28,borderRadius:8,background:C.wmS,border:"1px solid "+C.bd,color:C.wm,fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Edit">✏️</button>}
+<button onClick={()=>setO(!o)} style={{width:28,height:28,borderRadius:8,background:C.bgS,border:"1px solid "+C.bd,color:C.mt,fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u21BB"}</button>
+{onDl&&<button onClick={()=>onDl(di,idx)} style={{width:28,height:28,borderRadius:8,background:C.bgS,border:"1px solid "+C.bd,color:"#D4766A",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u2715"}</button>}
+</div>
+</div>
+{o&&<div style={{padding:"8px 16px 12px",borderTop:"1px solid "+C.bdL,background:C.bgS,display:"flex",flexWrap:"wrap",gap:5}}>
+<span style={{fontSize:10,color:C.mt,alignSelf:"center",marginRight:4}}>Swap:</span>
+{ALTS.filter(a=>a.c===item.c&&a.l!==item.l).concat(ALTS.filter(a=>a.c!==item.c&&a.l!==item.l)).slice(0,8).map((a,i)=><button key={i} onClick={()=>{onSw(di,idx,a);setO(false);}} style={{fontSize:11,padding:"5px 10px",background:a.c===item.c?ct.bg:C.wh,border:"1px solid "+(a.c===item.c?ct.a+"33":C.bd),borderRadius:20,cursor:"pointer",fontWeight:500,color:a.c===item.c?ct.a:C.fg}}>{a.l}</button>)}
+</div>}
+</>}
+</div>);
+}
+
+function ConfCard({bk}){
+return(<div style={{background:"#F0FAF0",borderRadius:16,border:"2px solid #5A9E6F",padding:"14px 16px",marginBottom:8}}>
+<div style={{display:"flex",alignItems:"center",gap:8}}>
+<span style={{fontSize:18}}>{"\u2705"}</span>
+<div style={{flex:1}}>
+<div style={{fontSize:14,fontWeight:600}}>{bk.v}</div>
+<div style={{fontSize:12,color:"#5A9E6F",fontWeight:600}}>Confirmed Reservation</div>
+<div style={{fontSize:12,color:C.mt}}>{bk.g} guests{bk.d?" \u00B7 "+fD(bk.d):""}</div>
+</div>
+<span style={{fontSize:11,padding:"4px 10px",background:"#DFF2E1",color:"#3D7A4F",borderRadius:20,fontWeight:600}}>Booked</span>
+</div>
+</div>);
+}
+
+function WkTab({wk,setWk,gi,origin,confirmed,editingTpl,onSaveTpl,onCancelTpl,isOwner}){
+const[open,setOpen]=useState(0);
+const[dragDay,setDragDay]=useState(null);const[dragItem,setDragItem]=useState(null);
+const onDDS=(e,i)=>{setDragDay(i);setDragItem(null);e.dataTransfer.effectAllowed="move";};
+const onDDO=(e,i)=>{e.preventDefault();if(dragDay===null||dragDay===i)return;setWk(w=>{const n=[...w];const it=n.splice(dragDay,1)[0];n.splice(i,0,it);setDragDay(i);return n;});};
+const onIDS=(e,di,ii)=>{e.stopPropagation();setDragItem({di,ii});setDragDay(null);e.dataTransfer.effectAllowed="move";};
+const onIDO=(e,di,ii)=>{e.preventDefault();e.stopPropagation();if(!dragItem||dragItem.di!==di||dragItem.ii===ii)return;
+setWk(w=>w.map((d,i)=>{if(i!==di)return d;const ni=[...d.items];const it=ni.splice(dragItem.ii,1)[0];ni.splice(ii,0,it);setDragItem({di,ii});return{...d,items:ni};}));};
+const sw=(di,ii,a)=>{setWk(wk.map((d,i)=>i===di?{...d,items:d.items.map((t,j)=>j===ii?{l:a.l,d:a.d,c:a.c,m:a.m,b:a.b}:t)}:d));};
+const dl=(di,ii)=>{setWk(wk.map((d,i)=>i===di?{...d,items:d.items.filter((_,j)=>j!==ii)}:d));};
+const editCard=(di,ii,data)=>{setWk(wk.map((d,i)=>i===di?{...d,items:d.items.map((t,j)=>j===ii?{...t,...data}:t)}:d));};
+return(
+<div style={{padding:"24px 20px",maxWidth:680,margin:"0 auto"}}>
+{editingTpl&&<div style={{background:C.crS,border:"2px solid "+C.cr,borderRadius:14,padding:"12px 16px",marginBottom:16,display:"flex",alignItems:"center",gap:10}}>
+<span style={{fontSize:14}}>📝</span>
+<div style={{flex:1}}><div style={{fontSize:14,fontWeight:600,color:C.cr}}>Editing: {editingTpl.name}</div><div style={{fontSize:12,color:C.mt}}>Swap or remove cards, then save your template.</div></div>
+<button onClick={onSaveTpl} style={{fontSize:12,padding:"8px 16px",background:C.sg,color:"#fff",border:"none",borderRadius:20,cursor:"pointer",fontWeight:600}}>Save Template</button>
+<button onClick={onCancelTpl} style={{fontSize:12,padding:"8px 16px",background:C.bgS,color:C.mt,border:"1px solid "+C.bd,borderRadius:20,cursor:"pointer"}}>Cancel</button>
+</div>}
+<div style={{textAlign:"center",marginBottom:20}}>
+<h2 style={{fontFamily:"'DM Serif Display',serif",fontSize:28,fontWeight:400}}>{editingTpl?"Template: "+editingTpl.name:"Your Shanghai Food Week"}</h2>
+<p style={{fontSize:13,color:C.mt,marginTop:6}}>{editingTpl?"Remove or swap cards to customize this template.":"Drag days to reorder \u00B7 drag cards within a day \u00B7 swap or delete anything"}</p>
+</div>
+<div style={{display:"flex",flexWrap:"wrap",gap:5,justifyContent:"center",marginBottom:16}}>{Object.entries(CT).map(([k,v])=><span key={k} style={{fontSize:10,color:v.a,background:v.bg,padding:"3px 9px",borderRadius:20,fontWeight:600}}>{v.i} {v.l}</span>)}</div>
+{wk.map((day,di)=>{
+const ds=gi&&gi.ci?aD(gi.ci,di).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):null;
+const isOpen=open===di;
+return(<div key={di} draggable onDragStart={e=>onDDS(e,di)} onDragOver={e=>onDDO(e,di)} onDragEnd={()=>setDragDay(null)} style={{marginBottom:8,opacity:dragDay===di?.5:1,cursor:"grab"}}>
+<button onClick={()=>setOpen(isOpen?-1:di)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,background:isOpen?C.wh:C.bgS,border:"1px solid "+(isOpen?C.cr+"44":C.bd),borderRadius:isOpen?"14px 14px 0 0":"14px",padding:"12px 16px",cursor:"pointer"}}>
+<span style={{fontSize:11,color:C.mt,cursor:"grab",userSelect:"none"}}>{"\u2800\u2807\u2800\u2807"}</span>
+<span style={{fontSize:20}}>{day.emoji}</span>
+<div style={{textAlign:"left",flex:1}}>
+<div style={{fontSize:11,color:C.cr,fontWeight:600,letterSpacing:.5,textTransform:"uppercase"}}>Day {di+1}{ds?" \u00B7 "+ds:""}</div>
+<div style={{fontSize:16,fontWeight:600,marginTop:1}}>{day.title}</div>
+</div>
+{(()=>{const spots=day.items.filter(x=>x.m).map(x=>x.m.replace(/\+/g," "));if(spots.length<2)return null;const url="https://www.google.com/maps/dir/"+spots.join("/");return <a href={url} target="_blank" rel="noopener" onClick={e=>e.stopPropagation()} style={{fontSize:10,padding:"5px 10px",background:C.skS,color:C.sk,borderRadius:20,fontWeight:600,textDecoration:"none",flexShrink:0}}>{"\uD83D\uDDFA\uFE0F"} Route</a>;})()}
+<span style={{color:C.cr,transform:isOpen?"rotate(180deg)":"none",fontSize:14,transition:"transform .15s"}}>{"\u25BE"}</span>
+</button>
+{isOpen&&<div style={{background:C.wh,borderRadius:"0 0 14px 14px",padding:"8px 8px 4px",border:"1px solid "+C.cr+"22",borderTop:"none"}}>
+{day.items.map((it,ii)=>{const isDI=dragItem&&dragItem.di===di&&dragItem.ii===ii;return(
+<div key={ii} draggable onDragStart={e=>onIDS(e,di,ii)} onDragOver={e=>onIDO(e,di,ii)} onDragEnd={()=>setDragItem(null)} style={{opacity:isDI?.4:1,cursor:"grab"}}>
+<Card item={it} idx={ii} di={di} onSw={sw} onDl={dl} onEdit={editCard} origin={origin} isOwner={isOwner}/>
+</div>);})}
+{confirmed&&confirmed.filter(b=>{if(!b.d||!gi||!gi.ci)return false;const bd=new Date(b.d);const ci=new Date(gi.ci);const diff=Math.round((bd-ci)/864e5);return diff===di;}).map((b,i)=><ConfCard key={"bk"+i} bk={b}/>)}
+</div>}
+</div>);})}
+</div>);
+}
+
+function CrTab({origin}){return(
+<div style={{padding:"24px 20px",maxWidth:680,margin:"0 auto"}}>
+<div style={{textAlign:"center",marginBottom:24}}>
+<h2 style={{fontFamily:"'DM Serif Display',serif",fontSize:28,fontWeight:400}}>Themed Food Crawls</h2>
+<p style={{fontSize:14,color:C.mt,marginTop:6}}>Follow a route. Each is a half-day adventure.</p>
+</div>
+{TRIPS.map((t,i)=>(<div key={i} style={{background:C.wh,borderRadius:16,border:"1px solid "+C.bd,padding:20,marginBottom:12}}>
+<div style={{display:"flex",gap:10,marginBottom:10}}>
+<span style={{fontSize:22}}>{t.emoji}</span>
+<div><div style={{fontSize:16,fontWeight:600}}>{t.title}</div><div style={{fontSize:13,color:C.fgS,lineHeight:1.5,marginTop:3}}>{t.d}</div></div>
+</div>
+<div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+{t.spots.map((p,j)=>{const q=PL[p];const tt=q?travelTime(origin,q):null;return q?<a key={j} href={MB+q} target="_blank" rel="noopener" style={{fontSize:12,padding:"6px 12px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:20,textDecoration:"none",fontWeight:500}}>{"\uD83D\uDCCD"} {p}{tt&&tt.walkMin<=25?" \u00B7 \uD83D\uDEB6 "+tt.walkMin+"m":tt?" \u00B7 \uD83D\uDE95 "+tt.driveMin+"m":""}</a>:<span key={j} style={{fontSize:12,padding:"6px 12px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:20,color:C.mt}}>{p}</span>;})}
+</div>
+</div>))}
+</div>);}
+
+function EsTab({inf,setInf,isO}){
+const[ed,setEd]=useState(null);
+const[et,setEt]=useState("");const[edesc,setEdesc]=useState("");
+const startEdit=(si,ii)=>{if(!isO)return;setEd({si,ii});setEt(inf[si].items[ii].t);setEdesc(inf[si].items[ii].d);};
+const save=()=>{if(!ed)return;const n=inf.map((s,si)=>si===ed.si?{...s,items:s.items.map((m,ii)=>ii===ed.ii?{...m,t:et,d:edesc}:m)}:s);setInf(n);setEd(null);};
+const addItem=(si)=>{const n=inf.map((s,i)=>i===si?{...s,items:[...s.items,{t:"New Item",d:"Description here"}]}:s);setInf(n);};
+const delItem=(si,ii)=>{const n=inf.map((s,i)=>i===si?{...s,items:s.items.filter((_,j)=>j!==ii)}:s);setInf(n);};
+const iS={width:"100%",padding:"8px 12px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:10,fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"};
+return(
+<div style={{padding:"24px 20px",maxWidth:680,margin:"0 auto"}}>
+<div style={{textAlign:"center",marginBottom:24}}>
+<h2 style={{fontFamily:"'DM Serif Display',serif",fontSize:28,fontWeight:400}}>Shanghai Essentials</h2>
+{isO&&<p style={{fontSize:12,color:C.cr,marginTop:4}}>Tap any card to edit</p>}
+</div>
+{inf.map((s,si)=>(<div key={si} style={{marginBottom:20}}>
+<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}><span style={{fontSize:18}}>{s.icon}</span><h3 style={{fontSize:16,fontWeight:600}}>{s.title}</h3></div>
+{s.items.map((m,ii)=>(
+ed&&ed.si===si&&ed.ii===ii?
+<div key={ii} style={{background:C.wh,borderRadius:14,border:"2px solid "+C.cr,padding:"12px 16px",marginBottom:6}}>
+<input value={et} onChange={e=>setEt(e.target.value)} style={{...iS,fontWeight:600,marginBottom:6}} placeholder="Title"/>
+<textarea value={edesc} onChange={e=>setEdesc(e.target.value)} rows={2} style={{...iS,resize:"vertical"}} placeholder="Description"/>
+<div style={{display:"flex",gap:6,marginTop:8}}>
+<button onClick={save} style={{fontSize:12,padding:"6px 16px",background:C.sg,color:"#fff",border:"none",borderRadius:20,cursor:"pointer",fontWeight:600}}>Save</button>
+<button onClick={()=>setEd(null)} style={{fontSize:12,padding:"6px 16px",background:C.bgS,color:C.mt,border:"1px solid "+C.bd,borderRadius:20,cursor:"pointer"}}>Cancel</button>
+{isO&&<button onClick={()=>{delItem(si,ii);setEd(null);}} style={{fontSize:12,padding:"6px 16px",background:"#FEE",color:"#D4766A",border:"1px solid #ECC",borderRadius:20,cursor:"pointer",marginLeft:"auto"}}>Delete</button>}
+</div>
+</div>
+:<div key={ii} onClick={()=>startEdit(si,ii)} style={{background:C.wh,borderRadius:14,border:"1px solid "+C.bd,padding:"12px 16px",marginBottom:6,cursor:isO?"pointer":"default"}}>
+<div style={{fontSize:14,fontWeight:600,marginBottom:2}}>{m.t}</div>
+<div style={{fontSize:13,color:C.fgS,lineHeight:1.5}}>{m.d}</div>
+{isO&&<div style={{fontSize:10,color:C.mtL,marginTop:4}}>✏️ click to edit</div>}
+</div>
+))}
+{isO&&<button onClick={()=>addItem(si)} style={{fontSize:12,color:C.cr,background:C.crS,border:"none",borderRadius:20,padding:"8px 16px",cursor:"pointer",fontWeight:600,marginTop:4}}>+ Add Item</button>}
+</div>))}
+</div>);}
+
+function BkTab({rq,setRq,isO}){
+const[f,sF]=useState({v:"",g:"",d:"",n:""});
+const sub=()=>{if(!f.v||!f.g)return;setRq([...rq,{...f,id:Date.now(),st:"pending"}]);sF({v:"",g:"",d:"",n:""});};
+const iS={width:"100%",padding:"11px 14px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:12,fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"};
+return(
+<div style={{padding:"24px 20px",maxWidth:680,margin:"0 auto"}}>
+<div style={{textAlign:"center",marginBottom:20}}>
+<h2 style={{fontFamily:"'DM Serif Display',serif",fontSize:28,fontWeight:400}}>{isO?"Manage Bookings":"Request a Booking"}</h2>
+</div>
+{!isO&&<div style={{background:C.wh,borderRadius:16,border:"1px solid "+C.bd,padding:20,marginBottom:20}}>
+<div style={{marginBottom:10}}><label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>Restaurant / Tour *</label><input value={f.v} onChange={e=>sF({...f,v:e.target.value})} placeholder="e.g. Old Jesse" style={iS}/></div>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+<div><label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>Party Size *</label><input value={f.g} onChange={e=>sF({...f,g:e.target.value})} placeholder="2" style={iS}/></div>
+<div><label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>Date</label><input type="date" value={f.d} onChange={e=>sF({...f,d:e.target.value})} style={iS}/></div>
+</div>
+<button onClick={sub} style={{width:"100%",padding:"12px",background:f.v&&f.g?C.cr:C.bd,color:f.v&&f.g?"#fff":C.mt,border:"none",borderRadius:12,fontSize:14,fontWeight:600,cursor:"pointer"}}>Submit</button>
+</div>}
+{rq.length===0&&<div style={{textAlign:"center",padding:30,color:C.mtL}}>No requests yet</div>}
+{rq.map((r,i)=>(<div key={r.id} style={{background:C.wh,borderRadius:14,border:"1px solid "+C.bd,padding:"12px 16px",marginBottom:6,display:"flex",alignItems:"center",gap:12}}>
+<div style={{flex:1}}><div style={{fontSize:14,fontWeight:600}}>{r.v}</div><div style={{fontSize:12,color:C.mt}}>{r.g} guests{r.d?" \u00B7 "+fD(r.d):""}</div></div>
+{isO?<select value={r.st} onChange={e=>{const n=[...rq];n[i]={...n[i],st:e.target.value};setRq(n);}} style={{padding:"6px 10px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:10,fontSize:12}}>
+<option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="declined">Declined</option>
+</select>:<span style={{fontSize:11,padding:"4px 12px",borderRadius:20,fontWeight:600,background:r.st==="confirmed"?C.sgS:r.st==="declined"?C.crS:C.wmS,color:r.st==="confirmed"?C.sg:r.st==="declined"?C.cr:C.wm}}>{r.st}</span>}
+</div>))}
+</div>);}
+
+function ChTab(){
+const[ms,setMs]=useState([{r:"a",t:"Hey! \uD83D\uDC4B I'm your Shanghai food concierge. Ask me anything!"}]);
+const[inp,setInp]=useState("");const[ld,setLd]=useState(false);const er=useRef(null);
+useEffect(()=>{er.current&&er.current.scrollIntoView({behavior:"smooth"});},[ms]);
+const send=async()=>{
+if(!inp.trim()||ld)return;const u=inp.trim();setInp("");
+setMs(p=>[...p,{r:"u",t:u}]);setLd(true);
+try{
+const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:500,system:"You are the UnTour Food Tours Shanghai concierge. Warm, specific. Give restaurants with addresses. Keep concise.",messages:[...ms.slice(-6).map(m=>({role:m.r==="a"?"assistant":"user",content:m.t})),{role:"user",content:u}]})});
+const data=await res.json();
+const txt=(data.content&&data.content[0]&&data.content[0].text)||"Hmm, try again!";
+setMs(p=>[...p,{r:"a",t:txt}]);
+}catch(e){setMs(p=>[...p,{r:"a",t:"Connection hiccup!"}]);}
+setLd(false);};
+return(
+<div style={{display:"flex",flexDirection:"column",height:"calc(100vh - 110px)",maxWidth:680,margin:"0 auto"}}>
+<div style={{flex:1,overflowY:"auto",padding:"20px 20px 10px"}}>
+{ms.map((m,i)=>(<div key={i} style={{marginBottom:12,display:"flex",justifyContent:m.r==="u"?"flex-end":"flex-start"}}>
+{m.r==="a"&&<div style={{width:28,height:28,borderRadius:8,background:C.crS,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,marginRight:8,flexShrink:0,marginTop:2}}>{"\uD83E\uDD5F"}</div>}
+<div style={{maxWidth:"75%",padding:"12px 16px",borderRadius:m.r==="u"?"18px 18px 4px 18px":"18px 18px 18px 4px",background:m.r==="u"?C.fg:C.wh,border:m.r==="u"?"none":"1px solid "+C.bd,color:m.r==="u"?"#fff":C.fg,fontSize:14,lineHeight:1.55,whiteSpace:"pre-wrap"}}>{m.t}</div>
+</div>))}
+{ld&&<div style={{display:"flex",gap:8,marginBottom:12}}>
+<div style={{width:28,height:28,borderRadius:8,background:C.crS,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>{"\uD83E\uDD5F"}</div>
+<div style={{padding:"12px 16px",background:C.wh,border:"1px solid "+C.bd,borderRadius:"18px 18px 18px 4px",color:C.mt}}>Thinking...</div>
+</div>}
+<div ref={er}/>
+</div>
+<div style={{padding:"12px 20px 16px",borderTop:"1px solid "+C.bd,background:C.bg,display:"flex",gap:8}}>
+<input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="What should we eat tonight?" style={{flex:1,padding:"12px 16px",background:C.wh,border:"1px solid "+C.bd,borderRadius:24,fontSize:14,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"}}/>
+<button onClick={send} disabled={ld} style={{padding:"12px 20px",background:C.cr,color:"#fff",border:"none",borderRadius:24,fontSize:14,fontWeight:600,cursor:"pointer"}}>Send</button>
+</div>
+</div>);}
+
+function parseICal(text){
+const evts=[];const blocks=text.split("BEGIN:VEVENT");
+for(let i=1;i<blocks.length;i++){
+const b=blocks[i].split("END:VEVENT")[0].replace(/\r\n /g,"");
+const get=(k)=>{const m=b.match(new RegExp(k+"[^:]*:(.+)"));return m?m[1].trim():null;};
+const sum=get("SUMMARY")||"";
+if(/not available|blocked|closed/i.test(sum))continue;
+const ds=get("DTSTART");const de=get("DTEND");
+if(!ds||!de)continue;
+const ci=ds.replace(/(\d{4})(\d{2})(\d{2}).*/,"$1-$2-$3");
+const co=de.replace(/(\d{4})(\d{2})(\d{2}).*/,"$1-$2-$3");
+if(new Date(co)<new Date())continue;
+const desc=(get("DESCRIPTION")||"").replace(/\\n/g,"\n");
+const phone=(desc.match(/(\d{4})\s*$/m)||[])[1]||"";
+const airbnbRes=(desc.match(/reservations\/details\/(\w+)/)||[])[1]||"";
+const email=(desc.match(/[\w.-]+@[\w.-]+\.\w{2,}/)||[])[0]||(b.match(/ATTENDEE.*mailto:([\w.-]+@[\w.-]+\.\w{2,})/)||[])[1]||"";
+const isGeneric=/^(reserved|booking|reservation|blocked|busy)$/i.test(sum.trim());
+const name=isGeneric?"":sum.replace(/\s*-\s*\d+\s*guest.*$/i,"").replace(/\s*\(.*\)$/,"").trim();
+const guestCount=(sum.match(/(\d+)\s*guest/i)||desc.match(/(\d+)\s*guest/i)||desc.match(/party.*?(\d+)/i)||[])[1]||"";
+evts.push({ci,co,phone,resCode:airbnbRes,name,email,guests:guestCount,summary:sum,desc});
+}
+evts.sort((a,b)=>a.ci.localeCompare(b.ci));
+return evts;
+}
+
+function RecsBank({alts,setAlts}){
+const[filter,setFilter]=useState("all");
+const[editIdx,setEditIdx]=useState(null);const[form,setForm]=useState({});
+const[adding,setAdding]=useState(false);
+const allCats=[...new Set(alts.map(a=>a.c))].sort();
+const filt=filter==="all"?alts:alts.filter(a=>a.c===filter);
+const catOpts=["breakfast","lunch","dinner","brunch","drinks","sightseeing","tour"];
+const iS={width:"100%",padding:"8px 12px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:10,fontSize:12,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"};
+const saveAlt=(idx,data)=>{setAlts(alts.map((a,i)=>i===idx?{...a,...data}:a));setEditIdx(null);};
+const delAlt=(idx)=>{setAlts(alts.filter((_,i)=>i!==idx));setEditIdx(null);};
+const addAlt=(data)=>{setAlts([...alts,data]);setAdding(false);setForm({});};
+return(
+<div style={{background:C.wh,borderRadius:16,border:"1px solid "+C.bd,padding:20,marginTop:16}}>
+<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+<h3 style={{fontSize:16,fontWeight:600}}>📋 Recommendations ({alts.length})</h3>
+<button onClick={()=>{setAdding(true);setForm({l:"",d:"",c:"dinner",m:"",b:false});}} style={{fontSize:11,color:C.cr,background:C.crS,border:"none",borderRadius:20,padding:"6px 14px",cursor:"pointer",fontWeight:600}}>+ Add</button>
+</div>
+<div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>
+<button onClick={()=>setFilter("all")} style={{fontSize:10,padding:"4px 10px",borderRadius:16,border:"1px solid "+(filter==="all"?C.cr:C.bd),background:filter==="all"?C.crS:C.bgS,color:filter==="all"?C.cr:C.mt,cursor:"pointer",fontWeight:600}}>All ({alts.length})</button>
+{allCats.map(c=>{const ct=CT[c]||CT.dinner;const cnt=alts.filter(a=>a.c===c).length;return<button key={c} onClick={()=>setFilter(filter===c?"all":c)} style={{fontSize:10,padding:"4px 10px",borderRadius:16,border:"1px solid "+(filter===c?ct.a+"55":C.bd),background:filter===c?ct.bg:C.bgS,color:filter===c?ct.a:C.mt,cursor:"pointer",fontWeight:500}}>{ct.i} {c} ({cnt})</button>;})}
+</div>
+{adding&&<div style={{background:C.bgS,borderRadius:12,padding:12,border:"2px solid "+C.cr,marginBottom:10}}>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
+<div><label style={{fontSize:10,color:C.mt}}>Name *</label><input value={form.l||""} onChange={e=>setForm({...form,l:e.target.value})} style={iS}/></div>
+<div><label style={{fontSize:10,color:C.mt}}>Category</label><select value={form.c||"dinner"} onChange={e=>setForm({...form,c:e.target.value})} style={{...iS,cursor:"pointer"}}>{catOpts.map(c=><option key={c} value={c}>{c}</option>)}</select></div>
+</div>
+<div style={{marginBottom:6}}><label style={{fontSize:10,color:C.mt}}>Description</label><input value={form.d||""} onChange={e=>setForm({...form,d:e.target.value})} style={iS}/></div>
+<div style={{display:"grid",gridTemplateColumns:"1fr auto auto",gap:6,alignItems:"end"}}>
+<div><label style={{fontSize:10,color:C.mt}}>Maps query</label><input value={form.m||""} onChange={e=>setForm({...form,m:e.target.value})} placeholder="Place+Name+Shanghai" style={iS}/></div>
+<label style={{fontSize:10,color:C.mt,display:"flex",alignItems:"center",gap:4,padding:"8px 0"}}><input type="checkbox" checked={!!form.b} onChange={e=>setForm({...form,b:e.target.checked})}/> Book</label>
+<div style={{display:"flex",gap:4}}><button onClick={()=>form.l&&addAlt(form)} style={{padding:"7px 14px",background:form.l?C.cr:C.bd,color:form.l?"#fff":C.mt,border:"none",borderRadius:10,fontSize:11,fontWeight:600,cursor:"pointer"}}>Save</button><button onClick={()=>setAdding(false)} style={{padding:"7px 10px",background:C.bgS,color:C.mt,border:"1px solid "+C.bd,borderRadius:10,fontSize:11,cursor:"pointer"}}>✕</button></div>
+</div>
+</div>}
+<div style={{maxHeight:400,overflowY:"auto"}}>
+{filt.map((a,fi)=>{const ri=alts.indexOf(a);const isEd=editIdx===ri;const ct=CT[a.c]||CT.dinner;
+return isEd?<div key={ri} style={{background:C.bgS,borderRadius:10,padding:10,marginBottom:4,border:"2px solid "+C.cr}}>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
+<div><label style={{fontSize:10,color:C.mt}}>Name</label><input value={form.l||""} onChange={e=>setForm({...form,l:e.target.value})} style={iS}/></div>
+<div><label style={{fontSize:10,color:C.mt}}>Category</label><select value={form.c||""} onChange={e=>setForm({...form,c:e.target.value})} style={{...iS,cursor:"pointer"}}>{catOpts.map(c=><option key={c} value={c}>{c}</option>)}</select></div>
+</div>
+<div style={{marginBottom:6}}><label style={{fontSize:10,color:C.mt}}>Description</label><input value={form.d||""} onChange={e=>setForm({...form,d:e.target.value})} style={iS}/></div>
+<div style={{display:"flex",gap:4}}>
+<button onClick={()=>saveAlt(ri,form)} style={{padding:"6px 14px",background:C.sg,color:"#fff",border:"none",borderRadius:10,fontSize:11,fontWeight:600,cursor:"pointer"}}>Save</button>
+<button onClick={()=>setEditIdx(null)} style={{padding:"6px 10px",background:C.bgS,color:C.mt,border:"1px solid "+C.bd,borderRadius:10,fontSize:11,cursor:"pointer"}}>Cancel</button>
+<button onClick={()=>delAlt(ri)} style={{padding:"6px 10px",background:"#FEE",color:"#D4766A",border:"1px solid #ECC",borderRadius:10,fontSize:11,cursor:"pointer",marginLeft:"auto"}}>Delete</button>
+</div>
+</div>:
+<div key={ri} onClick={()=>{setEditIdx(ri);setForm({l:a.l,d:a.d,c:a.c,m:a.m||"",b:!!a.b});}} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",background:C.bgS,borderRadius:10,marginBottom:3,cursor:"pointer",border:"1px solid "+C.bdL}}>
+<span style={{fontSize:13,width:22,textAlign:"center"}}>{ct.i}</span>
+<div style={{flex:1,minWidth:0}}>
+<div style={{fontSize:13,fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.l}</div>
+<div style={{fontSize:11,color:C.mt,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.d}</div>
+</div>
+<span style={{fontSize:9,color:ct.a,background:ct.bg,padding:"2px 7px",borderRadius:10,flexShrink:0,fontWeight:600}}>{a.c}</span>
+{a.b&&<span style={{fontSize:9,color:C.cr,flexShrink:0}}>📞</span>}
+</div>;})}
+</div>
+</div>);
+}
+
+function OwTab({gs,setGs,tpls,setTpls,onEditTpl,alts,setAlts}){
+const[ng,sNg]=useState({name:"",ci:"",co:"",n:"",tpl:""});const[cp,sCp]=useState(null);
+const[newTpl,setNewTpl]=useState("");const[renId,setRenId]=useState(null);const[renName,setRenName]=useState("");
+const[editId,setEditId]=useState(null);const[editData,setEditData]=useState({});
+const ICAL_STORE="ut_ical_url";
+const[icalUrl,setIcalUrl]=useState(()=>{try{return localStorage.getItem(ICAL_STORE)||"";}catch(e){return "";}});
+const[icalLoading,setIcalLoading]=useState(false);const[icalRes,setIcalRes]=useState(null);const[icalErr,setIcalErr]=useState("");
+const defTpl=tpls.find(t=>t.isDefault)||tpls[0];
+const selTpl=tpls.find(t=>t.id===(ng.tpl||defTpl?.id))||defTpl;
+const add=()=>{if(!ng.name||!ng.ci||!selTpl)return;setGs([...gs,{name:ng.name,ci:ng.ci,co:ng.co,n:ng.n,id:Date.now()+"_"+Math.random().toString(36).slice(2,6),wk:JSON.parse(JSON.stringify(selTpl.wk)),tplName:selTpl.name}]);sNg({name:"",ci:"",co:"",n:"",tpl:""});};
+const mkLink=(g)=>{try{const d=toB64(JSON.stringify({name:g.name,ci:g.ci,co:g.co,tpl:g.tplName||"Default"}));return window.location.origin+window.location.pathname+"?g="+g.id+"&d="+d;}catch(e){alert("Error: "+e.message);return null;}};
+const cpy=g=>{const link=mkLink(g);if(!link)return;copyText(link);sCp(g.id);setTimeout(()=>sCp(null),3000);};
+const addTpl=()=>{if(!newTpl.trim()||!defTpl)return;const t={id:Date.now()+"",name:newTpl.trim(),wk:JSON.parse(JSON.stringify(defTpl.wk)),isDefault:false};setTpls([...tpls,t]);setNewTpl("");};
+const setDef=(id)=>{setTpls(tpls.map(t=>({...t,isDefault:t.id===id})));};
+const delTpl=(id)=>{if(tpls.length<=1)return;const t=tpls.find(x=>x.id===id);if(t&&t.isDefault){const rest=tpls.filter(x=>x.id!==id);rest[0].isDefault=true;setTpls(rest);}else{setTpls(tpls.filter(x=>x.id!==id));}};
+const rename=(id)=>{if(!renName.trim())return;setTpls(tpls.map(t=>t.id===id?{...t,name:renName.trim()}:t));setRenId(null);setRenName("");};
+const fetchICal=async()=>{
+if(!icalUrl.trim())return;setIcalLoading(true);setIcalErr("");setIcalRes(null);
+try{localStorage.setItem(ICAL_STORE,icalUrl.trim());}catch(e){}
+try{
+const proxy="https://api.allorigins.win/raw?url="+encodeURIComponent(icalUrl.trim());
+const res=await fetch(proxy);if(!res.ok)throw new Error("Fetch failed ("+res.status+")");
+const text=await res.text();const evts=parseICal(text);
+if(!evts.length){setIcalErr("No upcoming reservations found.");} else{setIcalRes(evts);}
+}catch(e){setIcalErr("Could not fetch calendar: "+e.message);}
+setIcalLoading(false);
+};
+const importRes=(r)=>{
+const exists=gs.some(g=>g.ci===r.ci&&g.co===r.co);if(exists)return;
+const defT=tpls.find(t=>t.isDefault)||tpls[0];
+const gName=r.name||(r.phone?"Guest ..."+r.phone:"Guest");
+const notes=[r.resCode?"Ref: "+r.resCode:"",r.email?"Email: "+r.email:"",r.guests?r.guests+" guests":""].filter(Boolean).join(" · ");
+setGs(prev=>[...prev,{name:gName,ci:r.ci,co:r.co,n:notes,email:r.email||"",id:Date.now()+"_"+Math.random().toString(36).slice(2,6),wk:JSON.parse(JSON.stringify(defT.wk)),tplName:defT.name}]);
+};
+const importAll=()=>{if(!icalRes)return;icalRes.forEach(r=>importRes(r));};
+const iS={width:"100%",padding:"11px 14px",background:C.bgS,border:"1px solid "+C.bd,borderRadius:12,fontSize:13,outline:"none",fontFamily:"'Plus Jakarta Sans',sans-serif"};
+return(
+<div style={{padding:"24px 20px",maxWidth:680,margin:"0 auto"}}>
+<div style={{textAlign:"center",marginBottom:24}}>
+<h2 style={{fontFamily:"'DM Serif Display',serif",fontSize:28,fontWeight:400}}>Owner Dashboard</h2>
+</div>
+
+{/* Templates */}
+<div style={{background:C.wh,borderRadius:16,border:"1px solid "+C.bd,padding:20,marginBottom:16}}>
+<h3 style={{fontSize:16,fontWeight:600,marginBottom:12}}>Templates</h3>
+<div style={{marginBottom:10}}>
+{tpls.map(t=>(<div key={t.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",borderBottom:"1px solid "+C.bdL}}>
+<button onClick={()=>setDef(t.id)} style={{background:"none",border:"none",fontSize:16,cursor:"pointer",flexShrink:0}} title={t.isDefault?"Default":"Set as default"}>{t.isDefault?"\u2B50":"\u2606"}</button>
+{renId===t.id?<div style={{flex:1,display:"flex",gap:4}}>
+<input value={renName} onChange={e=>setRenName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&rename(t.id)} style={{...iS,flex:1}} autoFocus/>
+<button onClick={()=>rename(t.id)} style={{fontSize:11,color:C.sg,background:C.sgS,border:"none",borderRadius:20,padding:"6px 12px",cursor:"pointer",fontWeight:600}}>Save</button>
+</div>:<>
+<div style={{flex:1}}>
+<span style={{fontSize:14,fontWeight:t.isDefault?600:400}}>{t.name}</span>
+{t.isDefault&&<span style={{fontSize:10,color:C.cr,marginLeft:6,fontWeight:600}}>DEFAULT</span>}
+<span style={{fontSize:11,color:C.mt,marginLeft:6}}>{t.wk.length} days</span>
+</div>
+<button onClick={()=>onEditTpl(t)} style={{fontSize:10,color:C.cr,background:C.crS,border:"none",borderRadius:8,padding:"4px 8px",cursor:"pointer",fontWeight:600}}>Edit</button>
+<button onClick={()=>{setRenId(t.id);setRenName(t.name);}} style={{fontSize:10,color:C.mt,background:C.bgS,border:"1px solid "+C.bd,borderRadius:8,padding:"4px 8px",cursor:"pointer"}}>Rename</button>
+{tpls.length>1&&<button onClick={()=>delTpl(t.id)} style={{width:24,height:24,borderRadius:6,background:C.bgS,border:"1px solid "+C.bd,color:"#D4766A",fontSize:10,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u2715"}</button>}
+</>}
+</div>))}
+</div>
+<div style={{display:"flex",gap:6}}>
+<input value={newTpl} onChange={e=>setNewTpl(e.target.value)} placeholder="New template name..." onKeyDown={e=>e.key==="Enter"&&addTpl()} style={{...iS,flex:1}}/>
+<button onClick={addTpl} style={{fontSize:12,color:newTpl.trim()?C.cr:C.mt,background:newTpl.trim()?C.crS:C.bgS,border:"none",borderRadius:12,padding:"11px 16px",cursor:"pointer",fontWeight:600,flexShrink:0}}>+ Add</button>
+</div>
+<p style={{fontSize:11,color:C.mt,marginTop:8}}>New templates copy the default itinerary. Switch to Your Week tab to edit, then come back.</p>
+</div>
+
+{/* iCal Import */}
+<div style={{background:C.wh,borderRadius:16,border:"1px solid "+C.bd,padding:20,marginBottom:16}}>
+<h3 style={{fontSize:16,fontWeight:600,marginBottom:4}}>Import Reservations</h3>
+<p style={{fontSize:12,color:C.mt,marginBottom:12}}>Paste your iCal URL from Airbnb, Vrbo, Rezdy, Booking.com, or any platform.</p>
+<div style={{display:"flex",gap:6,marginBottom:8}}>
+<input value={icalUrl} onChange={e=>setIcalUrl(e.target.value)} placeholder="https://... .ics calendar URL" onKeyDown={e=>e.key==="Enter"&&fetchICal()} style={{...iS,flex:1,fontSize:12}}/>
+<button onClick={fetchICal} disabled={icalLoading} style={{fontSize:12,color:icalUrl.trim()?C.cr:C.mt,background:icalUrl.trim()?C.crS:C.bgS,border:"none",borderRadius:12,padding:"11px 16px",cursor:"pointer",fontWeight:600,flexShrink:0}}>{icalLoading?"Syncing...":"Sync"}</button>
+</div>
+{icalErr&&<div style={{fontSize:12,color:"#D4766A",marginBottom:8}}>{icalErr}</div>}
+{icalRes&&<div>
+<div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+<span style={{fontSize:13,fontWeight:600}}>{icalRes.length} upcoming reservation{icalRes.length>1?"s":""}</span>
+<button onClick={importAll} style={{fontSize:11,color:"#fff",background:C.sg,border:"none",borderRadius:20,padding:"7px 16px",cursor:"pointer",fontWeight:600}}>Import All</button>
+</div>
+{icalRes.map((r,i)=>{const exists=gs.some(g=>g.ci===r.ci&&g.co===r.co);const nights=Math.round((new Date(r.co)-new Date(r.ci))/864e5);return(
+<div key={i} style={{background:C.bgS,borderRadius:12,padding:"10px 14px",marginBottom:6}}>
+<div style={{display:"flex",alignItems:"center",gap:10}}>
+<div style={{width:36,height:36,borderRadius:10,background:C.wmS,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:700,color:C.wm}}>{r.name?r.name.charAt(0):"\uD83D\uDCC5"}</div>
+<div style={{flex:1}}>
+<div style={{fontSize:13,fontWeight:600}}>{r.name||"Guest"+(r.phone?" ..."+r.phone:"")}</div>
+<div style={{fontSize:12,color:C.mt}}>{fD(r.ci)} {"\u2192"} {fD(r.co)} · {nights} night{nights>1?"s":""}</div>
+<div style={{fontSize:11,color:C.mt}}>{[r.email,r.resCode?"Ref: "+r.resCode:"",r.guests?r.guests+" guests":"",r.phone&&!r.name?"..."+r.phone:""].filter(Boolean).join(" · ")}</div>
+</div>
+{exists?<span style={{fontSize:11,color:C.sg,fontWeight:600,flexShrink:0}}>{"\u2713"} Added</span>:
+<button onClick={()=>importRes(r)} style={{fontSize:11,color:"#fff",background:C.cr,border:"none",borderRadius:20,padding:"7px 14px",cursor:"pointer",fontWeight:600,flexShrink:0}}>Import</button>}
+</div>
+</div>);})}
+</div>}
+</div>
+
+{/* Create Guest */}
+<div style={{background:C.wh,borderRadius:16,border:"1px solid "+C.bd,padding:20,marginBottom:20}}>
+<h3 style={{fontSize:16,fontWeight:600,marginBottom:14}}>Create Guest Guide</h3>
+<div style={{marginBottom:10}}>
+<label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>Template</label>
+<select value={ng.tpl||defTpl?.id||""} onChange={e=>sNg({...ng,tpl:e.target.value})} style={{...iS,cursor:"pointer"}}>
+{tpls.map(t=><option key={t.id} value={t.id}>{t.name}{t.isDefault?" (default)":""}</option>)}
+</select>
+</div>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+<div><label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>Name</label><input value={ng.name} onChange={e=>sNg({...ng,name:e.target.value})} placeholder="Sarah Chen" style={iS}/></div>
+<div><label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>Notes</label><input value={ng.n} onChange={e=>sNg({...ng,n:e.target.value})} placeholder="Vegetarian..." style={iS}/></div>
+</div>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+<div><label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>Start</label><input type="date" value={ng.ci} onChange={e=>sNg({...ng,ci:e.target.value})} style={iS}/></div>
+<div><label style={{fontSize:12,color:C.mt,display:"block",marginBottom:4}}>End</label><input type="date" value={ng.co} onChange={e=>sNg({...ng,co:e.target.value})} style={iS}/></div>
+</div>
+<button onClick={add} style={{width:"100%",padding:"12px",background:ng.name&&ng.ci?C.cr:C.bd,color:ng.name&&ng.ci?"#fff":C.mt,border:"none",borderRadius:12,fontSize:14,fontWeight:600,cursor:"pointer"}}>Create & Share</button>
+</div>
+
+{/* Guest List */}
+{gs.length===0&&<div style={{textAlign:"center",padding:30,color:C.mtL}}>No guests yet</div>}
+{gs.map(g=>{const link=mkLink(g);const mailBody=link?"Hi "+g.name.split(" ")[0]+",\n\nHere's your personalized guide:\n"+link+"\n\nLooking forward to your visit!":"";const mailto=g.email?"mailto:"+g.email+"?subject=Your+Guide&body="+encodeURIComponent(mailBody):"";
+const isEd=editId===g.id;
+return(<div key={g.id} style={{background:C.wh,borderRadius:14,border:isEd?"2px solid "+C.cr:"1px solid "+C.bd,padding:"14px 16px",marginBottom:8}}>
+{isEd?<div>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
+<div><label style={{fontSize:11,color:C.mt,display:"block",marginBottom:3}}>Name</label><input value={editData.name||""} onChange={e=>setEditData({...editData,name:e.target.value})} style={iS}/></div>
+<div><label style={{fontSize:11,color:C.mt,display:"block",marginBottom:3}}>Email</label><input value={editData.email||""} onChange={e=>setEditData({...editData,email:e.target.value})} placeholder="guest@email.com" style={iS}/></div>
+</div>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
+<div><label style={{fontSize:11,color:C.mt,display:"block",marginBottom:3}}>Start</label><input type="date" value={editData.ci||""} onChange={e=>setEditData({...editData,ci:e.target.value})} style={iS}/></div>
+<div><label style={{fontSize:11,color:C.mt,display:"block",marginBottom:3}}>End</label><input type="date" value={editData.co||""} onChange={e=>setEditData({...editData,co:e.target.value})} style={iS}/></div>
+</div>
+<div style={{marginBottom:8}}><label style={{fontSize:11,color:C.mt,display:"block",marginBottom:3}}>Notes</label><input value={editData.n||""} onChange={e=>setEditData({...editData,n:e.target.value})} placeholder="Dietary needs, preferences..." style={iS}/></div>
+<div style={{marginBottom:10}}><label style={{fontSize:11,color:C.mt,display:"block",marginBottom:3}}>Template</label>
+<select value={editData.tplId||""} onChange={e=>{const t=tpls.find(x=>x.id===e.target.value);if(t)setEditData({...editData,tplId:t.id,tplName:t.name,wk:JSON.parse(JSON.stringify(t.wk))});}} style={{...iS,cursor:"pointer"}}>
+{tpls.map(t=><option key={t.id} value={t.id}>{t.name}{t.isDefault?" (default)":""}</option>)}
+</select></div>
+<div style={{display:"flex",gap:6}}>
+<button onClick={()=>{setGs(gs.map(x=>x.id===g.id?{...x,name:editData.name,ci:editData.ci,co:editData.co,n:editData.n,email:editData.email,tplName:editData.tplName,wk:editData.wk||x.wk}:x));setEditId(null);}} style={{flex:1,fontSize:13,color:"#fff",background:C.sg,border:"none",borderRadius:20,padding:"10px",cursor:"pointer",fontWeight:600}}>Save</button>
+<button onClick={()=>setEditId(null)} style={{fontSize:13,color:C.mt,background:C.bgS,border:"1px solid "+C.bd,borderRadius:20,padding:"10px 16px",cursor:"pointer"}}>Cancel</button>
+</div>
+</div>:<>
+<div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8,cursor:"pointer"}} onClick={()=>{setEditId(g.id);setEditData({name:g.name,ci:g.ci,co:g.co,n:g.n||"",email:g.email||"",tplId:(tpls.find(t=>t.name===g.tplName)||tpls[0]).id,tplName:g.tplName,wk:g.wk});}}>
+<div style={{width:36,height:36,borderRadius:10,background:C.wmS,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:700,color:C.wm}}>{g.name.charAt(0)}</div>
+<div style={{flex:1}}>
+<div style={{fontSize:14,fontWeight:600}}>{g.name} <span style={{fontSize:10,color:C.mtL}}>✏️</span></div>
+<div style={{fontSize:12,color:C.mt}}>{fD(g.ci)} {"\u2192"} {fD(g.co)}{g.tplName?" \u00B7 "+g.tplName:""}</div>
+{g.n&&<div style={{fontSize:11,color:C.mt}}>{g.n}</div>}
+</div>
+<button onClick={e=>{e.stopPropagation();setGs(gs.filter(x=>x.id!==g.id));}} style={{width:28,height:28,borderRadius:8,background:C.bgS,border:"1px solid "+C.bd,color:"#D4766A",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>{"\u2715"}</button>
+</div>
+<div style={{display:"flex",gap:6}}>
+<button onClick={()=>cpy(g)} style={{flex:1,fontSize:13,color:cp===g.id?C.sg:C.cr,background:cp===g.id?C.sgS:C.crS,border:"none",borderRadius:20,padding:"10px 14px",cursor:"pointer",fontWeight:600}}>{cp===g.id?"\u2713 Link Copied!":"\uD83D\uDD17 Copy Link"}</button>
+{g.email&&<a href={mailto} style={{flex:1,fontSize:13,color:"#fff",background:C.sg,border:"none",borderRadius:20,padding:"10px 14px",cursor:"pointer",fontWeight:600,textDecoration:"none",textAlign:"center",display:"block"}}>{"\u2709\uFE0F"} Email Guide</a>}
+</div>
+</>}
+</div>)})}
+
+{/* Recommendations Bank */}
+<RecsBank alts={alts} setAlts={setAlts}/>
+</div>);}
+
+const TPL_KEY="ut_templates";const GS_KEY="ut_guests";const INF_KEY="ut_essentials";const RQ_KEY="ut_bookings";
+function loadTpls(){try{const s=localStorage.getItem(TPL_KEY);if(s){const t=JSON.parse(s);if(t.length)return t;}}catch(e){}return[{id:"default",name:"Default",wk:JSON.parse(JSON.stringify(IW)),isDefault:true}];}
+function loadGs(){try{const s=localStorage.getItem(GS_KEY);if(s)return JSON.parse(s);}catch(e){}return[];}
+function loadInf(){try{const s=localStorage.getItem(INF_KEY);if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(INF));}
+function loadRq(){try{const s=localStorage.getItem(RQ_KEY);if(s)return JSON.parse(s);}catch(e){}return[];}
+
+function App(){
+const[tab,setTab]=useState("week");const[isO,setIsO]=useState(false);
+const[wk,setWk]=useState(JSON.parse(JSON.stringify(IW)));
+const[alts,setAlts]=useState([...ALTS]);
+const[editingTpl,setEditingTpl]=useState(null);const[preEditWk,setPreEditWk]=useState(null);
+const[rq,setRq]=useState(loadRq);
+const[gs,setGs]=useState(loadGs);
+const[tpls,setTpls]=useState(loadTpls);
+const[inf,setInf]=useState(loadInf);
+const pr=new URLSearchParams(window.location.search);
+const gid=pr.get("g");
+const[gi,setGi]=useState(null);
+const origin=DEF_ORIGIN;
+
+useEffect(()=>{try{localStorage.setItem(TPL_KEY,JSON.stringify(tpls))}catch(e){}},[tpls]);
+useEffect(()=>{try{localStorage.setItem(GS_KEY,JSON.stringify(gs))}catch(e){}},[gs]);
+useEffect(()=>{try{localStorage.setItem(INF_KEY,JSON.stringify(inf))}catch(e){}},[inf]);
+useEffect(()=>{try{localStorage.setItem(RQ_KEY,JSON.stringify(rq))}catch(e){}},[rq]);
+
+useEffect(()=>{
+if(!gid)return;
+try{const s=localStorage.getItem("ut_"+gid);if(s){const d=JSON.parse(s);if(d.wk)setWk(d.wk);setGi({name:d.name,ci:d.ci,co:d.co});return;}}catch(e){}
+const d=pr.get("d");if(d){try{const dc=JSON.parse(fromB64(d));setGi({name:dc.name,ci:dc.ci,co:dc.co});
+localStorage.setItem("ut_"+gid,JSON.stringify({name:dc.name,ci:dc.ci,co:dc.co,wk}));}catch(e){}}
+},[]);
+
+useEffect(()=>{if(gid&&gi)try{localStorage.setItem("ut_"+gid,JSON.stringify({...gi,wk}))}catch(e){}},[wk]);
+
+const tw=gi&&gi.ci&&gi.co?(function(){const n=Math.round((new Date(gi.co)-new Date(gi.ci))/864e5);return wk.slice(0,Math.max(1,n));}()):wk;
+
+return(
+<div style={{minHeight:"100vh",background:C.bg}}>
+<Header tab={tab} setTab={setTab} isO={isO} setIsO={setIsO} gi={gi}/>
+{tab==="week"&&<WkTab wk={editingTpl?wk:tw} setWk={setWk} gi={editingTpl?null:gi} origin={origin} confirmed={rq.filter(r=>r.st==="confirmed")} editingTpl={editingTpl} isOwner={isO}
+onSaveTpl={()=>{if(editingTpl){setTpls(tpls.map(t=>t.id===editingTpl.id?{...t,wk:JSON.parse(JSON.stringify(wk))}:t));setEditingTpl(null);if(preEditWk){setWk(preEditWk);setPreEditWk(null);}}}}
+onCancelTpl={()=>{setEditingTpl(null);if(preEditWk){setWk(preEditWk);setPreEditWk(null);}}}/>}
+{tab==="crawls"&&<CrTab origin={origin}/>}
+{tab==="essentials"&&<EsTab inf={inf} setInf={setInf} isO={isO}/>}
+{tab==="bookings"&&<BkTab rq={rq} setRq={setRq} isO={isO}/>}
+{tab==="chat"&&<ChTab/>}
+{tab==="owner"&&isO&&<OwTab gs={gs} setGs={setGs} tpls={tpls} setTpls={setTpls} alts={alts} setAlts={setAlts} onEditTpl={(t)=>{setPreEditWk(JSON.parse(JSON.stringify(wk)));setWk(JSON.parse(JSON.stringify(t.wk)));setEditingTpl({id:t.id,name:t.name});setTab("week");}}/>}
+<div style={{textAlign:"center",padding:"24px 20px",fontSize:11,color:C.mtL}}>Powered by <span style={{color:C.cr,fontWeight:600}}>Arrivo</span></div>
+</div>);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

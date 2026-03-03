@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arrivo — AI Concierge for Vacation Rentals</title>
-<meta name="description" content="Stop answering the same 50 guest questions. Arrivo creates a beautiful, AI-powered concierge for your vacation rental.">
-<meta property="og:title" content="Arrivo — AI Concierge for Vacation Rentals">
-<meta property="og:description" content="Curated itineraries, one-tap reservations, and a local guide that knows your property inside out.">
+<title>Arrivo — Your Local Knowledge, Beautifully Packaged for Every Guest</title>
+<meta name="description" content="Stop answering the same 50 guest questions. Arrivo turns your local expertise into a beautiful, personalized guest guide — in minutes.">
+<meta property="og:title" content="Arrivo — Your Local Knowledge, Beautifully Packaged">
+<meta property="og:description" content="Personalized itineraries, booking requests, and your insider tips — all in a gorgeous guide you customize in clicks.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
@@ -17,32 +17,28 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:#FDFBF7;-webkit-font-smoothing:antialiased;font-family:'Outfit',sans-serif}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const {useState,useEffect,useRef}=React;
-
 const C={bg:"#FDFBF7",bgW:"#F7F3EC",bgD:"#0F0E0C",bgDC:"#1A1816",card:"#FFFFFF",text:"#1A1714",ts:"#6B645A",tm:"#9E9689",gold:"#B8963E",gL:"#D4B868",gBg:"#F8F1E0",acc:"#C17246",aBg:"#FDF0E8",grn:"#3D7A5A",bdr:"#E8E2D8",bdrD:"#2A2622"};
 
 const MSGS=["Hi! What's the WiFi password again?","Any restaurant tips for tonight? We have 2 kids","How do we get to the house from the airport?","Is there a grocery store close by?","Can you recommend a winery?","What's the pool situation?","Do you know any good day trips?","Where should we eat tomorrow?"];
 
-function useIV(th=.12){const ref=useRef(null);const [v,sV]=useState(false);useEffect(()=>{const el=ref.current;if(!el)return;const o=new IntersectionObserver(([e])=>{if(e.isIntersecting){sV(true);o.disconnect();}},{threshold:th});o.observe(el);return()=>o.disconnect();},[th]);return[ref,v];}
+function useIV(th=.12){const ref=useRef(null);const[v,sV]=useState(false);useEffect(()=>{const el=ref.current;if(!el)return;const o=new IntersectionObserver(([e])=>{if(e.isIntersecting){sV(true);o.disconnect();}},{threshold:th});o.observe(el);return()=>o.disconnect();},[th]);return[ref,v];}
 function FI({children,delay=0,style={}}){const[ref,v]=useIV();return<div ref={ref} style={{opacity:v?1:0,transform:v?"translateY(0)":"translateY(24px)",transition:`opacity .65s ease ${delay}s, transform .65s ease ${delay}s`,...style}}>{children}</div>;}
 
 function Nav(){const[s,sS]=useState(false);useEffect(()=>{const h=()=>sS(window.scrollY>40);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h);},[]);
-  return<nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:s?"rgba(253,251,247,.92)":"transparent",backdropFilter:s?"blur(16px)":"none",borderBottom:s?`1px solid ${C.bdr}`:"1px solid transparent",transition:"all .3s"}}>
+  return<nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:s?"rgba(253,251,247,.92)":"transparent",backdropFilter:s?"blur(16px)":"none",borderBottom:s?"1px solid "+C.bdr:"1px solid transparent",transition:"all .3s"}}>
     <div style={{maxWidth:1180,margin:"0 auto",padding:"0 28px",height:60,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-      <div style={{display:"flex",alignItems:"center",gap:8}}>
-        <div style={{width:30,height:30,borderRadius:8,background:`linear-gradient(135deg,${C.gold},${C.acc})`,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:15,fontWeight:700,fontFamily:"'Instrument Serif',serif"}}>A</div>
-        <span style={{fontFamily:"'Instrument Serif',serif",fontSize:21,color:C.text}}>Arrivo</span>
-      </div>
+      <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:30,height:30,borderRadius:8,background:"linear-gradient(135deg,"+C.gold+","+C.acc+")",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:15,fontWeight:700,fontFamily:"'Instrument Serif',serif"}}>A</div><span style={{fontFamily:"'Instrument Serif',serif",fontSize:21,color:C.text}}>Arrivo</span></div>
       <div style={{display:"flex",alignItems:"center",gap:20}}>
-        {["How it Works","Features","Pricing"].map((l,i)=><a key={i} href={`#${l.toLowerCase().replace(/\s/g,"")}`} style={{fontSize:13,color:C.ts,textDecoration:"none"}}>{l}</a>)}
-        <a href="#cta" style={{padding:"7px 18px",background:C.text,color:C.bg,border:"none",borderRadius:8,fontSize:13,fontWeight:600,textDecoration:"none",display:"inline-block"}}>Get Early Access</a>
+        {["How it Works","Features","Pricing"].map((l,i)=><a key={i} href={"#"+l.toLowerCase().replace(/\s/g,"")} style={{fontSize:13,color:C.ts,textDecoration:"none"}}>{l}</a>)}
+        <a href="#cta" style={{padding:"7px 18px",background:C.text,color:C.bg,border:"none",borderRadius:8,fontSize:13,fontWeight:600,textDecoration:"none"}}>Get Early Access</a>
       </div>
     </div>
   </nav>;
@@ -50,33 +46,33 @@ function Nav(){const[s,sS]=useState(false);useEffect(()=>{const h=()=>sS(window.
 
 function Hero(){const[mi,sMi]=useState(0);useEffect(()=>{const iv=setInterval(()=>sMi(p=>(p+1)%MSGS.length),2400);return()=>clearInterval(iv);},[]);
   return<section style={{paddingTop:110,paddingBottom:70,background:C.bg,position:"relative",overflow:"hidden"}}>
-    <div style={{position:"absolute",top:-120,right:-180,width:550,height:550,borderRadius:"50%",background:`radial-gradient(circle,${C.gBg} 0%,transparent 70%)`,pointerEvents:"none"}}/>
-    <div style={{position:"absolute",bottom:-120,left:-80,width:350,height:350,borderRadius:"50%",background:`radial-gradient(circle,${C.aBg} 0%,transparent 70%)`,pointerEvents:"none"}}/>
+    <div style={{position:"absolute",top:-120,right:-180,width:550,height:550,borderRadius:"50%",background:"radial-gradient(circle,"+C.gBg+" 0%,transparent 70%)",pointerEvents:"none"}}/>
+    <div style={{position:"absolute",bottom:-120,left:-80,width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,"+C.aBg+" 0%,transparent 70%)",pointerEvents:"none"}}/>
     <div style={{maxWidth:1180,margin:"0 auto",padding:"0 28px",position:"relative"}}>
       <div style={{display:"grid",gridTemplateColumns:"1.1fr .9fr",gap:56,alignItems:"center"}}>
         <div>
-          <FI><div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",background:C.gBg,borderRadius:20,marginBottom:18,border:`1px solid ${C.gold}30`}}><span style={{width:6,height:6,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,color:C.gold,fontWeight:600,letterSpacing:.5}}>NOW IN EARLY ACCESS</span></div></FI>
-          <FI delay={.08}><h1 style={{fontFamily:"'Instrument Serif',serif",fontSize:52,lineHeight:1.08,color:C.text,marginBottom:18,fontWeight:400}}>Stop answering<br/>the same 50 guest<br/>questions. <span style={{fontStyle:"italic",color:C.acc}}>Forever.</span></h1></FI>
-          <FI delay={.16}><p style={{fontSize:17,lineHeight:1.65,color:C.ts,maxWidth:450,marginBottom:28,fontWeight:300}}>Arrivo creates a beautiful, AI-powered personal concierge for your vacation rental — complete with curated itineraries, one-tap reservations, and a local guide that knows your property inside out.</p></FI>
+          <FI><div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 12px",background:C.gBg,borderRadius:20,marginBottom:18,border:"1px solid "+C.gold+"30"}}><span style={{width:6,height:6,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,color:C.gold,fontWeight:600,letterSpacing:.5}}>NOW IN EARLY ACCESS</span></div></FI>
+          <FI delay={.08}><h1 style={{fontFamily:"'Instrument Serif',serif",fontSize:52,lineHeight:1.08,color:C.text,marginBottom:18,fontWeight:400}}>Your local knowledge,<br/>beautifully packaged<br/>for <span style={{fontStyle:"italic",color:C.acc}}>every guest.</span></h1></FI>
+          <FI delay={.16}><p style={{fontSize:17,lineHeight:1.65,color:C.ts,maxWidth:470,marginBottom:28,fontWeight:300}}>Arrivo turns your favorite restaurants, hidden gems, and insider tips into a gorgeous, personalized guest guide — complete with curated itineraries, booking requests for dining & tours, and everything guests need to stop texting you.</p></FI>
           <FI delay={.24}><div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}}>
-            <a href="#cta" style={{padding:"13px 26px",background:C.text,color:C.bg,border:"none",borderRadius:10,fontSize:15,fontWeight:600,textDecoration:"none",boxShadow:"0 4px 16px rgba(26,23,20,.18)"}}>Create Your Concierge — Free</a>
-            <span style={{fontSize:13,color:C.tm}}>No credit card needed</span>
+            <a href="#cta" style={{padding:"13px 26px",background:C.text,color:C.bg,border:"none",borderRadius:10,fontSize:15,fontWeight:600,textDecoration:"none",boxShadow:"0 4px 16px rgba(26,23,20,.18)"}}>Create Your Guide — Free</a>
+            <span style={{fontSize:13,color:C.tm}}>Personalize in minutes</span>
           </div></FI>
           <FI delay={.32}><div style={{display:"flex",gap:28,marginTop:32}}>
             {[{n:"5 min",l:"Setup time"},{n:"80%",l:"Fewer messages"},{n:"4.9★",l:"Review boost"}].map((s,i)=><div key={i}><div style={{fontSize:22,fontFamily:"'Instrument Serif',serif",color:C.text}}>{s.n}</div><div style={{fontSize:11,color:C.tm,marginTop:2}}>{s.l}</div></div>)}
           </div></FI>
         </div>
         <FI delay={.15}><div style={{position:"relative"}}>
-          <div style={{position:"absolute",top:-16,left:-36,width:260,background:C.card,borderRadius:14,padding:14,boxShadow:"0 6px 32px rgba(0,0,0,.07)",border:`1px solid ${C.bdr}`,zIndex:2}}>
+          <div style={{position:"absolute",top:-16,left:-36,width:260,background:C.card,borderRadius:14,padding:14,boxShadow:"0 6px 32px rgba(0,0,0,.07)",border:"1px solid "+C.bdr,zIndex:2}}>
             <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}><div style={{width:7,height:7,borderRadius:"50%",background:"#E85050"}}/><span style={{fontSize:10,color:C.tm,fontWeight:500}}>INCOMING MESSAGES</span><span style={{marginLeft:"auto",fontSize:10,background:"#FEE",color:"#C44",padding:"2px 7px",borderRadius:10,fontWeight:700}}>12</span></div>
             <div style={{height:60,overflow:"hidden",position:"relative"}}>{MSGS.map((m,i)=><div key={i} style={{position:"absolute",inset:0,display:"flex",gap:6,opacity:i===mi?1:0,transform:i===mi?"translateY(0)":"translateY(6px)",transition:"all .35s"}}><div style={{width:24,height:24,borderRadius:"50%",background:C.bgW,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,flexShrink:0}}>👤</div><div><div style={{fontSize:10,color:C.tm}}>Guest · just now</div><div style={{fontSize:12,color:C.text,lineHeight:1.4}}>{m}</div></div></div>)}</div>
             <div style={{fontSize:10,color:C.tm,textAlign:"center",fontStyle:"italic"}}>Sound familiar?</div>
           </div>
-          <div style={{marginLeft:50,marginTop:70,background:C.bgD,borderRadius:18,padding:18,color:C.bg,boxShadow:"0 16px 50px rgba(0,0,0,.18)",border:`1px solid ${C.bdrD}`}}>
-            <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:12}}><div style={{width:28,height:28,borderRadius:"50%",background:`linear-gradient(135deg,${C.gold},${C.acc})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>🏡</div><div><div style={{fontSize:13,fontWeight:600}}>Villa Concierge</div><div style={{fontSize:9,color:"#8A8279"}}>AI-powered · Always on</div></div></div>
-            <div style={{background:"#1E1B17",borderRadius:10,padding:12,marginBottom:8,fontSize:12,lineHeight:1.6,color:"#F5F0E8",fontWeight:300}}>Ciao! 🌿 For tonight with kids I'd recommend <span style={{color:C.gL}}>Podere il Casale</span> — farm-to-table, 8 min drive, animals they can visit. Shall I help reserve?</div>
-            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{["📍 Maps","📞 Reserve","🍷 Wine list"].map((t,i)=><span key={i} style={{fontSize:10,padding:"4px 9px",background:"#2A2520",borderRadius:7,color:C.gL,border:"1px solid #3D3832"}}>{t}</span>)}</div>
-            <div style={{marginTop:12,display:"flex",gap:5}}>{["📅 Your Week","🗺️ Day Trips","🏠 Info","📋 Requests"].map((t,i)=><span key={i} style={{flex:1,fontSize:9,padding:"7px 0",background:"#2A2520",borderRadius:7,color:"#8A8279",textAlign:"center",border:"1px solid #332F2A"}}>{t}</span>)}</div>
+          <div style={{marginLeft:50,marginTop:70,background:C.bgD,borderRadius:18,padding:18,color:C.bg,boxShadow:"0 16px 50px rgba(0,0,0,.18)",border:"1px solid "+C.bdrD}}>
+            <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:12}}><div style={{width:28,height:28,borderRadius:"50%",background:"linear-gradient(135deg,"+C.gold+","+C.acc+")",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>🏡</div><div><div style={{fontSize:13,fontWeight:600}}>Your Villa Guide</div><div style={{fontSize:9,color:"#8A8279"}}>Personalized · Always available</div></div></div>
+            <div style={{background:"#1E1B17",borderRadius:10,padding:12,marginBottom:8,fontSize:12,lineHeight:1.6,color:"#F5F0E8",fontWeight:300}}>For tonight with kids, your host recommends <span style={{color:C.gL}}>Podere il Casale</span> — farm-to-table, 8 min drive, animals the kids can visit. Tap below to request a booking!</div>
+            <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>{["📍 Maps","📞 Request Booking","🍷 Wine list"].map((t,i)=><span key={i} style={{fontSize:10,padding:"4px 9px",background:"#2A2520",borderRadius:7,color:C.gL,border:"1px solid #3D3832"}}>{t}</span>)}</div>
+            <div style={{marginTop:12,display:"flex",gap:5}}>{["📅 Your Week","🗺️ Day Trips","🏠 House Info","📋 Bookings"].map((t,i)=><span key={i} style={{flex:1,fontSize:9,padding:"7px 0",background:"#2A2520",borderRadius:7,color:"#8A8279",textAlign:"center",border:"1px solid #332F2A"}}>{t}</span>)}</div>
           </div>
         </div></FI>
       </div>
@@ -86,9 +82,9 @@ function Hero(){const[mi,sMi]=useState(0);useEffect(()=>{const iv=setInterval(()
 
 function Pain(){return<section style={{padding:"72px 28px",background:C.bgW}}>
   <div style={{maxWidth:880,margin:"0 auto",textAlign:"center"}}>
-    <FI><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>The Problem</p><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:38,color:C.text,lineHeight:1.15,marginBottom:14}}>You didn't buy a rental property<br/>to become a 24/7 travel agent</h2><p style={{fontSize:16,color:C.ts,fontWeight:300,maxWidth:560,margin:"0 auto 36px",lineHeight:1.6}}>Every guest asks the same questions. Every booking costs hours. You've typed "the WiFi password is..." more times than you can count.</p></FI>
+    <FI><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>The Problem</p><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:38,color:C.text,lineHeight:1.15,marginBottom:14}}>You didn't buy a rental property<br/>to become a 24/7 travel agent</h2><p style={{fontSize:16,color:C.ts,fontWeight:300,maxWidth:560,margin:"0 auto 36px",lineHeight:1.6}}>Every guest asks the same questions. Every restaurant recommendation costs another text thread. You've typed "the WiFi password is..." more times than you can count.</p></FI>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {[{i:"💬",s:"47",u:"messages",d:"Average guest messages per booking that could be automated"},{i:"⏰",s:"3.5",u:"hrs/week",d:"Spent answering repetitive questions per property"},{i:"⭐",s:"23%",u:"at risk",d:"Of 5-star reviews lost when guests feel unsupported"}].map((x,i)=><FI key={i} delay={i*.1}><div style={{background:C.card,borderRadius:14,padding:24,textAlign:"center",border:`1px solid ${C.bdr}`}}><div style={{fontSize:28,marginBottom:10}}>{x.i}</div><div style={{fontFamily:"'Instrument Serif',serif",fontSize:44,color:C.text}}>{x.s}</div><div style={{fontSize:13,color:C.acc,fontWeight:600,marginBottom:6}}>{x.u}</div><p style={{fontSize:12,color:C.ts,lineHeight:1.5,fontWeight:300}}>{x.d}</p></div></FI>)}
+      {[{i:"💬",s:"47",u:"messages",d:"Average guest messages per booking that your guide could handle"},{i:"⏰",s:"3.5",u:"hrs/week",d:"Spent answering repetitive questions per property"},{i:"⭐",s:"23%",u:"at risk",d:"Of 5-star reviews lost when guests feel unsupported"}].map((x,i)=><FI key={i} delay={i*.1}><div style={{background:C.card,borderRadius:14,padding:24,textAlign:"center",border:"1px solid "+C.bdr}}><div style={{fontSize:28,marginBottom:10}}>{x.i}</div><div style={{fontFamily:"'Instrument Serif',serif",fontSize:44,color:C.text}}>{x.s}</div><div style={{fontSize:13,color:C.acc,fontWeight:600,marginBottom:6}}>{x.u}</div><p style={{fontSize:12,color:C.ts,lineHeight:1.5,fontWeight:300}}>{x.d}</p></div></FI>)}
     </div>
   </div>
 </section>;}
@@ -97,16 +93,25 @@ function How(){return<section id="howitworks" style={{padding:"72px 28px",backgr
   <div style={{maxWidth:960,margin:"0 auto"}}>
     <FI><div style={{textAlign:"center",marginBottom:44}}><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>How It Works</p><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:38,color:C.text,lineHeight:1.15}}>Live in 5 minutes. <span style={{fontStyle:"italic",color:C.ts}}>Not an exaggeration.</span></h2></div></FI>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:28}}>
-      {[{s:"01",t:"Upload your guide",d:"Drop in your Airbnb listing, welcome PDF, or describe your property. Arrivo extracts everything.",i:"📄",a:C.gold},{s:"02",t:"We build your concierge",d:"AI generates a branded guest experience with itineraries, Maps links, booking buttons, and smart chat.",i:"✨",a:C.acc},{s:"03",t:"Send & forget",d:"Connect Hospitable, Guesty, or send a link. Guests arrive with a plan. You relax.",i:"🍷",a:C.grn}].map((x,i)=><FI key={i} delay={i*.1}><div style={{position:"relative"}}><div style={{fontSize:60,fontFamily:"'Instrument Serif',serif",color:`${x.a}18`,position:"absolute",top:-18,left:-2}}>{x.s}</div><div style={{paddingTop:36}}><div style={{width:44,height:44,borderRadius:11,background:`${x.a}12`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,marginBottom:14}}>{x.i}</div><h3 style={{fontFamily:"'Instrument Serif',serif",fontSize:22,color:C.text,marginBottom:6}}>{x.t}</h3><p style={{fontSize:13,color:C.ts,lineHeight:1.6,fontWeight:300}}>{x.d}</p></div></div></FI>)}
+      {[{s:"01",t:"Add your recommendations",d:"Drop in your Airbnb guidebook, a welcome PDF, or just type in your favorite spots. Your local knowledge is the foundation.",i:"📄",a:C.gold},{s:"02",t:"We build your guide",d:"Arrivo organizes your recommendations into a beautiful, branded guest experience — with itineraries, Maps links, booking request buttons, and a smart assistant trained on your tips.",i:"✨",a:C.acc},{s:"03",t:"Personalize & send",d:"Customize each guide per guest in a few clicks — add their name, dates, adjust the itinerary based on what they've told you. Reuse past itineraries, tweak, and send.",i:"🍷",a:C.grn}].map((x,i)=><FI key={i} delay={i*.1}><div style={{position:"relative"}}><div style={{fontSize:60,fontFamily:"'Instrument Serif',serif",color:x.a+"18",position:"absolute",top:-18,left:-2}}>{x.s}</div><div style={{paddingTop:36}}><div style={{width:44,height:44,borderRadius:11,background:x.a+"12",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,marginBottom:14}}>{x.i}</div><h3 style={{fontFamily:"'Instrument Serif',serif",fontSize:22,color:C.text,marginBottom:6}}>{x.t}</h3><p style={{fontSize:13,color:C.ts,lineHeight:1.6,fontWeight:300}}>{x.d}</p></div></div></FI>)}
     </div>
   </div>
 </section>;}
 
 function Features(){return<section id="features" style={{padding:"72px 28px",background:C.bgD,color:C.bg}}>
   <div style={{maxWidth:960,margin:"0 auto"}}>
-    <FI><div style={{textAlign:"center",marginBottom:44}}><p style={{fontSize:12,color:C.gL,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>Features</p><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:38,lineHeight:1.15}}>Not another chatbot. <span style={{fontStyle:"italic",color:C.gL}}>A personal concierge.</span></h2></div></FI>
+    <FI><div style={{textAlign:"center",marginBottom:44}}><p style={{fontSize:12,color:C.gL,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>Features</p><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:38,lineHeight:1.15}}>Everything guests need. <span style={{fontStyle:"italic",color:C.gL}}>Nothing they don't.</span></h2></div></FI>
     <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14}}>
-      {[{i:"📅",t:"Curated Weekly Itineraries",d:"Pre-built day plans guests can drag, drop, delete, and swap."},{i:"🗺️",t:"Themed Day Trips",d:"Wine, towns, farm, spa — with Maps, drive times, and booking links."},{i:"💬",t:"AI Concierge Chat",d:"Trained on YOUR property. Every place name links to Google Maps."},{i:"📋",t:"Reservation Requests",d:"Guests submit. You confirm from a dashboard. One tap."},{i:"🏠",t:"House Essentials Hub",d:"WiFi, contacts, rules, markets — tap-to-call, tap-to-navigate."},{i:"✏️",t:"Owner Control Panel",d:"Global edits cascade everywhere. Your content, your control."},{i:"🔗",t:"PMS Integrations",d:"Hospitable, Guesty, Lodgify — auto-send on booking."},{i:"📍",t:"One-Tap Everything",d:"Driving routes per day. Booking badges. Reservations Essential alerts."}].map((f,i)=><FI key={i} delay={(i%2)*.06}><div style={{background:C.bgDC,borderRadius:13,padding:22,border:`1px solid ${C.bdrD}`}}><div style={{fontSize:24,marginBottom:8}}>{f.i}</div><h3 style={{fontFamily:"'Instrument Serif',serif",fontSize:18,marginBottom:5,fontWeight:400}}>{f.t}</h3><p style={{fontSize:12,color:"#9E9689",lineHeight:1.6,fontWeight:300}}>{f.d}</p></div></FI>)}
+      {[
+        {i:"📅",t:"Curated Weekly Itineraries",d:"Pre-built day plans your guests can personalize — drag, drop, delete, and swap with ideas from your recommendation bank."},
+        {i:"🗺️",t:"Custom Day Trip Ideas",d:"Design themed day trips from your best recommendations. Tailor them per guest based on their interests, group size, and what they've mentioned."},
+        {i:"💬",t:"Smart Local Guide",d:"A guide trained entirely on your recommendations, house rules, and insider knowledge. Guests get answers instantly — from your expertise, not generic results."},
+        {i:"📋",t:"Dining & Tour Booking Requests",d:"Guests request restaurant reservations, winery tours, or cooking classes. You confirm from your dashboard with one tap. No back-and-forth texting."},
+        {i:"🏠",t:"House Essentials Hub",d:"WiFi, check-in/out, contacts, supermarkets, private chefs — everything in one tap-to-call, tap-to-navigate hub."},
+        {i:"✏️",t:"Per-Guest Personalization",d:"Add guest names, dates, and customize their itinerary based on your conversation. Every guest feels like you planned it just for them."},
+        {i:"🔄",t:"Reuse & Remix Itineraries",d:"Save winning itineraries from past guests. Clone, tweak for the next group, and send — your best recommendations get better every time."},
+        {i:"📍",t:"One-Tap Everything",d:"Driving routes per day, Google Maps links for every venue, booking request badges, and a full week of plans — guests just follow along."},
+      ].map((f,i)=><FI key={i} delay={(i%2)*.06}><div style={{background:C.bgDC,borderRadius:13,padding:22,border:"1px solid "+C.bdrD}}><div style={{fontSize:24,marginBottom:8}}>{f.i}</div><h3 style={{fontFamily:"'Instrument Serif',serif",fontSize:18,marginBottom:5,fontWeight:400}}>{f.t}</h3><p style={{fontSize:12,color:"#9E9689",lineHeight:1.6,fontWeight:300}}>{f.d}</p></div></FI>)}
     </div>
   </div>
 </section>;}
@@ -123,7 +128,7 @@ function Quote(){return<section style={{padding:"72px 28px",background:C.bg}}>
 function Integ(){return<section style={{padding:"56px 28px",background:C.bgW}}>
   <div style={{maxWidth:760,margin:"0 auto",textAlign:"center"}}>
     <FI><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>Integrations</p><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:30,color:C.text,marginBottom:28}}>Plugs into the tools you already use</h2>
-      <div style={{display:"flex",justifyContent:"center",gap:28,flexWrap:"wrap"}}>{[{n:"Hospitable"},{n:"Guesty"},{n:"Lodgify"},{n:"Airbnb"},{n:"VRBO"}].map((x,i)=><div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:5}}><div style={{width:50,height:50,borderRadius:12,background:C.card,border:`1px solid ${C.bdr}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:600,color:C.ts}}>{x.n.slice(0,2).toUpperCase()}</div><span style={{fontSize:12,fontWeight:500,color:C.text}}>{x.n}</span></div>)}</div>
+      <div style={{display:"flex",justifyContent:"center",gap:28,flexWrap:"wrap"}}>{[{n:"Hospitable"},{n:"Guesty"},{n:"Lodgify"},{n:"Airbnb"},{n:"VRBO"}].map((x,i)=><div key={i} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:5}}><div style={{width:50,height:50,borderRadius:12,background:C.card,border:"1px solid "+C.bdr,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:600,color:C.ts}}>{x.n.slice(0,2).toUpperCase()}</div><span style={{fontSize:12,fontWeight:500,color:C.text}}>{x.n}</span></div>)}</div>
     </FI>
   </div>
 </section>;}
@@ -132,13 +137,13 @@ function Pricing(){return<section id="pricing" style={{padding:"72px 28px",backg
   <div style={{maxWidth:960,margin:"0 auto"}}>
     <FI><div style={{textAlign:"center",marginBottom:40}}><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>Pricing</p><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:38,color:C.text}}>Start free. Scale when ready.</h2></div></FI>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:18}}>
-      {[{n:"Starter",p:"Free",pr:"forever",d:"Try with your first property",f:["1 property","AI concierge chat","Pre-built itineraries","House essentials hub","Google Maps links","Community support"],c:"Get Started Free",hi:false},{n:"Professional",p:"$29",pr:"/month",d:"The full concierge experience",f:["Up to 5 properties","Everything in Starter","Reservation requests","Owner control panel","PMS sync","Custom branding","Analytics","Priority support"],c:"Start 14-Day Trial",hi:true},{n:"Portfolio",p:"$79",pr:"/month",d:"For property managers",f:["Unlimited properties","Everything in Pro","API access","White-label","Team accounts","Dedicated onboarding","Bulk import","SLA guarantee"],c:"Contact Sales",hi:false}].map((x,i)=><FI key={i} delay={i*.08}><div style={{background:x.hi?C.text:C.card,color:x.hi?C.bg:C.text,borderRadius:16,padding:28,border:x.hi?"none":`1px solid ${C.bdr}`,boxShadow:x.hi?"0 16px 48px rgba(26,23,20,.12)":"none",position:"relative",display:"flex",flexDirection:"column",height:"100%"}}>
+      {[{n:"Starter",p:"Free",pr:"forever",d:"Try with your first property",f:["1 property","Smart local guide","Pre-built itineraries","House essentials hub","Google Maps links","Community support"],c:"Get Started Free",hi:false},{n:"Professional",p:"$29",pr:"/month",d:"The full host experience",f:["Up to 5 properties","Everything in Starter","Booking requests dashboard","Per-guest personalization","PMS auto-send","Custom branding","Itinerary templates","Priority support"],c:"Start 14-Day Trial",hi:true},{n:"Portfolio",p:"$79",pr:"/month",d:"For property managers",f:["Unlimited properties","Everything in Pro","API access","White-label","Team accounts","Dedicated onboarding","Bulk import","SLA guarantee"],c:"Contact Sales",hi:false}].map((x,i)=><FI key={i} delay={i*.08}><div style={{background:x.hi?C.text:C.card,color:x.hi?C.bg:C.text,borderRadius:16,padding:28,border:x.hi?"none":"1px solid "+C.bdr,boxShadow:x.hi?"0 16px 48px rgba(26,23,20,.12)":"none",position:"relative",display:"flex",flexDirection:"column",height:"100%"}}>
         {x.hi&&<div style={{position:"absolute",top:-11,left:"50%",transform:"translateX(-50%)",background:C.gold,color:C.text,fontSize:10,fontWeight:700,padding:"3px 12px",borderRadius:10}}>MOST POPULAR</div>}
         <div style={{fontSize:13,fontWeight:600,color:x.hi?C.gL:C.ts,marginBottom:6}}>{x.n}</div>
         <div style={{display:"flex",alignItems:"baseline",gap:3,marginBottom:3}}><span style={{fontFamily:"'Instrument Serif',serif",fontSize:40}}>{x.p}</span><span style={{fontSize:13,color:x.hi?"#8A8279":C.tm}}>{x.pr}</span></div>
         <p style={{fontSize:12,color:x.hi?"#9E9689":C.ts,marginBottom:18,fontWeight:300}}>{x.d}</p>
         <div style={{flex:1}}>{x.f.map((f,j)=><div key={j} style={{display:"flex",gap:7,alignItems:"center",padding:"4px 0",fontSize:12,color:x.hi?"#D4D0C8":C.ts,fontWeight:300}}><span style={{color:x.hi?C.gL:C.grn,fontSize:13}}>✓</span>{f}</div>)}</div>
-        <a href="#cta" style={{display:"block",textAlign:"center",marginTop:20,padding:"11px 0",background:x.hi?C.gold:"transparent",color:x.hi?C.text:C.text,border:x.hi?"none":`1px solid ${C.bdr}`,borderRadius:9,fontSize:13,fontWeight:600,textDecoration:"none"}}>{x.c}</a>
+        <a href="#cta" style={{display:"block",textAlign:"center",marginTop:20,padding:"11px 0",background:x.hi?C.gold:"transparent",color:x.hi?C.text:C.text,border:x.hi?"none":"1px solid "+C.bdr,borderRadius:9,fontSize:13,fontWeight:600,textDecoration:"none"}}>{x.c}</a>
       </div></FI>)}
     </div>
   </div>
@@ -149,7 +154,7 @@ function CTA(){const[email,sE]=useState("");const[done,sD]=useState(false);
     <div style={{maxWidth:560,margin:"0 auto",textAlign:"center"}}>
       <FI><h2 style={{fontFamily:"'Instrument Serif',serif",fontSize:38,color:C.bg,lineHeight:1.15,marginBottom:10}}>Your guests deserve<br/>better than a PDF.</h2>
         <p style={{fontSize:15,color:"#9E9689",fontWeight:300,marginBottom:28,lineHeight:1.6}}>Join early access. First 100 hosts get Professional free for 6 months.</p>
-        {!done?<div style={{display:"flex",gap:7,maxWidth:420,margin:"0 auto"}}><input value={email} onChange={e=>sE(e.target.value)} placeholder="you@email.com" style={{flex:1,padding:"12px 16px",background:"#1A1816",border:`1px solid ${C.bdrD}`,borderRadius:9,color:C.bg,fontSize:13,outline:"none"}} onFocus={e=>e.target.style.borderColor=C.gold} onBlur={e=>e.target.style.borderColor=C.bdrD}/><button onClick={()=>{if(email)sD(true);}} style={{padding:"12px 22px",background:C.gold,color:C.bgD,border:"none",borderRadius:9,fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>Get Early Access</button></div>
+        {!done?<div style={{display:"flex",gap:7,maxWidth:420,margin:"0 auto"}}><input value={email} onChange={e=>sE(e.target.value)} placeholder="you@email.com" style={{flex:1,padding:"12px 16px",background:"#1A1816",border:"1px solid "+C.bdrD,borderRadius:9,color:C.bg,fontSize:13,outline:"none"}} onFocus={e=>e.target.style.borderColor=C.gold} onBlur={e=>e.target.style.borderColor=C.bdrD}/><button onClick={()=>{if(email)sD(true);}} style={{padding:"12px 22px",background:C.gold,color:C.bgD,border:"none",borderRadius:9,fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>Get Early Access</button></div>
           :<div style={{padding:"14px 20px",background:"#1A2418",borderRadius:11,border:"1px solid #2A3A22"}}><span style={{fontSize:13,color:"#A8D5BA"}}>✓ You're on the list! We'll be in touch soon.</span></div>}
         <p style={{fontSize:11,color:"#6E6860",marginTop:14}}>No spam. Born in a flour mill in Tuscany.</p>
       </FI>
@@ -157,15 +162,14 @@ function CTA(){const[email,sE]=useState("");const[done,sD]=useState(false);
   </section>;
 }
 
-function Footer(){return<footer style={{padding:"28px",background:C.bgD,borderTop:`1px solid ${C.bdrD}`}}>
+function Footer(){return<footer style={{padding:"28px",background:C.bgD,borderTop:"1px solid "+C.bdrD}}>
   <div style={{maxWidth:960,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-    <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:22,height:22,borderRadius:5,background:`linear-gradient(135deg,${C.gold},${C.acc})`,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:10,fontWeight:700,fontFamily:"'Instrument Serif',serif"}}>A</div><span style={{fontFamily:"'Instrument Serif',serif",fontSize:15,color:"#9E9689"}}>Arrivo</span></div>
+    <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:22,height:22,borderRadius:5,background:"linear-gradient(135deg,"+C.gold+","+C.acc+")",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:10,fontWeight:700,fontFamily:"'Instrument Serif',serif"}}>A</div><span style={{fontFamily:"'Instrument Serif',serif",fontSize:15,color:"#9E9689"}}>Arrivo</span></div>
     <p style={{fontSize:11,color:"#6E6860"}}>© 2025 Arrivo · montepulciano-rental.com</p>
   </div>
 </footer>;}
 
 function App(){return<div style={{background:C.bg,minHeight:"100vh"}}><Nav/><Hero/><Pain/><How/><Features/><Quote/><Integ/><Pricing/><CTA/><Footer/></div>;}
-
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>

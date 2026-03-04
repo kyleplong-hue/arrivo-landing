@@ -143,6 +143,18 @@ nav .cta-nav:hover{background:var(--goldD)}
 /* ═══ FOOTER ═══ */
 footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-top:1px solid var(--bdr)}
 
+/* ═══ LEGACY COMPAT (CB/UnTour pages) ═══ */
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.feat{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:24px}
+.feat h3{font-size:15px;font-weight:600;font-family:'Outfit',sans-serif;margin-bottom:4px}
+.feat p{font-size:13px;color:var(--mut);line-height:1.5}
+.dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.dash-card{background:var(--dark);border-radius:14px;padding:28px 24px;color:var(--cream)}
+.dash-card h3{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;color:var(--goldL);margin-bottom:6px}
+.dash-card p{font-size:13px;color:#9A958C;line-height:1.55}
+.dash-card.highlight{border:1.5px solid var(--gold);background:linear-gradient(135deg,#1A1A18,#2A2520)}
+.step-img{width:100%;margin-top:16px;border-radius:10px;border:1px solid var(--bdr);box-shadow:0 4px 20px rgba(0,0,0,.08)}
+
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:768px){
   .ba-grid,.steps,.feat-grid-compact,.stats-grid,.revenue-options,.api-grid,.feat-row{grid-template-columns:1fr}

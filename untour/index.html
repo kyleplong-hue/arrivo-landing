@@ -143,6 +143,18 @@ nav .cta-nav:hover{background:var(--goldD)}
 /* ═══ FOOTER ═══ */
 footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-top:1px solid var(--bdr)}
 
+/* ═══ LEGACY COMPAT (CB/UnTour pages) ═══ */
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.feat{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:24px}
+.feat h3{font-size:15px;font-weight:600;font-family:'Outfit',sans-serif;margin-bottom:4px}
+.feat p{font-size:13px;color:var(--mut);line-height:1.5}
+.dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.dash-card{background:var(--dark);border-radius:14px;padding:28px 24px;color:var(--cream)}
+.dash-card h3{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;color:var(--goldL);margin-bottom:6px}
+.dash-card p{font-size:13px;color:#9A958C;line-height:1.55}
+.dash-card.highlight{border:1.5px solid var(--gold);background:linear-gradient(135deg,#1A1A18,#2A2520)}
+.step-img{width:100%;margin-top:16px;border-radius:10px;border:1px solid var(--bdr);box-shadow:0 4px 20px rgba(0,0,0,.08)}
+
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:768px){
   .ba-grid,.steps,.feat-grid-compact,.stats-grid,.revenue-options,.api-grid,.feat-row{grid-template-columns:1fr}
@@ -188,7 +200,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
   <div class="container">
     <div class="ba-grid">
       <div class="ba-card before fade-up delay-1">
-        <div class="ba-label">📱 Your inbox right now</div>
+        <div class="ba-label">Your inbox right now</div>
         <div class="ba-msg">"What should we eat the night before our tour?"</div>
         <div class="ba-msg">"Any bars you'd recommend near the Bund?"</div>
         <div class="ba-msg">"Is there a good dumpling spot near our hotel?"</div>
@@ -198,12 +210,12 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
         <div style="font-size:11px;color:#C44;text-align:center;margin-top:10px;font-weight:600">× 40 guests per week × every week</div>
       </div>
       <div class="ba-card after fade-up delay-2">
-        <div class="ba-label">✅ With Arrivo</div>
-        <div class="ba-msg">📅 Day 1: Dumpling Deep Dive — Jia Jia Tangbao → Wei Xiang Zhai → Pengyuan Guotie</div>
-        <div class="ba-msg">🥢 Day 2: Spice Route — Ben Zhen → Liu Tang Men → Maolago</div>
-        <div class="ba-msg">Day 3: Bund & Fine Dining — Canton Table → Tai'An Table → Flair rooftop</div>
-        <div class="ba-msg">📱 Essentials: VPN setup, WeChat, Didi, spice levels cheat sheet</div>
-        <div class="ba-msg">💬 AI concierge answers questions 24/7</div>
+        <div class="ba-label">With Arrivo</div>
+        <div class="ba-msg">Day 1: Dumpling Deep Dive — Jia Jia Tangbao → Wei Xiang Zhai → Pengyuan Guotie</div>
+        <div class="ba-msg">Day 2: Spice Route — Ben Zhen → Liu Tang Men → Maolago</div>
+        <div class="ba-msg">🍸 Day 3: Bund & Fine Dining — Canton Table → Tai'An Table → Flair rooftop</div>
+        <div class="ba-msg">Essentials: VPN setup, WeChat, Didi, spice levels cheat sheet</div>
+        <div class="ba-msg">AI concierge answers questions 24/7</div>
         <div style="font-size:11px;color:#4A8;text-align:center;margin-top:10px;font-weight:600">Sent automatically when they book ✓</div>
       </div>
     </div>
@@ -238,7 +250,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
       <div class="step fade-up delay-2">
         <div class="step-num">2</div>
         <h3>Personalize Per Guest</h3>
-        <p>Import reservations from your booking platform. Booked tours automatically appear in the guest's itinerary with meeting point, confirmation number, and guide details. Create guides from templates in one click.</p>
+        <p>Import reservations from your booking platform. Each guest gets a custom itinerary with their dates, name, and any notes. Create guides from templates in one click.</p>
         <img class="step-img" src="https://aello-leads-copilot.com/arrivo/step2_v2.png" alt="Owner dashboard with guest management" loading="lazy">
       </div>
       <div class="step fade-up delay-3">
@@ -280,42 +292,34 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
     <div class="section-sub">Everything your guests need, delivered before they land.</div>
     <div class="feat-grid">
       <div class="feat fade-up delay-1">
-        
         <h3>Drag-and-Drop Itineraries</h3>
         <p>Day-by-day plans guests can rearrange. Drag entire days to reorder, or move individual blocks within a day. Color-coded tags — food, wine, activity, relaxation — so they see the shape of their trip at a glance.</p>
       </div>
       <div class="feat fade-up delay-2">
-        
         <h3>Smart "New Idea" Swaps</h3>
         <p>Don't like a dinner pick? Hit swap. Arrivo suggests a category-matched alternative from your curated recommendations bank. Dinner swaps for dinner, winery for winery — never a random suggestion.</p>
       </div>
       <div class="feat fade-up delay-1">
-        
         <h3>Themed Day Trip Routes</h3>
         <p>Pre-built themed itineraries — Wine & Vineyards, Farm & Food, City Explorer. Each with stop-by-stop timing, drive times, and Google Maps links. Guests pick a theme and go.</p>
       </div>
       <div class="feat fade-up delay-2">
-        
         <h3>One-Tap Maps & Route Planning</h3>
         <p>Every venue links to Google Maps. A "Route" button on each day opens turn-by-turn directions through all that day's stops. Bilingual addresses for taxi drivers included.</p>
       </div>
       <div class="feat fade-up delay-1">
-        
         <h3>Booking Requests</h3>
         <p>Guests request restaurant reservations and experience bookings through the app. You confirm or decline from your dashboard — all tracked in one place with status updates.</p>
       </div>
       <div class="feat fade-up delay-2">
-        
         <h3>AI Concierge Chat</h3>
         <p>An AI concierge trained on your recommendations answers guest questions 24/7. Restaurants, directions, local tips — your expertise, always available. With quick-tap suggestions for common questions.</p>
       </div>
       <div class="feat fade-up delay-1">
-        
-        <h3>Booked Tours in the Itinerary</h3>
-        <p>Guests' booked tours appear right in their day-by-day plan — meeting point, time, confirmation number, guide details. No digging through email. Everything they need for the day, in one place.</p>
+        <h3>House Essentials Tab</h3>
+        <p>WiFi, check-in/out times, emergency contacts, nearby markets, private chef details — everything in a tappable, copy-friendly format. No more digging through old messages.</p>
       </div>
       <div class="feat fade-up delay-2">
-        
         <h3>Your Brand, Your Voice</h3>
         <p>White-labeled with your logo, colors, and tone. Guests see your brand, not ours. Dark or light themes, custom fonts — feels like a natural extension of your business.</p>
       </div>
@@ -331,32 +335,26 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
     <div class="section-sub">Guest management, reservation imports, templates, and your full recommendations library — all behind a simple PIN login.</div>
     <div class="dash-grid">
       <div class="dash-card highlight fade-up delay-1">
-        
         <h3>Guest Manager</h3>
         <p>Create personalized guides per guest with their name, dates, and notes. Generate a shareable link in one click. Track all active guests, their itinerary, and booking requests from a single view. Click any guest card to edit details inline.</p>
       </div>
       <div class="dash-card fade-up delay-2">
-        
         <h3>iCal Reservation Import</h3>
         <p>Paste your iCal URL from Airbnb, Vrbo, Rezdy, or Booking.com. Arrivo pulls guest names, emails, phone numbers, party size, and reservation codes. Import individually or bulk-import all upcoming bookings. Auto-creates guest entries.</p>
       </div>
       <div class="dash-card fade-up delay-1">
-        
         <h3>Template System</h3>
         <p>Build itinerary templates for different trip types — weekend getaway, full week, wine-focused, family-friendly. Set a default template. New guest guides clone from your chosen template in seconds.</p>
       </div>
       <div class="dash-card fade-up delay-2">
-        
         <h3>Recommendations Bank</h3>
         <p>Your full library of curated restaurants, wineries, experiences, and local tips — tagged, categorized, and searchable. Filter by dinner, wine, nature, shopping. Add new spots anytime. The engine behind smart swaps.</p>
       </div>
       <div class="dash-card fade-up delay-1">
-        
         <h3>Inline Editing</h3>
         <p>Click any recommendation card to edit the name, description, category, maps link, and booking status directly. Edit itinerary templates in the same drag-and-drop Week View your guests use. No separate admin panel needed.</p>
       </div>
       <div class="dash-card fade-up delay-2">
-        
         <h3>Global Find & Replace</h3>
         <p>Changed the name of something? Rename across every itinerary and template with global term replacements. One change propagates everywhere — descriptions, day trips, and concierge responses.</p>
       </div>
@@ -365,7 +363,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
 </section>
 
 <!-- ═══ TOUR API SECTION ═══ -->
-<section class="api-section" id="api">
+<section class="dark-section" id="api">
   <div class="container" style="text-align:center">
     <div class="section-label">For Tour Companies</div>
     <div style="font-family:'Newsreader',serif;font-size:clamp(26px,3.5vw,38px);color:var(--cream);font-weight:500;margin-bottom:8px">Plug into your existing <span style="color:var(--gold)">booking system.</span></div>
@@ -373,7 +371,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
     <div class="api-grid">
       <div class="api-card">
         <h4>Auto-Import Bookings</h4>
-        <p>iCal sync pulls new reservations every hour. Guest name, dates, party size, contact info — parsed and ready. Booked tours slot directly into the guest's day-by-day itinerary with meeting point, time, and confirmation details.</p>
+        <p>iCal sync pulls new reservations every hour. Guest name, dates, party size, contact info — parsed and ready to go. Works with any platform that exports iCal.</p>
       </div>
       <div class="api-card">
         <h4>Auto-Send Guides</h4>
@@ -438,7 +436,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
       <a href="/concierge/" class="demo-link"><span>🥢</span> UnTour Food Tours, Shanghai</a>
       <a href="/montepulciano/" class="demo-link"><span>🏡</span> Molino Nobile Villa, Tuscany</a>
     </div>
-    <div class="demo-note">Shanghai PIN: untour2024 · Tuscany PIN: 1234</div>
+    <div class="demo-note">Shanghai PIN: untour2024 · Tuscany PIN: 1234 · Guests see their own personalized view</div>
   </div>
 </section>
 

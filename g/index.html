@@ -2,114 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Your Trip — Arrivable</title>
 <meta name="robots" content="noindex">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;background:#0F0E0B;color:#EDE5DD;min-height:100vh}
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px}
-.spinner{width:32px;height:32px;border:3px solid #2A2520;border-top-color:#B8963E;border-radius:50%;animation:spin .8s linear infinite}
+body{font-family:-apple-system,sans-serif;background:#0F0E0B;color:#EDE5DD;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.loading{text-align:center}
+.spinner{width:32px;height:32px;border:3px solid #2A2520;border-top-color:#B8963E;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading p{font-size:13px;color:#8A8478}
-.error{text-align:center;padding:60px 24px}
-.error h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:12px}
-.error p{font-size:13px;color:#8A8478;line-height:1.6}
-.header{padding:16px 20px;border-bottom:1px solid #2A2520;display:flex;align-items:center;justify-content:space-between}
-.logo{font-family:'Playfair Display',serif;font-size:18px;color:#B8963E}
-.badge{font-size:10px;color:#8A8478;background:#1A1816;padding:4px 10px;border-radius:10px;border:1px solid #2A2520}
-.hero{padding:28px 20px;text-align:center;border-bottom:1px solid #2A2520}
-.hero h1{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px}
-.hero .dates{font-size:12px;color:#B8963E}
-.hero .notes{font-size:11px;color:#8A8478;margin-top:8px;font-style:italic}
-.tabs{display:flex;overflow-x:auto;border-bottom:1px solid #2A2520;padding:0 12px}
-.tab{padding:12px 16px;font-size:11px;font-weight:600;color:#8A8478;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
-.tab.active{color:#B8963E;border-bottom-color:#B8963E}
-.content{padding:16px 16px 100px}
-.day{margin-bottom:20px}
-.day-header{font-family:'Playfair Display',serif;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.dot{width:8px;height:8px;border-radius:50%}
-.stop{background:#1A1816;border:1px solid #2A2520;border-radius:10px;padding:12px 14px;margin-bottom:6px;display:flex;gap:10px}
-.stop-time{font-size:10px;color:#B8963E;min-width:48px;font-weight:600;padding-top:1px}
-.stop-name{font-size:13px;font-weight:600;margin-bottom:2px}
-.stop-desc{font-size:11px;color:#8A8478;line-height:1.4}
-.stop-btn{font-size:9px;padding:3px 8px;background:#252218;border:1px solid #3A352A;border-radius:8px;color:#8A8478;cursor:pointer;text-decoration:none;display:inline-block;margin-top:6px}
-.chat-box{display:flex;flex-direction:column;height:calc(100vh - 200px)}
-.msgs{flex:1;overflow-y:auto;padding:8px 0}
-.msg{display:flex;margin-bottom:8px;gap:6px}
-.msg.u{justify-content:flex-end}
-.bub{max-width:82%;padding:10px 14px;border-radius:14px;font-size:12px;line-height:1.5}
-.msg.b .bub{background:#1A1816;border:1px solid #2A2520;border-radius:14px 14px 14px 4px}
-.msg.u .bub{background:#B8963E;border-radius:14px 14px 4px 14px;color:#0F0E0B}
-.cin{display:flex;gap:6px;padding:10px 0;border-top:1px solid #2A2520}
-.cin input{flex:1;padding:10px 14px;background:#1A1816;border:1px solid #2A2520;border-radius:10px;color:#EDE5DD;font-size:12px;font-family:'DM Sans',sans-serif;outline:none}
-.cin button{padding:10px 16px;background:#B8963E;border:none;border-radius:10px;color:#0F0E0B;font-weight:600;font-size:12px;cursor:pointer}
-.ess{background:#1A1816;border:1px solid #2A2520;border-radius:10px;padding:14px;margin-bottom:8px}
-.ess-l{font-size:10px;color:#B8963E;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:4px}
-.ess-v{font-size:13px}
+p{font-size:13px;color:#8A8478}
 </style>
-</head>
-<body>
-<div id="app"><div class="loading"><div class="spinner"></div><p>Loading your trip...</p></div></div>
 <script>
-const linkId=window.location.pathname.split('/g/')[1]?.replace(/\/$/,'');
-const colors=['#C87A50','#B8963E','#4A5A2C','#6B8E8A','#8B6BAE','#C87A7A','#5A7ABE'];
-const fD=d=>d?new Date(d).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'';
-
-if(!linkId){err('No trip link provided');}
-else{fetch('/api/collections/guests/records?filter=(link_id=%27'+linkId+'%27)&perPage=1').then(r=>r.json()).then(d=>{
-  if(!d.items?.length)return err('Trip not found.');
-  go(d.items[0]);
-}).catch(()=>err('Could not load trip.'));}
-
-function err(m){document.getElementById('app').innerHTML='<div class="header"><div class="logo">arrivable.</div></div><div class="error"><h2>Hmm...</h2><p>'+m+'</p></div>';}
-
-function go(g){
-  const it=g.itinerary||[];let tab='week';let msgs=[{r:'b',t:'Ciao! Ask me anything about your trip!'}];let busy=false;
-  function render(){
-    const a=document.getElementById('app');
-    a.innerHTML='<div class="header"><div class="logo">arrivable.</div><div class="badge">'+(g.name||'Guest')+'</div></div>'
-      +'<div class="hero"><h1>Welcome'+(g.name?', '+g.name.split(' ')[0]:'')+'!</h1><div class="dates">'+fD(g.checkin)+' → '+fD(g.checkout)+'</div>'+(g.notes?'<div class="notes">'+g.notes+'</div>':'')+'</div>'
-      +'<div class="tabs">'+['week','chat','info'].map(t=>'<div class="tab'+(t===tab?' active':'')+'" onclick="st(\''+t+'\')">'+({week:'Your Week',chat:'Concierge',info:'Essentials'}[t])+'</div>').join('')+'</div>'
-      +'<div class="content" id="tc"></div>';
-    if(tab==='week')rWeek();else if(tab==='chat')rChat();else rInfo();
-  }
-  window.st=t=>{tab=t;render();};
-
-  function rWeek(){
-    const el=document.getElementById('tc');
-    if(!it.length){el.innerHTML='<p style="text-align:center;color:#8A8478;padding:40px 0">Your itinerary is being prepared!</p>';return;}
-    el.innerHTML=it.map((d,i)=>'<div class="day"><div class="day-header"><div class="dot" style="background:'+colors[i%7]+'"></div>'+(d.title||'Day '+(i+1))+'</div>'
-      +(d.stops||[]).map(s=>'<div class="stop"><div class="stop-time">'+(s.time||'')+'</div><div><div class="stop-name">'+(s.name||'')+'</div><div class="stop-desc">'+(s.desc||'')+'</div>'
-      +(s.name?'<a class="stop-btn" href="https://maps.google.com/?q='+encodeURIComponent(s.name+' '+(s.address||''))+'" target="_blank">📍 Maps</a>':'')+'</div></div>').join('')+'</div>').join('');
-  }
-
-  function rChat(){
-    const el=document.getElementById('tc');
-    el.innerHTML='<div class="chat-box"><div class="msgs" id="ms">'+msgs.map(m=>'<div class="msg '+(m.r==='u'?'u':'b')+'"><div class="bub">'+m.t+'</div></div>').join('')
-      +(busy?'<div class="msg b"><div class="bub" style="color:#8A8478">Thinking...</div></div>':'')+'</div>'
-      +'<div class="cin"><input id="ci" placeholder="Ask about restaurants, activities..." onkeydown="if(event.key===\'Enter\')sc()"><button onclick="sc()">Send</button></div></div>';
-    const ms=document.getElementById('ms');ms.scrollTop=ms.scrollHeight;document.getElementById('ci')?.focus();
-  }
-  window.sc=async()=>{
-    const i=document.getElementById('ci');const m=i?.value?.trim();if(!m||busy)return;
-    msgs.push({r:'u',t:m});busy=true;rChat();
-    try{const h=msgs.map(x=>({role:x.r==='u'?'user':'assistant',content:x.t}));
-      const res=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,property:'montepulciano',history:h})});
-      const d=await res.json();msgs.push({r:'b',t:d.reply||'Sorry, try again!'});
-    }catch(e){msgs.push({r:'b',t:'Connection issue.'});}
-    busy=false;rChat();
-  };
-
-  function rInfo(){document.getElementById('tc').innerHTML=
-    '<div class="ess"><div class="ess-l">Check-in</div><div class="ess-v">'+fD(g.checkin)+' · Keys in the lockbox</div></div>'
-    +'<div class="ess"><div class="ess-l">Check-out</div><div class="ess-v">'+fD(g.checkout)+' · 10:00 AM</div></div>'
-    +'<div class="ess"><div class="ess-l">WiFi</div><div class="ess-v">See welcome card in kitchen</div></div>'
-    +'<div class="ess"><div class="ess-l">Emergency</div><div class="ess-v">112 (EU) · +39 348 363 4104 (host)</div></div>'
-    +'<div class="ess"><div class="ess-l">Supermarket</div><div class="ess-v">Coop · 5 min drive</div></div>';}
-  render();
+// Redirect /g/{link_id} → /montepulciano/?pb={link_id}
+const linkId = window.location.pathname.split('/g/')[1]?.replace(/\/$/, '');
+if (linkId) {
+  window.location.replace('/montepulciano/?pb=' + encodeURIComponent(linkId));
+} else {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.loading').innerHTML = '<p>No trip link found.</p>';
+  });
 }
 </script>
+</head>
+<body>
+<div class="loading"><div class="spinner"></div><p>Loading your trip...</p></div>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Option B Preview — Before/After Replacement</title>
+<title>Option B Preview — Animated</title>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -14,24 +14,39 @@ body{font-family:'Outfit',sans-serif;background:#F5F2EB;color:#1A1A18}
 
 .sleep-section{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch;border-radius:18px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.1)}
 
-/* LEFT: the problem */
 .sleep-left{background:#fff;padding:48px 36px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid #eee}
-.sleep-left .notif{background:#f8f5f0;border:1px solid #e8e3d8;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start}
-.sleep-left .notif .dot{width:8px;height:8px;border-radius:50%;background:#e74c3c;flex-shrink:0;margin-top:5px}
-.sleep-left .notif .msg{font-size:13px;color:#555;line-height:1.4}
-.sleep-left .notif .msg strong{color:#1A1A18;font-weight:600}
-.sleep-left .time{font-size:11px;color:#aaa;text-align:right;margin-top:4px}
+.notif{background:#f8f5f0;border:1px solid #e8e3d8;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;opacity:0;transform:translateX(-20px);transition:all .5s ease}
+.notif.show{opacity:1;transform:translateX(0)}
+.notif .dot{width:8px;height:8px;border-radius:50%;background:#e74c3c;flex-shrink:0;margin-top:5px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.notif .msg{font-size:13px;color:#555;line-height:1.4}
+.notif .msg strong{color:#1A1A18;font-weight:600}
+.time-label{font-size:11px;color:#aaa;text-align:right;margin-top:4px;opacity:0;transition:opacity .5s}
+.time-label.show{opacity:1}
 
-/* RIGHT: the solution */
 .sleep-right{background:#1A1A18;padding:48px 36px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.sleep-right .emoji{font-size:48px;margin-bottom:16px}
-.sleep-right h3{font-family:'Newsreader',serif;font-size:28px;color:#EDE5DD;font-weight:500;margin-bottom:8px;line-height:1.2}
-.sleep-right p{font-size:14px;color:#8A8478;line-height:1.6;max-width:280px}
-.sleep-right .badge{display:inline-block;margin-top:16px;font-size:11px;color:#B8963E;background:#B8963E12;border:1px solid #B8963E30;padding:6px 14px;border-radius:20px;font-weight:600}
+.sleep-right .emoji{font-size:48px;margin-bottom:16px;opacity:0;transform:scale(.8);transition:all .6s ease}
+.sleep-right .emoji.show{opacity:1;transform:scale(1)}
+.sleep-right h3{font-family:'Newsreader',serif;font-size:28px;color:#EDE5DD;font-weight:500;margin-bottom:8px;line-height:1.2;opacity:0;transform:translateY(10px);transition:all .5s ease}
+.sleep-right h3.show{opacity:1;transform:translateY(0)}
+.sleep-right p{font-size:14px;color:#8A8478;line-height:1.6;max-width:280px;opacity:0;transition:opacity .5s}
+.sleep-right p.show{opacity:1}
+
+/* Answer cards that slide in */
+.answer{background:#252218;border:1px solid #3A352A;border-radius:10px;padding:12px 14px;margin-bottom:8px;width:100%;max-width:300px;text-align:left;opacity:0;transform:translateY(16px);transition:all .5s ease}
+.answer.show{opacity:1;transform:translateY(0)}
+.answer .a-q{font-size:10px;color:#8A8478;margin-bottom:4px}
+.answer .a-text{font-size:12px;color:#BDB8AE;line-height:1.4}
+.answer .a-text strong{color:#EDE5DD}
+.answer .a-icon{float:right;font-size:14px}
+
+.badge{display:inline-block;margin-top:12px;font-size:11px;color:#B8963E;background:#B8963E12;border:1px solid #B8963E30;padding:6px 14px;border-radius:20px;font-weight:600;opacity:0;transform:translateY(8px);transition:all .5s ease}
+.badge.show{opacity:1;transform:translateY(0)}
 
 @media(max-width:768px){
   .sleep-section{grid-template-columns:1fr}
   .sleep-left{border-right:none;border-bottom:1px solid #eee}
+  .sleep-left,.sleep-right{padding:32px 24px}
 }
 </style>
 </head>
@@ -40,33 +55,89 @@ body{font-family:'Outfit',sans-serif;background:#F5F2EB;color:#1A1A18}
 <div class="section">
   <div class="section-label">The Problem</div>
   
-  <div class="sleep-section">
-    <!-- LEFT: Messages at 11pm -->
+  <div class="sleep-section" id="sleepSection">
     <div class="sleep-left">
-      <div class="notif">
+      <div class="notif" id="n1">
         <div class="dot"></div>
         <div class="msg"><strong>Sarah:</strong> Where should we eat tonight? Something local, not touristy 🙏</div>
       </div>
-      <div class="notif">
+      <div class="notif" id="n2">
         <div class="dot"></div>
         <div class="msg"><strong>Sarah:</strong> Also, any wineries open tomorrow? We want to go early</div>
       </div>
-      <div class="notif">
+      <div class="notif" id="n3">
         <div class="dot"></div>
         <div class="msg"><strong>Sarah:</strong> Oh and is the pool heated? Kids are asking</div>
       </div>
-      <div class="time">11:47 PM · You're asleep.</div>
+      <div class="time-label" id="timeLabel">11:47 PM · You're asleep.</div>
     </div>
     
-    <!-- RIGHT: Solved -->
     <div class="sleep-right">
-      <div class="emoji">😴</div>
-      <h3>Answered instantly.<br>You slept through it.</h3>
-      <p>Your digital concierge handled all three questions using your recommendations — before you woke up.</p>
-      <div class="badge">✓ 3 questions answered · 0 effort from you</div>
+      <div class="emoji" id="emoji">😴</div>
+      <h3 id="headline">Answered instantly.<br>You slept through it.</h3>
+
+      <div class="answer" id="a1">
+        <div class="a-icon">🍽️</div>
+        <div class="a-q">Where should we eat?</div>
+        <div class="a-text"><strong>La Grotta</strong> — refined Tuscan, garden terrace. 15 min drive. Reservations recommended.</div>
+      </div>
+
+      <div class="answer" id="a2">
+        <div class="a-icon">🍷</div>
+        <div class="a-q">Wineries open tomorrow?</div>
+        <div class="a-text"><strong>De Ricci</strong> opens at 10 AM, no booking needed. <strong>Salcheto</strong> from 11 AM, book online.</div>
+      </div>
+
+      <div class="answer" id="a3">
+        <div class="a-icon">🏊</div>
+        <div class="a-q">Is the pool heated?</div>
+        <div class="a-text">Pool is <strong>solar-heated</strong>, warmest after 2 PM. Towels in the poolside cabinet.</div>
+      </div>
+
+      <div class="badge" id="badge">✓ 3 questions answered · 0 effort from you</div>
     </div>
   </div>
 </div>
+
+<script>
+// Intersection Observer to trigger when section scrolls into view
+let animated = false;
+function runAnimation() {
+  if (animated) return;
+  animated = true;
+
+  const timeline = [
+    { el: 'n1', delay: 400 },
+    { el: 'n2', delay: 1200 },
+    { el: 'n3', delay: 2000 },
+    { el: 'timeLabel', delay: 2800 },
+    { el: 'emoji', delay: 3400 },
+    { el: 'headline', delay: 3800 },
+    { el: 'a1', delay: 4600 },
+    { el: 'a2', delay: 5200 },
+    { el: 'a3', delay: 5800 },
+    { el: 'badge', delay: 6600 },
+  ];
+
+  timeline.forEach(({ el, delay }) => {
+    setTimeout(() => {
+      document.getElementById(el).classList.add('show');
+    }, delay);
+  });
+}
+
+// Use IntersectionObserver for scroll-triggered animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      runAnimation();
+      observer.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+
+observer.observe(document.getElementById('sleepSection'));
+</script>
 
 </body>
 </html>

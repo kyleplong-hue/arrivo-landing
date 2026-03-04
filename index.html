@@ -444,5 +444,124 @@ footer{padding:30px 0;text-align:center;font-size:11px;color:var(--mut);border-t
   </div>
 </footer>
 
+<!-- ═══ ONBOARDING WIZARD ═══ -->
+<div id="onboard-overlay" style="display:none;position:fixed;inset:0;background:rgba(26,26,24,.6);backdrop-filter:blur(8px);z-index:999;justify-content:center;align-items:center;padding:20px">
+<div id="onboard-modal" style="background:#FDFCF9;border-radius:18px;max-width:480px;width:100%;max-height:90vh;overflow:auto;padding:36px 32px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.2)">
+<button onclick="closeOnboard()" style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:18px;color:#6B6860;cursor:pointer">✕</button>
+<div id="onboard-steps"></div>
+</div>
+</div>
+
+<script>
+const OB={step:0,data:{type:"",name:"",city:"",website:"",pdf:null,listing:"",apis:[],email:"",password:""}};
+const APIS=["Rezdy","FareHarbor","Peek Pro","Bokun","Checkfront","iCal (Airbnb)","iCal (Vrbo)","iCal (Booking.com)","GetYourGuide","Viator","TripAdvisor"];
+function openOnboard(){OB.step=0;document.getElementById("onboard-overlay").style.display="flex";renderStep();}
+function closeOnboard(){document.getElementById("onboard-overlay").style.display="none";}
+document.getElementById("onboard-overlay").addEventListener("click",e=>{if(e.target===e.currentTarget)closeOnboard();});
+
+function renderStep(){
+const c=document.getElementById("onboard-steps");
+const prog=`<div style="display:flex;gap:6px;margin-bottom:28px">${[0,1,2,3,4].map(i=>`<div style="flex:1;height:3px;border-radius:2px;background:${i<=OB.step?"#B8963E":"#E8E3D8"}"></div>`).join("")}</div>`;
+const steps=[renderS0,renderS1,renderS2,renderS3,renderS4];
+c.innerHTML=prog+steps[OB.step]();
+}
+
+function renderS0(){
+const types=[{v:"tour",l:"Tour Company",d:"Walking tours, food tours, experiences"},{v:"rental",l:"Vacation Rental",d:"Airbnb, villa, boutique hotel"},{v:"both",l:"Both",d:"Tours + accommodation"}];
+return`<div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:6px">Step 1 of 5</div>
+<h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:500;margin-bottom:4px">Tell us about your business</h3>
+<p style="font-size:13px;color:#6B6860;margin-bottom:20px">We'll customize your Arrivo setup based on this.</p>
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px">Business name</label>
+<input id="ob-name" value="${OB.data.name}" oninput="OB.data.name=this.value" placeholder="e.g. Culinary Backstreets" style="width:100%;padding:10px 14px;border:1.5px solid #E8E3D8;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;margin-bottom:14px;outline:none" onfocus="this.style.borderColor='#B8963E'" onblur="this.style.borderColor='#E8E3D8'">
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px">City / Region</label>
+<input id="ob-city" value="${OB.data.city}" oninput="OB.data.city=this.value" placeholder="e.g. Istanbul, Tuscany, Shanghai" style="width:100%;padding:10px 14px;border:1.5px solid #E8E3D8;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;margin-bottom:16px;outline:none" onfocus="this.style.borderColor='#B8963E'" onblur="this.style.borderColor='#E8E3D8'">
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:8px">What type?</label>
+<div style="display:flex;flex-direction:column;gap:8px">${types.map(t=>`<button onclick="OB.data.type='${t.v}';renderStep()" style="text-align:left;padding:14px 16px;border:1.5px solid ${OB.data.type===t.v?"#B8963E":"#E8E3D8"};border-radius:10px;background:${OB.data.type===t.v?"#B8963E08":"#fff"};cursor:pointer;transition:all .15s">
+<div style="font-size:14px;font-weight:600;color:#1A1A18">${t.l}</div>
+<div style="font-size:12px;color:#6B6860">${t.d}</div>
+</button>`).join("")}</div>
+<button onclick="if(OB.data.type){OB.step=1;renderStep()}" style="width:100%;margin-top:20px;padding:13px;background:${OB.data.type?"#B8963E":"#E8E3D8"};color:${OB.data.type?"#fff":"#6B6860"};border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">Continue</button>`;
+}
+
+function renderS1(){
+return`<div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:6px">Step 2 of 5</div>
+<h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:500;margin-bottom:4px">Your content</h3>
+<p style="font-size:13px;color:#6B6860;margin-bottom:20px">We'll pull recommendations from your site and any guides you have.</p>
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px">Website URL</label>
+<input id="ob-web" value="${OB.data.website}" oninput="OB.data.website=this.value" placeholder="https://yoursite.com" style="width:100%;padding:10px 14px;border:1.5px solid #E8E3D8;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;margin-bottom:6px;outline:none" onfocus="this.style.borderColor='#B8963E'" onblur="this.style.borderColor='#E8E3D8'">
+<div style="font-size:11px;color:#6B6860;margin-bottom:18px">We'll crawl your blog posts, neighborhood guides, and recommendations to seed your Arrivo.</div>
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px">Upload a guidebook or PDF <span style="color:#B8963E;font-weight:400">(optional)</span></label>
+<div id="ob-pdf-zone" onclick="document.getElementById('ob-pdf-input').click()" style="border:2px dashed #E8E3D8;border-radius:10px;padding:24px;text-align:center;cursor:pointer;margin-bottom:6px;transition:border-color .15s" onmouseover="this.style.borderColor='#B8963E'" onmouseout="this.style.borderColor='#E8E3D8'">
+<div style="font-size:13px;color:#6B6860" id="ob-pdf-label">${OB.data.pdf?OB.data.pdf.name:"Drop a PDF here or click to browse"}</div>
+<input type="file" id="ob-pdf-input" accept=".pdf" style="display:none" onchange="if(this.files[0]){OB.data.pdf=this.files[0];document.getElementById('ob-pdf-label').textContent=this.files[0].name;}">
+</div>
+<div style="font-size:11px;color:#6B6860;margin-bottom:20px">Guest welcome guides, restaurant lists, neighborhood maps — anything you already send guests.</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=0;renderStep()" style="flex:1;padding:13px;background:#fff;color:#6B6860;border:1.5px solid #E8E3D8;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif">Back</button>
+<button onclick="OB.step=2;renderStep()" style="flex:2;padding:13px;background:#B8963E;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">Continue</button>
+</div>`;
+}
+
+function renderS2(){
+return`<div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:6px">Step 3 of 5</div>
+<h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:500;margin-bottom:4px">Your property listing</h3>
+<p style="font-size:13px;color:#6B6860;margin-bottom:20px">If you have a vacation rental listing, we'll pull in photos, amenities, and check-in details.</p>
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px">Airbnb / Vrbo / Booking.com URL <span style="color:#B8963E;font-weight:400">(optional)</span></label>
+<input id="ob-listing" value="${OB.data.listing}" oninput="OB.data.listing=this.value" placeholder="https://airbnb.com/rooms/12345" style="width:100%;padding:10px 14px;border:1.5px solid #E8E3D8;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;margin-bottom:6px;outline:none" onfocus="this.style.borderColor='#B8963E'" onblur="this.style.borderColor='#E8E3D8'">
+<div style="font-size:11px;color:#6B6860;margin-bottom:20px">We'll import your property details, house rules, and photos automatically.</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=1;renderStep()" style="flex:1;padding:13px;background:#fff;color:#6B6860;border:1.5px solid #E8E3D8;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif">Back</button>
+<button onclick="OB.step=3;renderStep()" style="flex:2;padding:13px;background:#B8963E;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">Continue</button>
+</div>`;
+}
+
+function renderS3(){
+return`<div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:6px">Step 4 of 5</div>
+<h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:500;margin-bottom:4px">Your integrations</h3>
+<p style="font-size:13px;color:#6B6860;margin-bottom:20px">Check any platforms you currently use. We'll set up the connections.</p>
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">${APIS.map(a=>{
+const checked=OB.data.apis.includes(a);
+return`<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid ${checked?"#B8963E":"#E8E3D8"};border-radius:8px;cursor:pointer;background:${checked?"#B8963E06":"#fff"};transition:all .15s">
+<input type="checkbox" ${checked?"checked":""} onchange="const i=OB.data.apis.indexOf('${a}');if(i>-1)OB.data.apis.splice(i,1);else OB.data.apis.push('${a}');renderStep()" style="accent-color:#B8963E;width:16px;height:16px">
+<span style="font-size:13px;font-weight:500">${a}</span>
+</label>`}).join("")}</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=2;renderStep()" style="flex:1;padding:13px;background:#fff;color:#6B6860;border:1.5px solid #E8E3D8;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif">Back</button>
+<button onclick="OB.step=4;renderStep()" style="flex:2;padding:13px;background:#B8963E;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif">Continue</button>
+</div>`;
+}
+
+function renderS4(){
+return`<div style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:6px">Step 5 of 5</div>
+<h3 style="font-family:'Newsreader',serif;font-size:24px;font-weight:500;margin-bottom:4px">Create your free account</h3>
+<p style="font-size:13px;color:#6B6860;margin-bottom:20px">Start with the free plan — upgrade anytime. No credit card required.</p>
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px">Email</label>
+<input id="ob-email" type="email" value="${OB.data.email}" oninput="OB.data.email=this.value" placeholder="you@yourcompany.com" style="width:100%;padding:10px 14px;border:1.5px solid #E8E3D8;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;margin-bottom:14px;outline:none" onfocus="this.style.borderColor='#B8963E'" onblur="this.style.borderColor='#E8E3D8'">
+<label style="display:block;font-size:12px;font-weight:500;color:#6B6860;margin-bottom:4px">Password</label>
+<input id="ob-pass" type="password" value="${OB.data.password}" oninput="OB.data.password=this.value" placeholder="Create a password" style="width:100%;padding:10px 14px;border:1.5px solid #E8E3D8;border-radius:8px;font-size:14px;font-family:'Outfit',sans-serif;margin-bottom:20px;outline:none" onfocus="this.style.borderColor='#B8963E'" onblur="this.style.borderColor='#E8E3D8'">
+<button id="ob-submit" onclick="submitOnboard()" style="width:100%;padding:14px;background:#B8963E;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;margin-bottom:10px">Start Free →</button>
+<div style="font-size:11px;color:#6B6860;text-align:center">Free plan includes 1 property, 5 guest links/month. <span style="color:#B8963E">Upgrade anytime.</span></div>
+<div style="display:flex;gap:10px;margin-top:14px">
+<button onclick="OB.step=3;renderStep()" style="width:100%;padding:11px;background:#fff;color:#6B6860;border:1.5px solid #E8E3D8;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif">Back</button>
+</div>`;
+}
+
+function submitOnboard(){
+const btn=document.getElementById("ob-submit");
+btn.textContent="Creating your Arrivo...";btn.style.background="#8A6F2E";
+setTimeout(()=>{
+  btn.textContent="You're in! Check your email.";btn.style.background="#4A5A2C";
+  setTimeout(()=>closeOnboard(),2000);
+},1500);
+}
+
+// Wire up all CTA buttons
+document.querySelectorAll('.cta-nav, .cta-primary').forEach(el=>{
+  if(el.href&&(el.href.includes('#demo')||el.href.includes('mailto:'))){
+    el.addEventListener('click',e=>{e.preventDefault();openOnboard();});
+  }
+});
+</script>
+
 </body>
 </html>

@@ -748,7 +748,7 @@ function rS3(){
 const ws=OB.data.websites;
 return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">Got a website?</h3>
 <p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:24px">We'll analyze it and pull in your content automatically.</p>
-${ws.map((w,i)=>`<div style="display:flex;gap:6px;margin-bottom:8px"><input value="${w}" oninput="OB.data.websites[${i}]=this.value;renderStep()" placeholder="https://yoursite.com" ${inp}>${ws.length>1?`<button onclick="OB.data.websites.splice(${i},1);renderStep()" style="background:none;border:1px solid #E8E3D8;border-radius:8px;padding:0 10px;color:#C44;cursor:pointer;font-size:16px">×</button>`:""}</div>`).join("")}
+${ws.map((w,i)=>`<div style="display:flex;gap:6px;margin-bottom:8px"><input value="${w}" oninput="OB.data.websites[${i}]=this.value" placeholder="https://yoursite.com" ${inp}>${ws.length>1?`<button onclick="OB.data.websites.splice(${i},1);renderStep()" style="background:none;border:1px solid #E8E3D8;border-radius:8px;padding:0 10px;color:#C44;cursor:pointer;font-size:16px">×</button>`:""}</div>`).join("")}
 <button onclick="OB.data.websites.push('');renderStep()" style="font-size:12px;color:#B8963E;background:none;border:none;cursor:pointer;margin-bottom:12px">+ Add another website</button>
 <div style="font-size:11px;color:#6B6860;margin-bottom:16px">Blog posts, guides, restaurant recs — we'll find them.</div>
 <div style="display:flex;gap:10px">

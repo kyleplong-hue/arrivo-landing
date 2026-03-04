@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Option B Preview — Chat Style</title>
+<title>Option B Preview — Chat → Itinerary</title>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -14,44 +14,53 @@ body{font-family:'Outfit',sans-serif;background:#F5F2EB;color:#1A1A18}
 .section-title{font-family:'Newsreader',serif;font-size:32px;text-align:center;margin-bottom:32px;font-weight:500}
 .section-title em{font-style:italic;color:#B8963E}
 
-.chat-box{background:#1A1A18;border-radius:18px;padding:32px 28px;min-height:260px;box-shadow:0 12px 48px rgba(0,0,0,.15);position:relative;overflow:hidden}
+.screen{background:#1A1A18;border-radius:18px;padding:28px 24px;min-height:340px;box-shadow:0 12px 48px rgba(0,0,0,.15);position:relative;overflow:hidden}
 
-/* Chat header */
-.chat-header{display:flex;align-items:center;gap:10px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid #2A2520}
-.chat-avatar{width:32px;height:32px;border-radius:50%;background:#B8963E;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:600}
-.chat-name{font-size:13px;color:#EDE5DD;font-weight:600}
-.chat-sub{font-size:10px;color:#8A8478}
-.chat-time{margin-left:auto;font-size:10px;color:#6B6860}
+/* Header */
+.screen-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #2A2520}
+.screen-avatar{width:32px;height:32px;border-radius:50%;background:#B8963E;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:600}
+.screen-name{font-size:13px;color:#EDE5DD;font-weight:600}
+.screen-sub{font-size:10px;color:#8A8478}
+.screen-time{margin-left:auto;font-size:10px;color:#6B6860}
 
-/* Messages */
-.chat-area{position:relative;min-height:180px}
+/* PHASE: Chat */
+.phase{position:absolute;left:24px;right:24px;top:72px;bottom:24px;opacity:0;transition:opacity .6s ease}
+.phase.active{opacity:1}
 
-.pair{position:absolute;width:100%;opacity:0;transform:translateY(20px);transition:all .6s ease}
-.pair.active{opacity:1;transform:translateY(0)}
-.pair.exit{opacity:0;transform:translateY(-30px)}
-
-.q-bubble{background:#2A2520;border-radius:14px 14px 14px 4px;padding:12px 16px;margin-bottom:10px;max-width:85%;font-size:13px;color:#EDE5DD;line-height:1.45;opacity:0;transform:translateX(-10px);transition:all .4s ease .1s}
-.pair.active .q-bubble{opacity:1;transform:translateX(0)}
-.q-label{font-size:9px;color:#8A8478;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
-
-.a-bubble{background:#B8963E15;border:1px solid #B8963E30;border-radius:14px 14px 4px 14px;padding:12px 16px;margin-left:auto;max-width:88%;font-size:13px;color:#D4B36A;line-height:1.5;opacity:0;transform:translateX(10px);transition:all .4s ease .6s}
-.pair.active .a-bubble{opacity:1;transform:translateX(0)}
+/* Chat bubbles */
+.q-bubble{background:#2A2520;border-radius:14px 14px 14px 4px;padding:12px 16px;margin-bottom:10px;max-width:85%;font-size:13px;color:#EDE5DD;line-height:1.45;opacity:0;transform:translateY(10px);transition:all .4s ease}
+.q-bubble.show{opacity:1;transform:translateY(0)}
+.q-label{font-size:9px;color:#8A8478;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.a-bubble{background:#B8963E15;border:1px solid #B8963E30;border-radius:14px 14px 4px 14px;padding:12px 16px;margin-left:auto;max-width:88%;font-size:13px;color:#D4B36A;line-height:1.5;margin-bottom:10px;opacity:0;transform:translateY(10px);transition:all .4s ease}
+.a-bubble.show{opacity:1;transform:translateY(0)}
 .a-bubble strong{color:#EDE5DD}
-.a-label{font-size:9px;color:#B8963E;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:right}
+.a-label{font-size:9px;color:#B8963E;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:right}
 
-/* Summary bar */
+/* Transition text */
+.transition-text{text-align:center;margin-top:16px;font-size:12px;color:#B8963E;opacity:0;transition:opacity .5s}
+.transition-text.show{opacity:1}
+
+/* PHASE: Itinerary */
+.itin-header{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:12px;text-align:center}
+.day-block{margin-bottom:10px}
+.day-label{font-size:11px;font-weight:600;color:#EDE5DD;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.day-label .bar{width:3px;height:14px;border-radius:2px}
+.itin-item{display:flex;gap:8px;padding:7px 10px;background:#252218;border-radius:8px;margin-bottom:4px;font-size:11px;color:#BDB8AE;opacity:1;transition:all .4s ease}
+.itin-item .time{color:#B8963E;min-width:48px;font-size:10px}
+.itin-item.new{opacity:0;transform:translateX(20px);background:#B8963E12;border:1px solid #B8963E25}
+.itin-item.new.show{opacity:1;transform:translateX(0)}
+.itin-item.new .desc{color:#D4B36A}
+.new-badge{font-size:8px;color:#B8963E;background:#B8963E20;padding:1px 5px;border-radius:4px;margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+/* Summary */
 .summary{text-align:center;margin-top:24px;opacity:0;transition:all .5s ease}
 .summary.show{opacity:1}
 .summary-badge{display:inline-block;font-size:11px;color:#B8963E;background:#B8963E12;border:1px solid #B8963E30;padding:8px 18px;border-radius:20px;font-weight:600}
 .summary-sub{font-size:11px;color:#6B6860;margin-top:6px}
 
-/* Dots indicator */
-.dots{display:flex;gap:6px;justify-content:center;margin-top:20px}
-.dot{width:6px;height:6px;border-radius:50%;background:#3A352A;transition:background .3s}
-.dot.active{background:#B8963E}
-
 @media(max-width:600px){
-  .chat-box{padding:24px 18px}
+  .screen{padding:20px 16px}
+  .phase{left:16px;right:16px;top:64px}
   .section-title{font-size:24px}
 }
 </style>
@@ -62,129 +71,129 @@ body{font-family:'Outfit',sans-serif;background:#F5F2EB;color:#1A1A18}
   <div class="section-label">11:47 PM · You're asleep</div>
   <div class="section-title">Your concierge <em>never sleeps.</em></div>
   
-  <div class="chat-box">
-    <div class="chat-header">
-      <div class="chat-avatar">S</div>
+  <div class="screen" id="screen">
+    <div class="screen-header">
+      <div class="screen-avatar">S</div>
       <div>
-        <div class="chat-name">Sarah & James</div>
-        <div class="chat-sub">Molino Nobile · Jun 15–22</div>
+        <div class="screen-name">Sarah & James</div>
+        <div class="screen-sub">Molino Nobile · Jun 15–22</div>
       </div>
-      <div class="chat-time">11:47 PM</div>
+      <div class="screen-time" id="screenTime">11:47 PM</div>
     </div>
 
-    <div class="chat-area" id="chatArea">
-      <!-- Pair 1 -->
-      <div class="pair" id="p1">
-        <div class="q-bubble">
-          <div class="q-label">Sarah</div>
-          Where should we eat tonight? Something local, not touristy 🙏
-        </div>
-        <div class="a-bubble">
-          <div class="a-label">Concierge · instant</div>
-          Try <strong>La Grotta</strong> in Montepulciano — refined Tuscan with a garden terrace. 15 min drive. Book ahead, I can help with that!
-        </div>
+    <!-- PHASE 1: Chat -->
+    <div class="phase" id="chatPhase">
+      <div class="q-bubble" id="q1">
+        <div class="q-label">Sarah</div>
+        Where should we eat tonight? Something local 🙏
       </div>
-
-      <!-- Pair 2 -->
-      <div class="pair" id="p2">
-        <div class="q-bubble">
-          <div class="q-label">Sarah</div>
-          Any wineries open tomorrow? We want to go early
-        </div>
-        <div class="a-bubble">
-          <div class="a-label">Concierge · instant</div>
-          <strong>De Ricci</strong> opens at 10 AM, no booking needed. <strong>Salcheto</strong> from 11 AM — book online. Both are 12 min from the villa. 🍷
-        </div>
+      <div class="a-bubble" id="a1">
+        <div class="a-label">Concierge</div>
+        Try <strong>La Grotta</strong> — refined Tuscan, garden terrace. I'll add it to your evening!
       </div>
-
-      <!-- Pair 3 -->
-      <div class="pair" id="p3">
-        <div class="q-bubble">
-          <div class="q-label">Sarah</div>
-          Is the pool heated? Kids are asking 🏊
-        </div>
-        <div class="a-bubble">
-          <div class="a-label">Concierge · instant</div>
-          Pool is <strong>solar-heated</strong>, warmest after 2 PM. Towels in the poolside cabinet. Kids will love it!
-        </div>
+      <div class="q-bubble" id="q2">
+        <div class="q-label">Sarah</div>
+        Any wineries open tomorrow morning?
       </div>
+      <div class="a-bubble" id="a2">
+        <div class="a-label">Concierge</div>
+        <strong>De Ricci</strong> at 10 AM, no booking needed. Adding to Day 2! 🍷
+      </div>
+      <div class="transition-text" id="trans">Updating your itinerary...</div>
     </div>
 
-    <div class="dots">
-      <div class="dot" id="d1"></div>
-      <div class="dot" id="d2"></div>
-      <div class="dot" id="d3"></div>
+    <!-- PHASE 2: Itinerary -->
+    <div class="phase" id="itinPhase">
+      <div class="itin-header">Your Updated Week</div>
+      
+      <div class="day-block">
+        <div class="day-label"><div class="bar" style="background:#C87A50"></div>Today — Evening</div>
+        <div class="itin-item"><span class="time">5:30 PM</span><span class="desc">Aperitivo by the pool 🏊</span></div>
+        <div class="itin-item new" id="i1"><span class="time">7:30 PM</span><span class="desc">La Grotta — garden terrace dinner</span><span class="new-badge">new</span></div>
+        <div class="itin-item"><span class="time">9:30 PM</span><span class="desc">Evening stroll through Montepulciano</span></div>
+      </div>
+
+      <div class="day-block">
+        <div class="day-label"><div class="bar" style="background:#B8963E"></div>Tomorrow — Wine Day</div>
+        <div class="itin-item new" id="i2"><span class="time">10:00 AM</span><span class="desc">De Ricci winery — walk-in tasting</span><span class="new-badge">new</span></div>
+        <div class="itin-item"><span class="time">12:30 PM</span><span class="desc">Lunch at Bindella</span></div>
+        <div class="itin-item"><span class="time">3:00 PM</span><span class="desc">Salcheto sunset tasting</span></div>
+      </div>
+
+      <div class="day-block">
+        <div class="day-label"><div class="bar" style="background:#4A5A2C"></div>Day 3 — Hill Towns</div>
+        <div class="itin-item"><span class="time">9:30 AM</span><span class="desc">Montepulciano walking tour</span></div>
+        <div class="itin-item"><span class="time">1:00 PM</span><span class="desc">Pienza pecorino tasting & lunch</span></div>
+      </div>
     </div>
   </div>
 
   <div class="summary" id="summary">
-    <div class="summary-badge">😴 3 questions answered while you slept · 0 effort from you</div>
-    <div class="summary-sub">Your expertise, always on — even at midnight.</div>
+    <div class="summary-badge">😴 Questions answered, itinerary updated — all while you slept</div>
+    <div class="summary-sub">Your expertise does the work. Even at midnight.</div>
   </div>
 </div>
 
 <script>
-const pairs = ['p1','p2','p3'];
-const dots = ['d1','d2','d3'];
-let current = 0;
 let started = false;
-
-function showPair(index) {
-  // Exit current
-  pairs.forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.classList.remove('active');
-    if (i < index) el.classList.add('exit');
-    else el.classList.remove('exit');
-  });
-  
-  // Show new
-  document.getElementById(pairs[index]).classList.add('active');
-  
-  // Update dots
-  dots.forEach((id, i) => {
-    document.getElementById(id).classList.toggle('active', i === index);
-  });
-}
 
 function runSequence() {
   if (started) return;
   started = true;
 
-  // Show pair 1
-  setTimeout(() => showPair(0), 600);
+  const chatPhase = document.getElementById('chatPhase');
+  const itinPhase = document.getElementById('itinPhase');
 
-  // Show pair 2
-  setTimeout(() => showPair(1), 4500);
+  // Reset
+  chatPhase.classList.remove('active');
+  itinPhase.classList.remove('active');
+  ['q1','a1','q2','a2','trans'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['i1','i2'].forEach(id => document.getElementById(id).classList.remove('show'));
+  document.getElementById('summary').classList.remove('show');
+  document.getElementById('screenTime').textContent = '11:47 PM';
 
-  // Show pair 3
-  setTimeout(() => showPair(2), 8400);
+  // Phase 1: Chat
+  setTimeout(() => chatPhase.classList.add('active'), 300);
 
-  // Show summary
+  // Q1 slides in
+  setTimeout(() => document.getElementById('q1').classList.add('show'), 800);
+  // A1 slides in
+  setTimeout(() => document.getElementById('a1').classList.add('show'), 2200);
+  // Q2 slides in
+  setTimeout(() => document.getElementById('q2').classList.add('show'), 4200);
+  // A2 slides in
+  setTimeout(() => document.getElementById('a2').classList.add('show'), 5800);
+  // Transition text
+  setTimeout(() => document.getElementById('trans').classList.add('show'), 7500);
+
+  // Phase 2: Switch to itinerary
   setTimeout(() => {
-    document.getElementById('summary').classList.add('show');
-  }, 11500);
+    chatPhase.classList.remove('active');
+    itinPhase.classList.add('active');
+    document.getElementById('screenTime').textContent = 'Updated';
+  }, 9000);
 
-  // Loop: restart after pause
+  // New items slide in
+  setTimeout(() => document.getElementById('i1').classList.add('show'), 10000);
+  setTimeout(() => document.getElementById('i2').classList.add('show'), 11200);
+
+  // Summary
+  setTimeout(() => document.getElementById('summary').classList.add('show'), 12800);
+
+  // Loop
   setTimeout(() => {
-    document.getElementById('summary').classList.remove('show');
-    pairs.forEach(id => {
-      const el = document.getElementById(id);
-      el.classList.remove('active', 'exit');
-    });
     started = false;
-    setTimeout(runSequence, 2000);
-  }, 15000);
+    setTimeout(runSequence, 3000);
+  }, 17000);
 }
 
-// Trigger on scroll into view
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) runSequence();
   });
 }, { threshold: 0.3 });
 
-observer.observe(document.querySelector('.chat-box'));
+observer.observe(document.getElementById('screen'));
 </script>
 
 </body>

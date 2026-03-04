@@ -948,11 +948,7 @@ try{
     }
   }catch(e){console.warn('Property creation:',e);}
 
-  // Also send to Formspree as backup/notification
-  fetch('https://formspree.io/f/xbdanzog',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({...OB.data,websites:OB.data.websites,source:'pocketbase_signup',userId:auth.record?.id})
-  }).catch(()=>{});
+  // Signup notification logged server-side (Formspree removed)
 
   // Store auth for dashboard
   if(authRes.ok){

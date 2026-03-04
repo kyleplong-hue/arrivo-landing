@@ -149,6 +149,7 @@ function AddProperty({token,onDone}){
 function GuestManager({prop,token}){
   const[guests,setGuests]=useState([]);const[loading,setLoading]=useState(true);
   const[showAdd,setShowAdd]=useState(false);
+  const[editGuest,setEditGuest]=useState(null);
   const[name,setName]=useState('');const[checkin,setCheckin]=useState('');const[checkout,setCheckout]=useState('');const[notes,setNotes]=useState('');
   const[icalUrl,setIcalUrl]=useState('');const[syncing,setSyncing]=useState(false);const[syncResult,setSyncResult]=useState(null);
   const[copied,setCopied]=useState(null);
@@ -188,6 +189,7 @@ function GuestManager({prop,token}){
   const iS={width:'100%',padding:'10px 12px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,color:T.cream,fontSize:12,fontFamily:"'DM Sans',sans-serif",marginBottom:8};
 
   if(loading)return<p style={{color:T.mut,textAlign:'center',padding:40}}>Loading guests...</p>;
+  if(editGuest)return<ItineraryEditor guest={editGuest} token={token} onBack={()=>{setEditGuest(null);load();}}/>;
 
   return<div>
     {/* iCal Import */}
@@ -221,17 +223,133 @@ function GuestManager({prop,token}){
     {guests.length===0?<div style={{textAlign:'center',padding:40,color:T.mut,fontSize:13}}>No guests yet. Add one or import from your calendar.</div>
     :guests.map(g=><div key={g.id} style={{background:T.card,borderRadius:12,padding:14,marginBottom:8,border:'1px solid '+T.bdr}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-        <div>
+        <div style={{cursor:'pointer'}} onClick={()=>setEditGuest(g)}>
           <div style={{fontSize:14,fontWeight:600}}>{g.name}</div>
-          <div style={{fontSize:10,color:T.mut}}>{g.checkin?.slice(0,10)} → {g.checkout?.slice(0,10)} · {g.status||'—'}</div>
+          <div style={{fontSize:10,color:T.mut}}>{g.checkin?.slice(0,10)} → {g.checkout?.slice(0,10)} · {(g.itinerary||[]).length} days · {g.status||'—'}</div>
         </div>
         <div style={{display:'flex',gap:6}}>
+          <button onClick={()=>setEditGuest(g)} style={{fontSize:11,color:T.cream,background:T.dw,border:'1px solid '+T.bdr,borderRadius:7,padding:'5px 10px',cursor:'pointer'}}>✏️ Itinerary</button>
           {g.link_id&&<button onClick={()=>copyLink(g.link_id)} style={{fontSize:11,color:copied===g.link_id?T.ol:T.gold,background:copied===g.link_id?T.ol+'15':T.gold+'15',border:'1px solid '+(copied===g.link_id?T.ol:T.gold)+'33',borderRadius:7,padding:'5px 10px',cursor:'pointer',fontWeight:600}}>{copied===g.link_id?'✓ Copied':'Copy Link'}</button>}
           <button onClick={()=>delGuest(g.id)} style={{fontSize:11,color:T.red,background:T.red+'10',border:'1px solid '+T.red+'25',borderRadius:7,padding:'5px 8px',cursor:'pointer'}}>✕</button>
         </div>
       </div>
       {g.notes&&<div style={{fontSize:11,color:T.mut,marginTop:4}}>{g.notes}</div>}
     </div>)}
+  </div>;
+}
+
+// ═══ ITINERARY EDITOR ═══
+function ItineraryEditor({guest,token,onBack}){
+  const[itin,setItin]=useState(guest.itinerary||[]);
+  const[saving,setSaving]=useState(false);const[saved,setSaved]=useState(false);
+  const iS={width:'100%',padding:'8px 10px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:7,color:T.cream,fontSize:12,fontFamily:"'DM Sans',sans-serif"};
+
+  const save=async()=>{
+    setSaving(true);
+    await pb('PATCH','/collections/guests/records/'+guest.id,{itinerary:itin},token);
+    setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),2000);
+  };
+
+  const addDay=()=>{
+    setItin([...itin,{title:'Day '+(itin.length+1),stops:[]}]);
+  };
+  const removeDay=(di)=>{
+    setItin(itin.filter((_,i)=>i!==di));
+  };
+  const updateDay=(di,field,val)=>{
+    setItin(itin.map((d,i)=>i===di?{...d,[field]:val}:d));
+  };
+  const addStop=(di)=>{
+    const days=[...itin];
+    days[di]={...days[di],stops:[...(days[di].stops||[]),{time:'',name:'',desc:'',address:''}]};
+    setItin(days);
+  };
+  const updateStop=(di,si,field,val)=>{
+    const days=[...itin];
+    const stops=[...(days[di].stops||[])];
+    stops[si]={...stops[si],[field]:val};
+    days[di]={...days[di],stops};
+    setItin(days);
+  };
+  const removeStop=(di,si)=>{
+    const days=[...itin];
+    days[di]={...days[di],stops:days[di].stops.filter((_,i)=>i!==si)};
+    setItin(days);
+  };
+  const moveStop=(di,si,dir)=>{
+    const days=[...itin];
+    const stops=[...(days[di].stops||[])];
+    const ni=si+dir;
+    if(ni<0||ni>=stops.length)return;
+    [stops[si],stops[ni]]=[stops[ni],stops[si]];
+    days[di]={...days[di],stops};
+    setItin(days);
+  };
+
+  const colors=['#C87A50','#B8963E','#4A5A2C','#6B8E8A','#8B6BAE','#C87A7A','#5A7ABE'];
+
+  return<div>
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+      <div style={{display:'flex',alignItems:'center',gap:10}}>
+        <button onClick={onBack} style={{background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,padding:'6px 10px',color:T.cream,cursor:'pointer',fontSize:12}}>←</button>
+        <div>
+          <div style={{fontSize:16,fontWeight:600}}>{guest.name}'s Itinerary</div>
+          <div style={{fontSize:10,color:T.mut}}>{guest.checkin?.slice(0,10)} → {guest.checkout?.slice(0,10)}</div>
+        </div>
+      </div>
+      <div style={{display:'flex',gap:6}}>
+        <button onClick={save} disabled={saving} style={{padding:'8px 16px',background:T.gold,border:'none',borderRadius:8,color:T.dark,fontWeight:600,fontSize:12,cursor:'pointer'}}>{saved?'✓ Saved':saving?'Saving...':'Save'}</button>
+        {guest.link_id&&<a href={'/g/'+guest.link_id} target="_blank" style={{padding:'8px 12px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,color:T.gold,fontSize:12,textDecoration:'none',fontWeight:500}}>Preview →</a>}
+      </div>
+    </div>
+
+    {itin.map((day,di)=><div key={di} style={{background:T.card,borderRadius:14,padding:16,marginBottom:12,border:'1px solid '+T.bdr,borderLeft:'3px solid '+colors[di%7]}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <input value={day.title||''} onChange={e=>updateDay(di,'title',e.target.value)} placeholder={'Day '+(di+1)+' title'} style={{...iS,fontWeight:600,fontSize:14,background:'transparent',border:'none',padding:'4px 0'}}/>
+        <button onClick={()=>removeDay(di)} style={{fontSize:10,color:T.red,background:'none',border:'1px solid '+T.red+'33',borderRadius:5,padding:'2px 6px',cursor:'pointer'}}>Remove day</button>
+      </div>
+
+      {(day.stops||[]).map((stop,si)=><div key={si} style={{background:T.dw,borderRadius:10,padding:12,marginBottom:6,border:'1px solid '+T.bdr}}>
+        <div style={{display:'flex',gap:6,marginBottom:6}}>
+          <input value={stop.time||''} onChange={e=>updateStop(di,si,'time',e.target.value)} placeholder="10:00 AM" style={{...iS,width:80,flexShrink:0}}/>
+          <input value={stop.name||''} onChange={e=>updateStop(di,si,'name',e.target.value)} placeholder="Stop name (e.g. La Grotta Restaurant)" style={{...iS,flex:1}}/>
+        </div>
+        <textarea value={stop.desc||''} onChange={e=>updateStop(di,si,'desc',e.target.value)} placeholder="Description, tips, booking info..." rows={2} style={{...iS,resize:'vertical',marginBottom:6}}/>
+        <div style={{display:'flex',gap:4,alignItems:'center'}}>
+          <input value={stop.address||''} onChange={e=>updateStop(di,si,'address',e.target.value)} placeholder="Address (for Maps link)" style={{...iS,flex:1,fontSize:10}}/>
+          <button onClick={()=>moveStop(di,si,-1)} disabled={si===0} style={{padding:'2px 6px',background:T.card,border:'1px solid '+T.bdr,borderRadius:4,color:si===0?T.bdr:T.cream,cursor:'pointer',fontSize:11}}>↑</button>
+          <button onClick={()=>moveStop(di,si,1)} disabled={si===day.stops.length-1} style={{padding:'2px 6px',background:T.card,border:'1px solid '+T.bdr,borderRadius:4,color:si===day.stops.length-1?T.bdr:T.cream,cursor:'pointer',fontSize:11}}>↓</button>
+          <button onClick={()=>removeStop(di,si)} style={{padding:'2px 6px',background:T.red+'10',border:'1px solid '+T.red+'33',borderRadius:4,color:T.red,cursor:'pointer',fontSize:11}}>✕</button>
+        </div>
+      </div>)}
+
+      <button onClick={()=>addStop(di)} style={{width:'100%',padding:8,background:'transparent',border:'1px dashed '+T.bdr,borderRadius:8,color:T.mut,fontSize:11,cursor:'pointer',marginTop:4}}>+ Add stop</button>
+    </div>)}
+
+    <div style={{display:'flex',gap:8}}>
+      <button onClick={addDay} style={{flex:1,padding:14,background:T.card,border:'1px dashed '+T.gold+'44',borderRadius:14,color:T.gold,fontSize:13,fontWeight:600,cursor:'pointer'}}>+ Add Day</button>
+      {itin.length===0&&<button onClick={async()=>{
+        setSaving(true);
+        try{
+          const numDays=guest.checkout&&guest.checkin?Math.ceil((new Date(guest.checkout)-new Date(guest.checkin))/86400000):3;
+          const res=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+            message:'Create a '+Math.min(numDays,7)+'-day itinerary for a guest staying at a Tuscan villa near Montepulciano. Include restaurants, wineries, day trips, and activities. Return ONLY valid JSON array: [{"title":"Day 1 - Arrival","stops":[{"time":"3:00 PM","name":"Check in","desc":"Description","address":"Location"}]}]. No markdown, no explanation, just the JSON array.',
+            property:'montepulciano'})});
+          const data=await res.json();
+          // Try to parse AI response as JSON
+          const match=data.reply?.match(/\[[\s\S]*\]/);
+          if(match){
+            const gen=JSON.parse(match[0]);
+            setItin(gen);
+          }
+        }catch(e){console.error('Generate error:',e);}
+        setSaving(false);
+      }} style={{padding:'14px 20px',background:T.gold+'18',border:'1px solid '+T.gold+'44',borderRadius:14,color:T.gold,fontSize:13,fontWeight:600,cursor:'pointer'}}>✨ Auto-Generate</button>}
+    </div>
+
+    {itin.length>0&&<div style={{marginTop:16,textAlign:'center'}}>
+      <button onClick={save} disabled={saving} style={{padding:'12px 32px',background:T.gold,border:'none',borderRadius:10,color:T.dark,fontWeight:700,fontSize:14,cursor:'pointer'}}>{saved?'✓ Saved!':saving?'Saving...':'Save Itinerary'}</button>
+    </div>}
   </div>;
 }
 

@@ -3,140 +3,188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Option B Preview — Animated</title>
+<title>Option B Preview — Chat Style</title>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Outfit',sans-serif;background:#F5F2EB;color:#1A1A18}
 
-.section{max-width:900px;margin:80px auto;padding:0 28px}
+.section{max-width:720px;margin:80px auto;padding:0 28px}
 .section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:10px;text-align:center}
+.section-title{font-family:'Newsreader',serif;font-size:32px;text-align:center;margin-bottom:32px;font-weight:500}
+.section-title em{font-style:italic;color:#B8963E}
 
-.sleep-section{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch;border-radius:18px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.1)}
+.chat-box{background:#1A1A18;border-radius:18px;padding:32px 28px;min-height:260px;box-shadow:0 12px 48px rgba(0,0,0,.15);position:relative;overflow:hidden}
 
-.sleep-left{background:#fff;padding:48px 36px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid #eee}
-.notif{background:#f8f5f0;border:1px solid #e8e3d8;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;opacity:0;transform:translateX(-20px);transition:all .5s ease}
-.notif.show{opacity:1;transform:translateX(0)}
-.notif .dot{width:8px;height:8px;border-radius:50%;background:#e74c3c;flex-shrink:0;margin-top:5px;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.notif .msg{font-size:13px;color:#555;line-height:1.4}
-.notif .msg strong{color:#1A1A18;font-weight:600}
-.time-label{font-size:11px;color:#aaa;text-align:right;margin-top:4px;opacity:0;transition:opacity .5s}
-.time-label.show{opacity:1}
+/* Chat header */
+.chat-header{display:flex;align-items:center;gap:10px;margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid #2A2520}
+.chat-avatar{width:32px;height:32px;border-radius:50%;background:#B8963E;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:600}
+.chat-name{font-size:13px;color:#EDE5DD;font-weight:600}
+.chat-sub{font-size:10px;color:#8A8478}
+.chat-time{margin-left:auto;font-size:10px;color:#6B6860}
 
-.sleep-right{background:#1A1A18;padding:48px 36px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.sleep-right .emoji{font-size:48px;margin-bottom:16px;opacity:0;transform:scale(.8);transition:all .6s ease}
-.sleep-right .emoji.show{opacity:1;transform:scale(1)}
-.sleep-right h3{font-family:'Newsreader',serif;font-size:28px;color:#EDE5DD;font-weight:500;margin-bottom:8px;line-height:1.2;opacity:0;transform:translateY(10px);transition:all .5s ease}
-.sleep-right h3.show{opacity:1;transform:translateY(0)}
-.sleep-right p{font-size:14px;color:#8A8478;line-height:1.6;max-width:280px;opacity:0;transition:opacity .5s}
-.sleep-right p.show{opacity:1}
+/* Messages */
+.chat-area{position:relative;min-height:180px}
 
-/* Answer cards that slide in */
-.answer{background:#252218;border:1px solid #3A352A;border-radius:10px;padding:12px 14px;margin-bottom:8px;width:100%;max-width:300px;text-align:left;opacity:0;transform:translateY(16px);transition:all .5s ease}
-.answer.show{opacity:1;transform:translateY(0)}
-.answer .a-q{font-size:10px;color:#8A8478;margin-bottom:4px}
-.answer .a-text{font-size:12px;color:#BDB8AE;line-height:1.4}
-.answer .a-text strong{color:#EDE5DD}
-.answer .a-icon{float:right;font-size:14px}
+.pair{position:absolute;width:100%;opacity:0;transform:translateY(20px);transition:all .6s ease}
+.pair.active{opacity:1;transform:translateY(0)}
+.pair.exit{opacity:0;transform:translateY(-30px)}
 
-.badge{display:inline-block;margin-top:12px;font-size:11px;color:#B8963E;background:#B8963E12;border:1px solid #B8963E30;padding:6px 14px;border-radius:20px;font-weight:600;opacity:0;transform:translateY(8px);transition:all .5s ease}
-.badge.show{opacity:1;transform:translateY(0)}
+.q-bubble{background:#2A2520;border-radius:14px 14px 14px 4px;padding:12px 16px;margin-bottom:10px;max-width:85%;font-size:13px;color:#EDE5DD;line-height:1.45;opacity:0;transform:translateX(-10px);transition:all .4s ease .1s}
+.pair.active .q-bubble{opacity:1;transform:translateX(0)}
+.q-label{font-size:9px;color:#8A8478;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
 
-@media(max-width:768px){
-  .sleep-section{grid-template-columns:1fr}
-  .sleep-left{border-right:none;border-bottom:1px solid #eee}
-  .sleep-left,.sleep-right{padding:32px 24px}
+.a-bubble{background:#B8963E15;border:1px solid #B8963E30;border-radius:14px 14px 4px 14px;padding:12px 16px;margin-left:auto;max-width:88%;font-size:13px;color:#D4B36A;line-height:1.5;opacity:0;transform:translateX(10px);transition:all .4s ease .6s}
+.pair.active .a-bubble{opacity:1;transform:translateX(0)}
+.a-bubble strong{color:#EDE5DD}
+.a-label{font-size:9px;color:#B8963E;margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:right}
+
+/* Summary bar */
+.summary{text-align:center;margin-top:24px;opacity:0;transition:all .5s ease}
+.summary.show{opacity:1}
+.summary-badge{display:inline-block;font-size:11px;color:#B8963E;background:#B8963E12;border:1px solid #B8963E30;padding:8px 18px;border-radius:20px;font-weight:600}
+.summary-sub{font-size:11px;color:#6B6860;margin-top:6px}
+
+/* Dots indicator */
+.dots{display:flex;gap:6px;justify-content:center;margin-top:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:#3A352A;transition:background .3s}
+.dot.active{background:#B8963E}
+
+@media(max-width:600px){
+  .chat-box{padding:24px 18px}
+  .section-title{font-size:24px}
 }
 </style>
 </head>
 <body>
 
 <div class="section">
-  <div class="section-label">The Problem</div>
+  <div class="section-label">11:47 PM · You're asleep</div>
+  <div class="section-title">Your concierge <em>never sleeps.</em></div>
   
-  <div class="sleep-section" id="sleepSection">
-    <div class="sleep-left">
-      <div class="notif" id="n1">
-        <div class="dot"></div>
-        <div class="msg"><strong>Sarah:</strong> Where should we eat tonight? Something local, not touristy 🙏</div>
+  <div class="chat-box">
+    <div class="chat-header">
+      <div class="chat-avatar">S</div>
+      <div>
+        <div class="chat-name">Sarah & James</div>
+        <div class="chat-sub">Molino Nobile · Jun 15–22</div>
       </div>
-      <div class="notif" id="n2">
-        <div class="dot"></div>
-        <div class="msg"><strong>Sarah:</strong> Also, any wineries open tomorrow? We want to go early</div>
-      </div>
-      <div class="notif" id="n3">
-        <div class="dot"></div>
-        <div class="msg"><strong>Sarah:</strong> Oh and is the pool heated? Kids are asking</div>
-      </div>
-      <div class="time-label" id="timeLabel">11:47 PM · You're asleep.</div>
+      <div class="chat-time">11:47 PM</div>
     </div>
-    
-    <div class="sleep-right">
-      <div class="emoji" id="emoji">😴</div>
-      <h3 id="headline">Answered instantly.<br>You slept through it.</h3>
 
-      <div class="answer" id="a1">
-        <div class="a-icon">🍽️</div>
-        <div class="a-q">Where should we eat?</div>
-        <div class="a-text"><strong>La Grotta</strong> — refined Tuscan, garden terrace. 15 min drive. Reservations recommended.</div>
+    <div class="chat-area" id="chatArea">
+      <!-- Pair 1 -->
+      <div class="pair" id="p1">
+        <div class="q-bubble">
+          <div class="q-label">Sarah</div>
+          Where should we eat tonight? Something local, not touristy 🙏
+        </div>
+        <div class="a-bubble">
+          <div class="a-label">Concierge · instant</div>
+          Try <strong>La Grotta</strong> in Montepulciano — refined Tuscan with a garden terrace. 15 min drive. Book ahead, I can help with that!
+        </div>
       </div>
 
-      <div class="answer" id="a2">
-        <div class="a-icon">🍷</div>
-        <div class="a-q">Wineries open tomorrow?</div>
-        <div class="a-text"><strong>De Ricci</strong> opens at 10 AM, no booking needed. <strong>Salcheto</strong> from 11 AM, book online.</div>
+      <!-- Pair 2 -->
+      <div class="pair" id="p2">
+        <div class="q-bubble">
+          <div class="q-label">Sarah</div>
+          Any wineries open tomorrow? We want to go early
+        </div>
+        <div class="a-bubble">
+          <div class="a-label">Concierge · instant</div>
+          <strong>De Ricci</strong> opens at 10 AM, no booking needed. <strong>Salcheto</strong> from 11 AM — book online. Both are 12 min from the villa. 🍷
+        </div>
       </div>
 
-      <div class="answer" id="a3">
-        <div class="a-icon">🏊</div>
-        <div class="a-q">Is the pool heated?</div>
-        <div class="a-text">Pool is <strong>solar-heated</strong>, warmest after 2 PM. Towels in the poolside cabinet.</div>
+      <!-- Pair 3 -->
+      <div class="pair" id="p3">
+        <div class="q-bubble">
+          <div class="q-label">Sarah</div>
+          Is the pool heated? Kids are asking 🏊
+        </div>
+        <div class="a-bubble">
+          <div class="a-label">Concierge · instant</div>
+          Pool is <strong>solar-heated</strong>, warmest after 2 PM. Towels in the poolside cabinet. Kids will love it!
+        </div>
       </div>
-
-      <div class="badge" id="badge">✓ 3 questions answered · 0 effort from you</div>
     </div>
+
+    <div class="dots">
+      <div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+    </div>
+  </div>
+
+  <div class="summary" id="summary">
+    <div class="summary-badge">😴 3 questions answered while you slept · 0 effort from you</div>
+    <div class="summary-sub">Your expertise, always on — even at midnight.</div>
   </div>
 </div>
 
 <script>
-// Intersection Observer to trigger when section scrolls into view
-let animated = false;
-function runAnimation() {
-  if (animated) return;
-  animated = true;
+const pairs = ['p1','p2','p3'];
+const dots = ['d1','d2','d3'];
+let current = 0;
+let started = false;
 
-  const timeline = [
-    { el: 'n1', delay: 400 },
-    { el: 'n2', delay: 1200 },
-    { el: 'n3', delay: 2000 },
-    { el: 'timeLabel', delay: 2800 },
-    { el: 'emoji', delay: 3400 },
-    { el: 'headline', delay: 3800 },
-    { el: 'a1', delay: 4600 },
-    { el: 'a2', delay: 5200 },
-    { el: 'a3', delay: 5800 },
-    { el: 'badge', delay: 6600 },
-  ];
-
-  timeline.forEach(({ el, delay }) => {
-    setTimeout(() => {
-      document.getElementById(el).classList.add('show');
-    }, delay);
+function showPair(index) {
+  // Exit current
+  pairs.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('active');
+    if (i < index) el.classList.add('exit');
+    else el.classList.remove('exit');
+  });
+  
+  // Show new
+  document.getElementById(pairs[index]).classList.add('active');
+  
+  // Update dots
+  dots.forEach((id, i) => {
+    document.getElementById(id).classList.toggle('active', i === index);
   });
 }
 
-// Use IntersectionObserver for scroll-triggered animation
+function runSequence() {
+  if (started) return;
+  started = true;
+
+  // Show pair 1
+  setTimeout(() => showPair(0), 600);
+
+  // Show pair 2
+  setTimeout(() => showPair(1), 4500);
+
+  // Show pair 3
+  setTimeout(() => showPair(2), 8400);
+
+  // Show summary
+  setTimeout(() => {
+    document.getElementById('summary').classList.add('show');
+  }, 11500);
+
+  // Loop: restart after pause
+  setTimeout(() => {
+    document.getElementById('summary').classList.remove('show');
+    pairs.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('active', 'exit');
+    });
+    started = false;
+    setTimeout(runSequence, 2000);
+  }, 15000);
+}
+
+// Trigger on scroll into view
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      runAnimation();
-      observer.disconnect();
-    }
+    if (entry.isIntersecting) runSequence();
   });
 }, { threshold: 0.3 });
 
-observer.observe(document.getElementById('sleepSection'));
+observer.observe(document.querySelector('.chat-box'));
 </script>
 
 </body>

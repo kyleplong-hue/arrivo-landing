@@ -378,23 +378,55 @@ function PropertyDetail({prop,token,onBack}){
 function PropertySettings({prop,token}){
   const[name,setName]=useState(prop.name||'');const[city,setCity]=useState(prop.city||'');
   const[website,setWebsite]=useState(prop.website||'');const[pin,setPin]=useState(prop.pin||'');
+  const settings=prop.settings||{};
+  const[prompt,setPrompt]=useState(settings.concierge_prompt||'');
   const[saving,setSaving]=useState(false);const[saved,setSaved]=useState(false);
+  const[testMsg,setTestMsg]=useState('');const[testReply,setTestReply]=useState('');const[testing,setTesting]=useState(false);
   const iS={width:'100%',padding:'10px 12px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,color:T.cream,fontSize:12,fontFamily:"'DM Sans',sans-serif",marginBottom:10};
   const save=async()=>{
     setSaving(true);
-    await pb('PATCH','/collections/properties/records/'+prop.id,{name,city,website,pin},token);
+    const newSettings={...settings,concierge_prompt:prompt||undefined};
+    await pb('PATCH','/collections/properties/records/'+prop.id,{name,city,website,pin,settings:newSettings},token);
     setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),2000);
   };
-  return<div style={{background:T.card,borderRadius:12,padding:20,border:'1px solid '+T.bdr}}>
-    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Property Name</label>
-    <input value={name} onChange={e=>setName(e.target.value)} style={iS}/>
-    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>City</label>
-    <input value={city} onChange={e=>setCity(e.target.value)} style={iS}/>
-    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Website</label>
-    <input value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://..." style={iS}/>
-    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Guest PIN</label>
-    <input value={pin} onChange={e=>setPin(e.target.value)} style={{...iS,width:100}}/>
-    <div><button onClick={save} disabled={saving} style={{padding:'10px 20px',background:T.gold,border:'none',borderRadius:8,color:T.dark,fontWeight:600,fontSize:12,cursor:'pointer'}}>{saved?'✓ Saved':saving?'Saving...':'Save Changes'}</button></div>
+  const testChat=async()=>{
+    if(!testMsg.trim()||testing)return;setTesting(true);setTestReply('');
+    try{
+      const res=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:testMsg,property_id:prop.id})});
+      const data=await res.json();setTestReply(data.reply||'No response');
+    }catch(e){setTestReply('Error: '+e.message);}
+    setTesting(false);
+  };
+  return<div>
+    <div style={{background:T.card,borderRadius:12,padding:20,border:'1px solid '+T.bdr,marginBottom:16}}>
+      <div style={{fontSize:14,fontWeight:600,marginBottom:12}}>Property Details</div>
+      <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Property Name</label>
+      <input value={name} onChange={e=>setName(e.target.value)} style={iS}/>
+      <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>City</label>
+      <input value={city} onChange={e=>setCity(e.target.value)} style={iS}/>
+      <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Website</label>
+      <input value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://..." style={iS}/>
+      <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Guest PIN</label>
+      <input value={pin} onChange={e=>setPin(e.target.value)} style={{...iS,width:100}}/>
+    </div>
+
+    <div style={{background:T.card,borderRadius:12,padding:20,border:'1px solid '+T.bdr,marginBottom:16}}>
+      <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>🤖 Concierge AI</div>
+      <p style={{fontSize:11,color:T.mut,marginBottom:10,lineHeight:1.5}}>Customize what your AI concierge knows. Include restaurants, activities, property details, local tips — anything a guest might ask about.</p>
+      <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Knowledge Base / System Prompt</label>
+      <textarea value={prompt} onChange={e=>setPrompt(e.target.value)} rows={8} placeholder={"You are a concierge for "+name+" in "+city+".\n\nProperty details:\n- [bedrooms, pool, amenities...]\n\nLocal knowledge:\n- Restaurants: [name, description, drive time]\n- Activities: [wineries, tours, markets]\n- Day trips: [nearby towns, distances]\n\nKeep answers concise and warm."} style={{...iS,resize:'vertical',lineHeight:1.5}}/>
+
+      <div style={{marginTop:8}}>
+        <div style={{fontSize:11,color:T.mut,marginBottom:4}}>Test your concierge:</div>
+        <div style={{display:'flex',gap:6}}>
+          <input value={testMsg} onChange={e=>setTestMsg(e.target.value)} placeholder="Ask a test question..." style={{...iS,flex:1,marginBottom:0}} onKeyDown={e=>e.key==='Enter'&&testChat()}/>
+          <button onClick={testChat} disabled={testing} style={{padding:'10px 14px',background:testing?T.card:T.gold,border:'none',borderRadius:8,color:testing?T.mut:T.dark,fontWeight:600,fontSize:11,cursor:'pointer'}}>{testing?'...':'Test'}</button>
+        </div>
+        {testReply&&<div style={{marginTop:8,padding:10,background:T.dw,borderRadius:8,border:'1px solid '+T.bdr,fontSize:12,color:T.gl,lineHeight:1.5}}>{testReply}</div>}
+      </div>
+    </div>
+
+    <div><button onClick={save} disabled={saving} style={{padding:'12px 24px',background:T.gold,border:'none',borderRadius:10,color:T.dark,fontWeight:700,fontSize:14,cursor:'pointer'}}>{saved?'✓ Saved':saving?'Saving...':'Save All Changes'}</button></div>
   </div>;
 }
 

@@ -691,7 +691,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
 </div>
 
 <script>
-const OB={step:0,data:{type:"",name:"",city:"",websites:[""],pdfs:[],listing:"",apis:[],email:"",password:""},analyzed:false};
+const OB={step:0,data:{type:"",name:"",city:"",websites:[""],pdfs:[],listing:"",apis:[],email:"",password:""},analyzed:false,analysis:null};
 const TOUR_APIS=["Rezdy","FareHarbor","Peek Pro","Bokun","Checkfront","GetYourGuide","Viator","TripAdvisor"];
 const RENTAL_APIS=["iCal (Airbnb)","iCal (Vrbo)","iCal (Booking.com)","Guesty","Lodgify","Hostaway","Hospitable"];
 const BOTH_APIS=["Rezdy","FareHarbor","iCal (Airbnb)","iCal (Vrbo)","iCal (Booking.com)","GetYourGuide","Viator","Guesty"];
@@ -758,33 +758,40 @@ ${ws.map((w,i)=>`<div style="display:flex;gap:6px;margin-bottom:8px"><input valu
 <button onclick="OB.step=5;renderStep()" ${skip}>Skip — I don't have a website</button>`;
 }
 
-function runAnalysis(){
+async function runAnalysis(){
 OB.step=4;
 const c=document.getElementById("onboard-steps");
 c.innerHTML=dots()+`<div style="text-align:center;padding:30px 0">
 <div id="ob-spinner" style="width:40px;height:40px;border:3px solid #E8E3D8;border-top:3px solid #B8963E;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite"></div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 <h3 style="font-family:'Newsreader',serif;font-size:22px;font-weight:500;margin-bottom:6px">Analyzing your site...</h3>
-<p id="ob-scan-status" style="font-size:13px;color:#6B6860">Connecting to ${OB.data.website.replace('https://','').replace('http://','').split('/')[0]}</p>
+<p id="ob-scan-status" style="font-size:13px;color:#6B6860">Crawling pages...</p>
 </div>`;
 
-const domain=OB.data.website.replace('https://','').replace('http://','').split('/')[0];
-const phases=["Crawling pages...","Found blog posts","Extracting recommendations...","Identifying neighborhoods...","Building your content map..."];
-let pi=0;
-const iv=setInterval(()=>{
-  pi++;
-  if(pi<phases.length){document.getElementById("ob-scan-status").textContent=phases[pi];}
-  else{clearInterval(iv);showAnalysisResults(domain);}
-},800);
+try{
+  const urls=OB.data.websites.filter(w=>w.trim());
+  const res=await fetch('/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({urls})});
+  const data=await res.json();
+  if(data.error){
+    document.getElementById("ob-scan-status").textContent='Could not analyze site. Skipping...';
+    setTimeout(()=>OB.step=5&&renderStep(),2000);
+    return;
+  }
+  OB.analyzed=true;
+  OB.analysis=data;
+  showAnalysisResults(data);
+}catch(e){
+  document.getElementById("ob-scan-status").textContent='Analysis failed. Continuing...';
+  setTimeout(()=>OB.step=5&&renderStep(),2000);
+}
 }
 
-function showAnalysisResults(domain){
-OB.analyzed=true;
-const name=OB.data.name||domain;
-const city=OB.data.city||"your city";
-const mockPages=Math.floor(Math.random()*20)+8;
-const mockRecs=Math.floor(Math.random()*30)+12;
-const mockCategories=Math.floor(Math.random()*4)+3;
+function showAnalysisResults(data){
+const domain=data.data?.business_name||'your site';
+const pages=data.pages_scanned||0;
+const recs=data.recommendations||0;
+const cats=data.categories||0;
+const sampleRecs=(data.data?.recommendations||[]).slice(0,5).map(r=>r.name).join(', ')||'Restaurants, activities, and local spots';
 const c=document.getElementById("onboard-steps");
 c.innerHTML=dots()+`<div style="text-align:center;margin-bottom:20px">
 <div style="width:48px;height:48px;border-radius:50%;background:#4A5A2C15;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;color:#4A5A2C;font-weight:700">✓</div>
@@ -793,21 +800,21 @@ c.innerHTML=dots()+`<div style="text-align:center;margin-bottom:20px">
 </div>
 <div style="display:flex;gap:10px;margin-bottom:16px">
 <div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
-<div style="font-size:24px;font-weight:700;color:#B8963E">${mockPages}</div>
+<div style="font-size:24px;font-weight:700;color:#B8963E">${pages}</div>
 <div style="font-size:11px;color:#6B6860">Pages crawled</div>
 </div>
 <div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
-<div style="font-size:24px;font-weight:700;color:#B8963E">${mockRecs}</div>
+<div style="font-size:24px;font-weight:700;color:#B8963E">${recs}</div>
 <div style="font-size:11px;color:#6B6860">Recommendations</div>
 </div>
 <div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
-<div style="font-size:24px;font-weight:700;color:#B8963E">${mockCategories}</div>
+<div style="font-size:24px;font-weight:700;color:#B8963E">${cats}</div>
 <div style="font-size:11px;color:#6B6860">Categories</div>
 </div>
 </div>
 <div style="background:#F7F4EE;border-radius:10px;padding:14px;margin-bottom:16px">
 <div style="font-size:11px;color:#6B6860;font-weight:600;margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">Sample recommendations found</div>
-<div style="font-size:13px;color:#1A1A18;line-height:1.6">Restaurants, cafés, and local spots from your blog posts will be imported as your recommendations bank. You can edit, add, or remove any of them after setup.</div>
+<div style="font-size:13px;color:#1A1A18;line-height:1.6">${sampleRecs}${recs>5?' and more':''} will be added to your AI concierge knowledge base. You can edit, add, or remove any of them after setup.</div>
 </div>
 <div style="display:flex;gap:10px">
 <button onclick="OB.step=3;renderStep()" ${btnS}>Back</button>
@@ -933,6 +940,14 @@ try{
       headers:{'Authorization':'Bearer '+auth.token}
     }).then(r=>r.json());
     if(!existingProps.items?.length){
+      // Build settings with concierge prompt from analysis
+      const settings={
+        apis:OB.data.apis,
+        listing:OB.data.listing||''
+      };
+      if(OB.analysis?.data?.concierge_prompt){
+        settings.concierge_prompt=OB.analysis.data.concierge_prompt;
+      }
       await fetch('/api/collections/properties/records',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+auth.token},
@@ -942,7 +957,7 @@ try{
           prop_type:OB.data.type,
           website:OB.data.websites?.filter(w=>w.trim()).join(', ')||'',
           pin:Math.floor(1000+Math.random()*9000).toString(),
-          settings:{apis:OB.data.apis,listing:OB.data.listing||''}
+          settings
         })
       });
     }

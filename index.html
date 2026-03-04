@@ -909,7 +909,7 @@ try{
       business_name:OB.data.name,
       city:OB.data.city,
       business_type:OB.data.type,
-      website:OB.data.website||'',
+      website:OB.data.websites?.filter(w=>w.trim()).join(', ')||'',
       listing_url:OB.data.listing||'',
       apis:OB.data.apis,
       onboarded:true
@@ -969,10 +969,7 @@ try{
   // Signup notification logged server-side (Formspree removed)
 
   // Store auth for dashboard
-  if(authRes.ok){
-    const authData=await authRes.clone().json().catch(()=>null);
-    if(authData)localStorage.setItem('pb_auth',JSON.stringify({token:authData.token,user:authData.record}));
-  }
+  localStorage.setItem('pb_auth',JSON.stringify({token:auth.token,user:auth.record}));
 
   btn.textContent="You're in! Redirecting...";
   btn.style.background="#4A5A2C";

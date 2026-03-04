@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Dashboard — Arrivable</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#0F0E0B;color:#EDE5DD;min-height:100vh}
+::placeholder{color:#6B6860}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#B8963E!important}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+const PB='/api';
+const T={dark:'#0F0E0B',card:'#1A1816',dw:'#252218',bdr:'#3A352A',cream:'#EDE5DD',gold:'#B8963E',gl:'#D4B36A',mut:'#8A8478',ol:'#4A8B3F',red:'#C44'};
+
+// ═══ AUTH HELPERS ═══
+function getAuth(){try{return JSON.parse(localStorage.getItem('pb_auth'));}catch{return null;}}
+function setAuth(token,user){localStorage.setItem('pb_auth',JSON.stringify({token,user}));}
+function clearAuth(){localStorage.removeItem('pb_auth');}
+async function pb(method,path,body,token){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(token)opts.headers['Authorization']='Bearer '+token;
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(PB+path,opts);
+  const data=await res.json();
+  if(!res.ok)throw data;
+  return data;
+}
+
+// ═══ LOGIN/SIGNUP SCREEN ═══
+function AuthScreen({onAuth}){
+  const[mode,setMode]=useState('login');
+  const[email,setEmail]=useState('');const[pass,setPass]=useState('');
+  const[name,setName]=useState('');const[city,setCity]=useState('');const[btype,setBtype]=useState('rental');
+  const[error,setError]=useState('');const[loading,setLoading]=useState(false);
+
+  const submit=async(e)=>{
+    e.preventDefault();setError('');setLoading(true);
+    try{
+      if(mode==='signup'){
+        await pb('POST','/collections/users/records',{email,password:pass,passwordConfirm:pass,name,business_name:name,city,business_type:btype,onboarded:true});
+      }
+      const auth=await pb('POST','/collections/users/auth-with-password',{identity:email,password:pass});
+      setAuth(auth.token,auth.record);
+      onAuth(auth.token,auth.record);
+    }catch(err){
+      const msg=err.data?.email?.message||err.data?.password?.message||err.message||'Something went wrong';
+      setError(msg);
+    }
+    setLoading(false);
+  };
+
+  const iS={width:'100%',padding:'12px 14px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:10,color:T.cream,fontSize:13,fontFamily:"'DM Sans',sans-serif",marginBottom:10};
+  const bS={width:'100%',padding:'14px',background:T.gold,border:'none',borderRadius:10,color:T.dark,fontWeight:700,fontSize:14,cursor:'pointer',marginTop:4};
+
+  return<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}>
+    <div style={{width:'100%',maxWidth:380}}>
+      <div style={{textAlign:'center',marginBottom:32}}>
+        <div style={{fontFamily:"'Playfair Display',serif",fontSize:28,color:T.gold,marginBottom:6}}>arrivable.</div>
+        <p style={{fontSize:13,color:T.mut}}>{mode==='login'?'Welcome back':'Create your account'}</p>
+      </div>
+      <form onSubmit={submit} style={{background:T.card,borderRadius:16,padding:28,border:'1px solid '+T.bdr}}>
+        {mode==='signup'&&<>
+          <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Business Name</label>
+          <input value={name} onChange={e=>setName(e.target.value)} placeholder="Villa Molino Nobile" style={iS} required/>
+          <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>City</label>
+          <input value={city} onChange={e=>setCity(e.target.value)} placeholder="Montepulciano" style={iS} required/>
+          <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Business Type</label>
+          <select value={btype} onChange={e=>setBtype(e.target.value)} style={{...iS,cursor:'pointer'}}>
+            <option value="rental">Vacation Rental</option>
+            <option value="tour">Tour Operator</option>
+            <option value="hotel">Hotel / B&B</option>
+            <option value="property_mgr">Property Manager</option>
+          </select>
+        </>}
+        <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Email</label>
+        <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" style={iS} required/>
+        <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Password</label>
+        <input type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="••••••••" style={iS} required minLength={8}/>
+        {error&&<div style={{fontSize:12,color:T.red,marginBottom:8,padding:'8px 10px',background:T.red+'12',borderRadius:8}}>{error}</div>}
+        <button type="submit" disabled={loading} style={{...bS,opacity:loading?.6:1}}>{loading?'Please wait...':mode==='login'?'Sign In':'Create Account'}</button>
+      </form>
+      <div style={{textAlign:'center',marginTop:16}}>
+        <button onClick={()=>{setMode(mode==='login'?'signup':'login');setError('');}} style={{background:'none',border:'none',color:T.gold,fontSize:12,cursor:'pointer'}}>
+          {mode==='login'?"Don't have an account? Sign up":'Already have an account? Sign in'}
+        </button>
+      </div>
+    </div>
+  </div>;
+}
+
+// ═══ PROPERTY CARD ═══
+function PropertyCard({prop,token,onSelect,onRefresh}){
+  const[guestCount,setGuestCount]=useState(null);
+  useEffect(()=>{
+    pb('GET','/collections/guests/records?perPage=1&filter=(link_id~"'+prop.id+'")',null,token)
+      .then(d=>setGuestCount(d.totalItems||0)).catch(()=>{});
+  },[prop.id]);
+
+  return<div onClick={()=>onSelect(prop)} style={{background:T.card,borderRadius:14,padding:20,border:'1px solid '+T.bdr,cursor:'pointer',transition:'border-color .2s'}}
+    onMouseOver={e=>e.currentTarget.style.borderColor=T.gold+'55'} onMouseOut={e=>e.currentTarget.style.borderColor=T.bdr}>
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
+      <div>
+        <div style={{fontSize:16,fontWeight:600}}>{prop.name||'Untitled Property'}</div>
+        <div style={{fontSize:11,color:T.mut}}>{prop.city||'No city'} · {prop.prop_type||'rental'}</div>
+      </div>
+      <div style={{fontSize:9,color:T.gold,background:T.gold+'12',padding:'3px 8px',borderRadius:6,fontWeight:600}}>PIN: {prop.pin||'—'}</div>
+    </div>
+    <div style={{display:'flex',gap:12}}>
+      <div style={{fontSize:11,color:T.mut}}>👥 {guestCount!==null?guestCount:'...'} guests</div>
+      {prop.website&&<a href={prop.website} target="_blank" style={{fontSize:11,color:T.gold,textDecoration:'none'}} onClick={e=>e.stopPropagation()}>🔗 Website</a>}
+    </div>
+  </div>;
+}
+
+// ═══ ADD PROPERTY ═══
+function AddProperty({token,onDone}){
+  const[name,setName]=useState('');const[city,setCity]=useState('');const[type,setType]=useState('rental');
+  const[loading,setLoading]=useState(false);
+  const iS={width:'100%',padding:'10px 12px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,color:T.cream,fontSize:12,fontFamily:"'DM Sans',sans-serif",marginBottom:8};
+  const save=async()=>{
+    if(!name.trim())return;setLoading(true);
+    const pin=Math.floor(1000+Math.random()*9000).toString();
+    await pb('POST','/collections/properties/records',{name,city,prop_type:type,pin,settings:{}},token);
+    setLoading(false);onDone();
+  };
+  return<div style={{background:T.card,borderRadius:14,padding:20,border:'1px solid '+T.gold+'33'}}>
+    <div style={{fontSize:14,fontWeight:600,marginBottom:12}}>+ Add Property</div>
+    <input value={name} onChange={e=>setName(e.target.value)} placeholder="Property name" style={iS}/>
+    <input value={city} onChange={e=>setCity(e.target.value)} placeholder="City" style={iS}/>
+    <select value={type} onChange={e=>setType(e.target.value)} style={{...iS,cursor:'pointer'}}>
+      <option value="rental">Vacation Rental</option><option value="tour">Tour</option><option value="hotel">Hotel/B&B</option>
+    </select>
+    <button onClick={save} disabled={loading} style={{padding:'10px 20px',background:T.gold,border:'none',borderRadius:8,color:T.dark,fontWeight:600,fontSize:12,cursor:'pointer'}}>{loading?'Creating...':'Create Property'}</button>
+  </div>;
+}
+
+// ═══ GUEST MANAGER ═══
+function GuestManager({prop,token}){
+  const[guests,setGuests]=useState([]);const[loading,setLoading]=useState(true);
+  const[showAdd,setShowAdd]=useState(false);
+  const[name,setName]=useState('');const[checkin,setCheckin]=useState('');const[checkout,setCheckout]=useState('');const[notes,setNotes]=useState('');
+  const[icalUrl,setIcalUrl]=useState('');const[syncing,setSyncing]=useState(false);const[syncResult,setSyncResult]=useState(null);
+  const[copied,setCopied]=useState(null);
+
+  const load=()=>{
+    pb('GET','/collections/guests/records?perPage=100&sort=-created',null,token)
+      .then(d=>{setGuests(d.items||[]);setLoading(false);}).catch(()=>setLoading(false));
+  };
+  useEffect(load,[prop.id]);
+
+  const addGuest=async()=>{
+    if(!name||!checkin)return;
+    const linkId=prop.id.slice(0,4)+'-'+Date.now().toString(36);
+    await pb('POST','/collections/guests/records',{name,checkin,checkout:checkout||null,notes,link_id:linkId,status:'confirmed',itinerary:[]},token);
+    setName('');setCheckin('');setCheckout('');setNotes('');setShowAdd(false);load();
+  };
+
+  const delGuest=async(id)=>{
+    if(!confirm('Delete this guest?'))return;
+    await pb('DELETE','/collections/guests/records/'+id,null,token);load();
+  };
+
+  const copyLink=(linkId)=>{
+    const url=window.location.origin+'/g/'+linkId;
+    navigator.clipboard?.writeText(url);setCopied(linkId);setTimeout(()=>setCopied(null),2500);
+  };
+
+  const syncIcal=async()=>{
+    if(!icalUrl.trim()||syncing)return;setSyncing(true);setSyncResult(null);
+    try{
+      const res=await fetch('/ical/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:icalUrl.trim()})});
+      const data=await res.json();setSyncResult(data);load();
+    }catch(e){setSyncResult({error:e.message});}
+    setSyncing(false);
+  };
+
+  const iS={width:'100%',padding:'10px 12px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,color:T.cream,fontSize:12,fontFamily:"'DM Sans',sans-serif",marginBottom:8};
+
+  if(loading)return<p style={{color:T.mut,textAlign:'center',padding:40}}>Loading guests...</p>;
+
+  return<div>
+    {/* iCal Import */}
+    <div style={{background:T.card,borderRadius:12,padding:16,border:'1px solid '+T.bdr,marginBottom:16}}>
+      <div style={{fontSize:13,fontWeight:600,marginBottom:8}}>📅 Import from Calendar</div>
+      <div style={{display:'flex',gap:6}}>
+        <input value={icalUrl} onChange={e=>setIcalUrl(e.target.value)} placeholder="Paste Airbnb/Vrbo iCal URL..." style={{...iS,marginBottom:0,flex:1}}/>
+        <button onClick={syncIcal} disabled={syncing} style={{padding:'10px 16px',background:syncing?T.card:T.gold,border:'none',borderRadius:8,color:syncing?T.mut:T.dark,fontWeight:600,fontSize:11,cursor:'pointer',whiteSpace:'nowrap'}}>{syncing?'Syncing...':'Import'}</button>
+      </div>
+      {syncResult&&!syncResult.error&&<div style={{marginTop:8,fontSize:11,color:T.ol}}>✓ {syncResult.created} imported · {syncResult.updated} updated</div>}
+      {syncResult?.error&&<div style={{marginTop:8,fontSize:11,color:T.red}}>{syncResult.error}</div>}
+    </div>
+
+    {/* Add Guest */}
+    {showAdd?<div style={{background:T.card,borderRadius:12,padding:16,border:'1px solid '+T.gold+'33',marginBottom:16}}>
+      <div style={{fontSize:13,fontWeight:600,marginBottom:10}}>New Guest</div>
+      <input value={name} onChange={e=>setName(e.target.value)} placeholder="Guest name" style={iS}/>
+      <div style={{display:'flex',gap:6}}>
+        <input type="date" value={checkin} onChange={e=>setCheckin(e.target.value)} style={{...iS,flex:1}}/>
+        <input type="date" value={checkout} onChange={e=>setCheckout(e.target.value)} style={{...iS,flex:1}}/>
+      </div>
+      <textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Notes (optional)" rows={2} style={{...iS,resize:'vertical'}}/>
+      <div style={{display:'flex',gap:8}}>
+        <button onClick={addGuest} style={{padding:'10px 20px',background:T.gold,border:'none',borderRadius:8,color:T.dark,fontWeight:600,fontSize:12,cursor:'pointer'}}>Add Guest</button>
+        <button onClick={()=>setShowAdd(false)} style={{padding:'10px 20px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,color:T.mut,fontSize:12,cursor:'pointer'}}>Cancel</button>
+      </div>
+    </div>
+    :<button onClick={()=>setShowAdd(true)} style={{width:'100%',padding:14,background:T.card,border:'1px dashed '+T.bdr,borderRadius:12,color:T.gold,fontSize:13,fontWeight:600,cursor:'pointer',marginBottom:16}}>+ Add Guest</button>}
+
+    {/* Guest List */}
+    {guests.length===0?<div style={{textAlign:'center',padding:40,color:T.mut,fontSize:13}}>No guests yet. Add one or import from your calendar.</div>
+    :guests.map(g=><div key={g.id} style={{background:T.card,borderRadius:12,padding:14,marginBottom:8,border:'1px solid '+T.bdr}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <div>
+          <div style={{fontSize:14,fontWeight:600}}>{g.name}</div>
+          <div style={{fontSize:10,color:T.mut}}>{g.checkin?.slice(0,10)} → {g.checkout?.slice(0,10)} · {g.status||'—'}</div>
+        </div>
+        <div style={{display:'flex',gap:6}}>
+          {g.link_id&&<button onClick={()=>copyLink(g.link_id)} style={{fontSize:11,color:copied===g.link_id?T.ol:T.gold,background:copied===g.link_id?T.ol+'15':T.gold+'15',border:'1px solid '+(copied===g.link_id?T.ol:T.gold)+'33',borderRadius:7,padding:'5px 10px',cursor:'pointer',fontWeight:600}}>{copied===g.link_id?'✓ Copied':'Copy Link'}</button>}
+          <button onClick={()=>delGuest(g.id)} style={{fontSize:11,color:T.red,background:T.red+'10',border:'1px solid '+T.red+'25',borderRadius:7,padding:'5px 8px',cursor:'pointer'}}>✕</button>
+        </div>
+      </div>
+      {g.notes&&<div style={{fontSize:11,color:T.mut,marginTop:4}}>{g.notes}</div>}
+    </div>)}
+  </div>;
+}
+
+// ═══ PROPERTY DETAIL ═══
+function PropertyDetail({prop,token,onBack}){
+  const[tab,setTab]=useState('guests');
+  const tabs=[{id:'guests',l:'Guests'},{id:'settings',l:'Settings'}];
+
+  return<div>
+    <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:20}}>
+      <button onClick={onBack} style={{background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,padding:'6px 10px',color:T.cream,cursor:'pointer',fontSize:13}}>← Back</button>
+      <div>
+        <div style={{fontSize:18,fontWeight:600}}>{prop.name}</div>
+        <div style={{fontSize:11,color:T.mut}}>{prop.city} · PIN: {prop.pin}</div>
+      </div>
+    </div>
+    <div style={{display:'flex',gap:4,marginBottom:16}}>
+      {tabs.map(t=><button key={t.id} onClick={()=>setTab(t.id)} style={{padding:'8px 16px',background:tab===t.id?T.gold+'18':T.card,border:'1px solid '+(tab===t.id?T.gold+'44':T.bdr),borderRadius:8,color:tab===t.id?T.gold:T.mut,fontSize:12,fontWeight:600,cursor:'pointer'}}>{t.l}</button>)}
+    </div>
+    {tab==='guests'&&<GuestManager prop={prop} token={token}/>}
+    {tab==='settings'&&<PropertySettings prop={prop} token={token}/>}
+  </div>;
+}
+
+// ═══ PROPERTY SETTINGS ═══
+function PropertySettings({prop,token}){
+  const[name,setName]=useState(prop.name||'');const[city,setCity]=useState(prop.city||'');
+  const[website,setWebsite]=useState(prop.website||'');const[pin,setPin]=useState(prop.pin||'');
+  const[saving,setSaving]=useState(false);const[saved,setSaved]=useState(false);
+  const iS={width:'100%',padding:'10px 12px',background:T.dw,border:'1px solid '+T.bdr,borderRadius:8,color:T.cream,fontSize:12,fontFamily:"'DM Sans',sans-serif",marginBottom:10};
+  const save=async()=>{
+    setSaving(true);
+    await pb('PATCH','/collections/properties/records/'+prop.id,{name,city,website,pin},token);
+    setSaving(false);setSaved(true);setTimeout(()=>setSaved(false),2000);
+  };
+  return<div style={{background:T.card,borderRadius:12,padding:20,border:'1px solid '+T.bdr}}>
+    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Property Name</label>
+    <input value={name} onChange={e=>setName(e.target.value)} style={iS}/>
+    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>City</label>
+    <input value={city} onChange={e=>setCity(e.target.value)} style={iS}/>
+    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Website</label>
+    <input value={website} onChange={e=>setWebsite(e.target.value)} placeholder="https://..." style={iS}/>
+    <label style={{fontSize:11,color:T.mut,marginBottom:4,display:'block'}}>Guest PIN</label>
+    <input value={pin} onChange={e=>setPin(e.target.value)} style={{...iS,width:100}}/>
+    <div><button onClick={save} disabled={saving} style={{padding:'10px 20px',background:T.gold,border:'none',borderRadius:8,color:T.dark,fontWeight:600,fontSize:12,cursor:'pointer'}}>{saved?'✓ Saved':saving?'Saving...':'Save Changes'}</button></div>
+  </div>;
+}
+
+// ═══ MAIN APP ═══
+function App(){
+  const[token,setToken]=useState(null);const[user,setUser]=useState(null);
+  const[properties,setProperties]=useState([]);const[selected,setSelected]=useState(null);
+  const[showAdd,setShowAdd]=useState(false);const[loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    const auth=getAuth();
+    if(auth?.token){setToken(auth.token);setUser(auth.user);}
+    else setLoading(false);
+  },[]);
+
+  const loadProps=()=>{
+    if(!token)return;
+    pb('GET','/collections/properties/records?perPage=50&sort=-created',null,token)
+      .then(d=>{setProperties(d.items||[]);setLoading(false);})
+      .catch(()=>{clearAuth();setToken(null);setLoading(false);});
+  };
+  useEffect(loadProps,[token]);
+
+  const logout=()=>{clearAuth();setToken(null);setUser(null);setProperties([]);setSelected(null);};
+
+  if(!token)return<AuthScreen onAuth={(t,u)=>{setToken(t);setUser(u);}}/>;
+  if(loading)return<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}><p style={{color:T.mut}}>Loading...</p></div>;
+
+  return<div style={{maxWidth:720,margin:'0 auto',padding:'20px 16px'}}>
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24,paddingBottom:16,borderBottom:'1px solid '+T.bdr}}>
+      <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,color:T.gold,cursor:'pointer'}} onClick={()=>setSelected(null)}>arrivable.</div>
+      <div style={{display:'flex',alignItems:'center',gap:12}}>
+        <span style={{fontSize:11,color:T.mut}}>{user?.email}</span>
+        <button onClick={logout} style={{fontSize:11,color:T.mut,background:T.dw,border:'1px solid '+T.bdr,borderRadius:6,padding:'4px 10px',cursor:'pointer'}}>Log out</button>
+      </div>
+    </div>
+
+    {selected?<PropertyDetail prop={selected} token={token} onBack={()=>{setSelected(null);loadProps();}}/>
+    :<div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:24}}>Your Properties</h1>
+        <button onClick={()=>setShowAdd(!showAdd)} style={{padding:'8px 16px',background:T.gold,border:'none',borderRadius:8,color:T.dark,fontWeight:600,fontSize:12,cursor:'pointer'}}>+ Add Property</button>
+      </div>
+      {showAdd&&<div style={{marginBottom:16}}><AddProperty token={token} onDone={()=>{setShowAdd(false);loadProps();}}/></div>}
+      <div style={{display:'grid',gap:10}}>
+        {properties.length===0&&!showAdd&&<div style={{textAlign:'center',padding:40,color:T.mut}}>
+          <div style={{fontSize:24,marginBottom:8}}>🏡</div>
+          <p>No properties yet. Add your first one!</p>
+        </div>}
+        {properties.map(p=><PropertyCard key={p.id} prop={p} token={token} onSelect={setSelected} onRefresh={loadProps}/>)}
+      </div>
+    </div>}
+  </div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

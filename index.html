@@ -270,6 +270,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
       <a href="#features">Features</a>
       <a href="#api-section">API</a>
       <a href="#demo">Live Demo</a>
+      <a href="/dashboard/" style="color:var(--gold);font-weight:600">Dashboard</a>
       <a href="#demo" class="cta-nav">Get Started</a>
     </div>
   </div>
@@ -932,9 +933,15 @@ try{
     body:JSON.stringify({...OB.data,source:'pocketbase_signup',userId:user.id})
   }).catch(()=>{});
 
-  btn.textContent="You're in! Welcome aboard.";
+  // Store auth for dashboard
+  if(authRes.ok){
+    const authData=await authRes.clone().json().catch(()=>null);
+    if(authData)localStorage.setItem('pb_auth',JSON.stringify({token:authData.token,user:authData.record}));
+  }
+
+  btn.textContent="You're in! Redirecting...";
   btn.style.background="#4A5A2C";
-  setTimeout(()=>closeOnboard(),2200);
+  setTimeout(()=>{closeOnboard();window.location.href='/dashboard/';},1500);
 
 }catch(error){
   console.error('Signup error:',error);

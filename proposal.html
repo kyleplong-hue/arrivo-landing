@@ -322,7 +322,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 
 <section class="hero">
   <h1>Your guests arrive prepared</h1>
-  <p>Turn your local expertise into personalized pre-trip planners. Guests explore deeper, ask fewer questions, and remember your name. Built for tour operators and vacation rentals.</p>
+  <p>Build once. Personalize for every guest. They edit, explore, and stop messaging you at 11pm asking where to eat. Your expertise does the work — even when you're off the clock.</p>
 
   <div class="badges">
     <div class="badge">Trusted by tour companies in 12 cities</div>
@@ -447,12 +447,12 @@ function runAnimation(){
   setTimeout(()=>{
     dinner.style.background = '#2A2520';
     dinner.style.transition = 'all 0.3s';
-  }, 2000);
+  }, 3000);
   
   // Step 2: Swap out
   setTimeout(()=>{
     dinner.classList.add('swapping');
-  }, 3200);
+  }, 5000);
   
   // Step 3: Replace content
   setTimeout(()=>{
@@ -460,13 +460,13 @@ function runAnimation(){
     dinner.classList.remove('swapping');
     dinner.classList.add('swap-in');
     dinner.style.background = '#1A1A18';
-  }, 4000);
+  }, 6200);
   
   // Step 4: Drag animation
   setTimeout(()=>{
     dinner.classList.remove('swap-in');
     dinner.classList.add('dragging');
-  }, 5200);
+  }, 8000);
   
   // Step 5: Reset for next loop
   setTimeout(()=>{
@@ -475,8 +475,8 @@ function runAnimation(){
     dinner.style.background = '#1A1A18';
     animationRunning = false;
     // Loop
-    setTimeout(runAnimation, 3000);
-  }, 7000);
+    setTimeout(runAnimation, 4000);
+  }, 10500);
 }
 
 // Start after page loads

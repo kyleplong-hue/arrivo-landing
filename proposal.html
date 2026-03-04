@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flighty-Style Hero Proposal — Arrivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,600;0,6..72,700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:#fff;color:#000;overflow-x:hidden}
+.container{max-width:1400px;margin:0 auto;padding:0 40px}
+
+/* NAV */
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 60px}
+.logo{font-family:'Newsreader',serif;font-size:24px;font-weight:700;color:#000;text-decoration:none}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{text-decoration:none;color:#666;font-size:14px;font-weight:500}
+.nav-cta{background:#000;color:#fff;padding:8px 18px;border-radius:8px}
+
+/* HERO */
+.hero{text-align:center;padding:60px 40px 0;min-height:90vh;position:relative}
+
+.hero h1{
+  font-family:'Newsreader',serif;
+  font-size:clamp(48px,7vw,88px);
+  font-weight:700;
+  line-height:1.05;
+  margin-bottom:28px;
+  letter-spacing:-0.02em;
+}
+
+.hero p{
+  font-size:18px;
+  color:#555;
+  max-width:620px;
+  margin:0 auto 32px;
+  line-height:1.65;
+}
+
+/* TRUST BADGES */
+.badges{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  margin-bottom:60px;
+}
+.badge{
+  font-size:11px;
+  color:#888;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.badge::before,
+.badge::after{
+  content:'❬';
+  color:#ccc;
+}
+.badge::after{
+  content:'❭';
+}
+
+/* PRODUCT VISUAL AREA */
+.visual-area{
+  position:relative;
+  max-width:1100px;
+  margin:0 auto;
+  height:680px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* PHONE MOCKUP */
+.phone{
+  position:relative;
+  z-index:10;
+  width:320px;
+  height:640px;
+  background:#1A1A18;
+  border-radius:32px;
+  border:8px solid #2A2520;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  overflow:hidden;
+  transform:rotate(-2deg);
+}
+.phone-screen{
+  width:100%;
+  height:100%;
+  background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 640"><rect fill="%231A1A18"/></svg>');
+  background-size:cover;
+  display:flex;
+  flex-direction:column;
+  padding:16px;
+  color:#EDE5DD;
+  font-size:12px;
+}
+.screen-header{
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:#B8963E;
+  font-weight:700;
+  margin-bottom:12px;
+  text-align:center;
+}
+.screen-day{
+  background:#252218;
+  border-radius:10px;
+  padding:10px 12px;
+  margin-bottom:6px;
+  border-left:3px solid #C87A50;
+}
+.screen-day strong{
+  color:#EDE5DD;
+  font-size:13px;
+}
+.screen-day span{
+  color:#8A8478;
+  font-size:11px;
+}
+
+/* FLOATING NOTIFICATION CARDS */
+.notification{
+  position:absolute;
+  background:#fff;
+  border-radius:12px;
+  padding:12px 16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
+  font-size:13px;
+  max-width:280px;
+  line-height:1.4;
+  transition:transform .3s ease;
+}
+.notification:hover{
+  transform:scale(1.03);
+}
+.notification strong{
+  display:block;
+  font-weight:600;
+  margin-bottom:3px;
+  color:#000;
+}
+.notification .meta{
+  font-size:11px;
+  color:#888;
+  margin-top:4px;
+}
+.notification .emoji{
+  font-size:16px;
+  margin-right:6px;
+}
+
+/* POSITION THE CARDS */
+.n1{
+  top:40px;
+  left:60px;
+  opacity:1;
+}
+.n2{
+  top:120px;
+  right:80px;
+  opacity:0.95;
+}
+.n3{
+  top:280px;
+  left:20px;
+  opacity:0.9;
+}
+.n4{
+  top:380px;
+  right:40px;
+  opacity:0.92;
+}
+.n5{
+  bottom:160px;
+  left:100px;
+  opacity:0.88;
+}
+.n6{
+  bottom:80px;
+  right:100px;
+  opacity:0.85;
+}
+.n7{
+  bottom:240px;
+  left:180px;
+  opacity:0.8;
+  max-width:220px;
+}
+
+/* ACCENT COLOR (GOLD) */
+.accent{color:#B8963E}
+
+/* STICKY NAV */
+.sticky-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#1A1A18;
+  padding:16px 0;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  z-index:100;
+}
+.sticky-nav a{
+  text-decoration:none;
+  color:#BDB8AE;
+  font-size:13px;
+  padding:10px 24px;
+  border-radius:20px;
+  transition:all .2s;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.sticky-nav a.active{
+  background:#B8963E;
+  color:#fff;
+}
+.sticky-nav a:hover:not(.active){
+  background:#2A2520;
+}
+
+@media(max-width:1200px){
+  .notification{max-width:200px;font-size:12px;padding:10px 12px}
+  .n1{left:20px}
+  .n3{left:10px}
+  .n5{left:40px}
+}
+
+@media(max-width:900px){
+  .visual-area{height:580px}
+  .phone{width:280px;height:560px}
+  .notification{display:none}
+  .n1,.n2{display:block;opacity:1}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">arrivable</a>
+  <div class="nav-links">
+    <a href="#">For Tour Operators</a>
+    <a href="#">For Rentals</a>
+    <a href="#">Pricing</a>
+    <a href="#" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Your guests arrive prepared</h1>
+  <p>Turn your local expertise into personalized pre-trip planners. Guests explore deeper, ask fewer questions, and remember your name. Built for tour operators and vacation rentals.</p>
+
+  <div class="badges">
+    <div class="badge">Trusted by tour companies in 12 cities</div>
+    <div class="badge">Rated 4.9/5 by property managers</div>
+  </div>
+
+  <!-- PRODUCT VISUAL WITH FLOATING CARDS -->
+  <div class="visual-area">
+    
+    <!-- PHONE MOCKUP -->
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="screen-header">Your Week</div>
+        <div class="screen-day">
+          <strong>Day 1</strong> <span>— Arrival Day</span>
+        </div>
+        <div class="screen-day" style="border-color:#B8963E">
+          <strong>Day 2</strong> <span>— Wine & Vineyards</span>
+        </div>
+        <div class="screen-day" style="border-color:#4A5A2C">
+          <strong>Day 3</strong> <span>— Montepulciano & Pienza</span>
+        </div>
+        <div class="screen-day" style="border-color:#3A6090">
+          <strong>Day 4</strong> <span>— Val d'Orcia</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOATING NOTIFICATIONS -->
+    <div class="notification n1">
+      <span class="emoji">🍷</span><strong>Sarah asked about wineries</strong>
+      <div class="meta">11:32 PM · Answered with 3 recs near the villa</div>
+    </div>
+
+    <div class="notification n2">
+      <span class="emoji">✅</span><strong>Booking confirmed</strong>
+      La Grotta, 4 guests, 8:00 PM tonight
+      <div class="meta">Sent confirmation to host</div>
+    </div>
+
+    <div class="notification n3">
+      <span class="emoji">☀️</span><strong>Marco's itinerary updated</strong>
+      Rainy day plan swapped in for Day 3
+      <div class="meta">Auto-adjusted based on forecast</div>
+    </div>
+
+    <div class="notification n4">
+      <span class="emoji">🗺️</span><strong>"Best gelato near Piazza?"</strong>
+      <div class="meta">Answered instantly with map link</div>
+    </div>
+
+    <div class="notification n5">
+      <span class="emoji">🏊</span><strong>Chen family checked essentials</strong>
+      Pool times, WiFi password, checkout details
+      <div class="meta">3 min ago</div>
+    </div>
+
+    <div class="notification n6">
+      <span class="emoji">✈️</span><strong>Flight delayed — itinerary adjusted</strong>
+      <div class="meta">Day 1 arrival time updated, dinner reservation moved</div>
+    </div>
+
+    <div class="notification n7">
+      <span class="emoji">💬</span><strong>"Can you book Chef Francesco?"</strong>
+      <div class="meta">Request forwarded to host dashboard</div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- STICKY JOURNEY NAV -->
+<div class="sticky-nav">
+  <a href="#" class="active">✨ Pre-Trip</a>
+  <a href="#">🗺️ On the Ground</a>
+  <a href="#">⭐ After Checkout</a>
+  <a href="#">📱 Get Started</a>
+</div>
+
+</body>
+</html>

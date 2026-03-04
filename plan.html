@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arrivo — Improvement Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-heading: 'Instrument Serif', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --bg: #FDFAF6;
+  --surface: #FFFFFF;
+  --surface2: #F5F0E8;
+  --border: rgba(0,0,0,.07);
+  --border-bright: rgba(0,0,0,.14);
+  --text: #1A1814;
+  --text-dim: #8A8478;
+  --gold: #B8963E;
+  --gold-dim: rgba(184,150,62,.08);
+  --terra: #C2410C;
+  --terra-dim: rgba(194,65,12,.07);
+  --sage: #4D7C0F;
+  --sage-dim: rgba(77,124,15,.07);
+  --sky: #0369A1;
+  --sky-dim: rgba(3,105,161,.07);
+  --wine: #881337;
+  --wine-dim: rgba(136,19,55,.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141210;
+    --surface: #1E1B18;
+    --surface2: #282420;
+    --border: rgba(255,255,255,.06);
+    --border-bright: rgba(255,255,255,.12);
+    --text: #EDE5DD;
+    --text-dim: #9A958C;
+    --gold: #D4B36A;
+    --gold-dim: rgba(212,179,106,.1);
+    --terra: #FB923C;
+    --terra-dim: rgba(251,146,60,.1);
+    --sage: #A3E635;
+    --sage-dim: rgba(163,230,53,.08);
+    --sky: #38BDF8;
+    --sky-dim: rgba(56,189,248,.08);
+    --wine: #FDA4AF;
+    --wine-dim: rgba(253,164,175,.08);
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.6;
+  background-image: radial-gradient(ellipse 80% 60% at 30% 10%, var(--gold-dim), transparent 70%);
+}
+.wrap{max-width:900px;margin:0 auto;padding:40px 24px 80px}
+
+/* Header */
+.header{text-align:center;margin-bottom:48px;animation:fadeUp .6s ease both}
+.header .mono{font-family:var(--font-mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:500}
+.header h1{font-family:var(--font-heading);font-size:42px;font-weight:400;margin:8px 0 6px;font-style:italic;line-height:1.15}
+.header .sub{font-size:15px;color:var(--text-dim);max-width:520px;margin:0 auto}
+
+/* Section */
+.section{margin-bottom:40px;animation:fadeUp .6s ease both;animation-delay:calc(var(--i,0) * .08s)}
+.section-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:8px}
+.section h2{font-family:var(--font-heading);font-size:28px;font-weight:400;font-style:italic;margin-bottom:6px}
+.section .desc{font-size:14px;color:var(--text-dim);margin-bottom:16px;line-height:1.6}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;transition:border-color .2s}
+.card:hover{border-color:var(--border-bright)}
+.card h3{font-size:16px;font-weight:600;margin-bottom:4px}
+.card p{font-size:13px;color:var(--text-dim);line-height:1.55}
+.card .tag{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:6px;margin-top:8px;font-weight:500}
+
+/* Priority colors */
+.p-high{border-left:3px solid var(--terra)}
+.p-high .tag{background:var(--terra-dim);color:var(--terra)}
+.p-med{border-left:3px solid var(--gold)}
+.p-med .tag{background:var(--gold-dim);color:var(--gold)}
+.p-low{border-left:3px solid var(--sky)}
+.p-low .tag{background:var(--sky-dim);color:var(--sky)}
+
+/* Category badges */
+.cat{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;margin-right:4px;font-weight:500}
+.cat-ui{background:var(--sky-dim);color:var(--sky)}
+.cat-ux{background:var(--sage-dim);color:var(--sage)}
+.cat-content{background:var(--gold-dim);color:var(--gold)}
+.cat-perf{background:var(--wine-dim);color:var(--wine)}
+.cat-biz{background:var(--terra-dim);color:var(--terra)}
+
+/* Grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:700px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Status */
+.status-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.stat-card{flex:1;min-width:140px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.stat-num{font-family:var(--font-heading);font-size:32px;font-weight:400;color:var(--gold)}
+.stat-label{font-size:11px;color:var(--text-dim);margin-top:2px}
+
+/* Callout */
+.callout{border-radius:10px;padding:16px 18px;margin:16px 0;font-size:13px;line-height:1.6}
+.callout-gold{background:var(--gold-dim);border-left:3px solid var(--gold);color:var(--text)}
+.callout-sage{background:var(--sage-dim);border-left:3px solid var(--sage);color:var(--text)}
+.callout-terra{background:var(--terra-dim);border-left:3px solid var(--terra);color:var(--text)}
+.callout strong{font-weight:600}
+
+/* Vote */
+.vote-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.vote-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:var(--font-body)}
+.vote-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.vote-btn.picked{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="mono">Improvement Plan</div>
+  <h1>Arrivo — What to Build Next</h1>
+  <div class="sub">Current state audit + prioritized improvements. Review each area, tell me what to execute.</div>
+</div>
+
+<!-- Current State -->
+<div class="section" style="--i:1">
+  <div class="section-label">Current State</div>
+  <h2>What we have today</h2>
+  <div class="status-row">
+    <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Landing Page</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Live Demos</div></div>
+    <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Formspree Signup</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Real Backend</div></div>
+  </div>
+  <div class="callout callout-gold"><strong>Where we stand:</strong> Landing page is live at arrivo.montepulciano-rental.com. Tuscany demo is polished. Shanghai + Istanbul demos exist but aren't linked from landing. Onboarding wizard collects data via Formspree. No actual user accounts, no persistence, no backend.</div>
+</div>
+
+<!-- AREA 1: Landing Page -->
+<div class="section" style="--i:2">
+  <div class="section-label">Area 1</div>
+  <h2>Landing Page Polish</h2>
+  <div class="desc">The front door. First impression for tour operators and rental hosts.</div>
+
+  <div class="card p-high">
+    <h3>Real screenshots instead of mock HTML</h3>
+    <p>The feature sections (Itinerary Builder, Smart Swaps, Guest Manager, AI Chat) currently show HTML mockups. Replace with actual screenshots from the Molino demo — they'd look 10x better and prove the product is real.</p>
+    <span class="cat cat-ui">UI</span> <span class="cat cat-biz">Credibility</span>
+    <div class="tag">High Priority</div>
+  </div>
+
+  <div class="card p-high">
+    <h3>Mobile responsiveness audit</h3>
+    <p>The landing page has basic responsive CSS but hasn't been tested thoroughly on mobile. Feature rows, stats grid, and the onboarding wizard all need mobile testing and fixes.</p>
+    <span class="cat cat-ui">UI</span> <span class="cat cat-ux">UX</span>
+    <div class="tag">High Priority</div>
+  </div>
+
+  <div class="card p-med">
+    <h3>Social proof / testimonials</h3>
+    <p>Even fake testimonials with real-sounding names + roles would help ("Francesca M., Villa Owner, Chianti" or "James L., Walking Tour Guide, Lisbon"). Or a "Trusted by X tour operators" bar.</p>
+    <span class="cat cat-biz">Business</span> <span class="cat cat-content">Content</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+
+  <div class="card p-med">
+    <h3>Video walkthrough or GIF</h3>
+    <p>A 30-second screen recording of someone dragging blocks, swapping restaurants, and chatting with the AI concierge. Embed above the fold or in the hero. Shows the product better than any copy.</p>
+    <span class="cat cat-ui">UI</span> <span class="cat cat-biz">Business</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+
+  <div class="card p-low">
+    <h3>SEO basics</h3>
+    <p>Open Graph tags, proper meta descriptions, structured data for SaaS. Currently minimal. Won't matter until traffic comes but takes 5 minutes.</p>
+    <span class="cat cat-perf">Technical</span>
+    <div class="tag">Low Priority</div>
+  </div>
+</div>
+
+<!-- AREA 2: Demo App -->
+<div class="section" style="--i:3">
+  <div class="section-label">Area 2</div>
+  <h2>Demo App (Molino Nobile)</h2>
+  <div class="desc">The Tuscany demo is the hero. It needs to feel like a real product, not a prototype.</div>
+
+  <div class="card p-high">
+    <h3>Performance: React via CDN + Babel is slow</h3>
+    <p>Currently loading React, ReactDOM, and Babel from CDN and compiling JSX in the browser. Page load is sluggish. Options: (A) Pre-compile to vanilla JS, (B) Switch to Preact + HTM (no build step, much smaller), (C) Keep as-is for demo purposes.</p>
+    <span class="cat cat-perf">Performance</span>
+    <div class="tag">High Priority</div>
+    <div class="vote-row">
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">A: Pre-compile</button>
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">B: Preact + HTM</button>
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">C: Keep as-is</button>
+    </div>
+  </div>
+
+  <div class="card p-high">
+    <h3>AI Chat needs an API key proxy</h3>
+    <p>The chat tab currently calls the Anthropic API directly from the browser. This means either: (A) it doesn't work without a key, or (B) someone's key is exposed in the source. Need a simple proxy/edge function.</p>
+    <span class="cat cat-perf">Technical</span> <span class="cat cat-ux">UX</span>
+    <div class="tag">High Priority</div>
+    <div class="vote-row">
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">Cloudflare Worker proxy</button>
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">Disable chat in demo</button>
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">Rate-limited free tier</button>
+    </div>
+  </div>
+
+  <div class="card p-med">
+    <h3>Guest link sharing is fragile</h3>
+    <p>Guest links encode the entire itinerary in base64 URL params. Works but: URLs are enormous, can break in email clients, and there's no server-side persistence. Fine for demo, bad for production.</p>
+    <span class="cat cat-ux">UX</span> <span class="cat cat-perf">Technical</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+
+  <div class="card p-med">
+    <h3>Add "guided tour" mode for demos</h3>
+    <p>First-time visitors don't know what to click. A tooltip-based walkthrough ("Try dragging this block ↕" → "Hit swap ↻" → "Check the AI chat") would dramatically improve demo engagement.</p>
+    <span class="cat cat-ux">UX</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+
+  <div class="card p-low">
+    <h3>Offline / PWA support</h3>
+    <p>Guests traveling might not have reliable internet. A service worker could cache the itinerary for offline viewing. Nice-to-have, not urgent.</p>
+    <span class="cat cat-perf">Technical</span>
+    <div class="tag">Low Priority</div>
+  </div>
+</div>
+
+<!-- AREA 3: Backend -->
+<div class="section" style="--i:4">
+  <div class="section-label">Area 3</div>
+  <h2>Backend & Infrastructure</h2>
+  <div class="desc">Currently zero backend. Everything is static HTML + localStorage. What's the minimum viable backend?</div>
+
+  <div class="card p-high">
+    <h3>Where to host the backend?</h3>
+    <p>Options for a minimal backend that handles user accounts, itinerary storage, and guest link generation. All can start free tier.</p>
+    <span class="cat cat-perf">Technical</span> <span class="cat cat-biz">Business</span>
+    <div class="tag">High Priority</div>
+    <div class="vote-row">
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">Supabase (Postgres + Auth)</button>
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">Firebase (NoSQL + Auth)</button>
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">Cloudflare Workers + D1</button>
+      <button class="vote-btn" onclick="this.classList.toggle('picked')">Stay static for now</button>
+    </div>
+  </div>
+
+  <div class="card p-med">
+    <h3>iCal import for reservations</h3>
+    <p>The landing page promises iCal import from Airbnb/Vrbo. This is actually straightforward — parse .ics files client-side and auto-create guest entries. Could work without a backend.</p>
+    <span class="cat cat-ux">UX</span> <span class="cat cat-biz">Business</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+
+  <div class="card p-med">
+    <h3>Email delivery for guest links</h3>
+    <p>Hosts need to send links to guests. Could use AgentMail (already configured), or simple mailto: links, or integrate with their existing email.</p>
+    <span class="cat cat-biz">Business</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+</div>
+
+<!-- AREA 4: Content & Copy -->
+<div class="section" style="--i:5">
+  <div class="section-label">Area 4</div>
+  <h2>Content & Positioning</h2>
+  <div class="desc">The copy and messaging that sells Arrivo to potential customers.</div>
+
+  <div class="card p-med">
+    <h3>Pricing page</h3>
+    <p>The onboarding wizard shows Free/Pro tiers but there's no dedicated pricing page. Tour operators want to see exactly what they get before signing up.</p>
+    <span class="cat cat-biz">Business</span> <span class="cat cat-content">Content</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+
+  <div class="card p-med">
+    <h3>"How it works" for tour operators specifically</h3>
+    <p>The current landing page is generic. Tour operators have different needs than villa owners (they sell experiences, not accommodation). A dedicated section or variant showing tour-specific features would convert better.</p>
+    <span class="cat cat-content">Content</span> <span class="cat cat-biz">Business</span>
+    <div class="tag">Medium Priority</div>
+  </div>
+
+  <div class="card p-low">
+    <h3>Blog / content marketing</h3>
+    <p>"How to reduce guest questions by 80%" — SEO-optimized content targeting tour operators and rental hosts searching for solutions. Long-term play.</p>
+    <span class="cat cat-content">Content</span>
+    <div class="tag">Low Priority</div>
+  </div>
+</div>
+
+<!-- AREA 5: Quick Wins -->
+<div class="section" style="--i:6">
+  <div class="section-label">Area 5</div>
+  <h2>Quick Wins (< 30 min each)</h2>
+  <div class="desc">Low-effort, high-impact changes that can ship today.</div>
+
+  <div class="grid-2">
+    <div class="card p-high">
+      <h3>Fix double ];]; in demo JS</h3>
+      <p>The initWeek, TRIPS, and ALTS arrays have double closing brackets from the content replacement scripts. Causes a syntax warning.</p>
+      <div class="tag">5 min fix</div>
+    </div>
+    <div class="card p-high">
+      <h3>Add favicon + OG image</h3>
+      <p>Currently using an emoji favicon. A proper SVG favicon + OG image for social sharing would look more professional.</p>
+      <div class="tag">10 min fix</div>
+    </div>
+    <div class="card p-med">
+      <h3>Smooth scroll on landing</h3>
+      <p>Nav links jump instead of smooth-scrolling. Already have scroll-behavior:smooth in CSS but the onboard wizard hijacks click events.</p>
+      <div class="tag">5 min fix</div>
+    </div>
+    <div class="card p-med">
+      <h3>Footer with real links</h3>
+      <p>Add links to Terms, Privacy, Contact. Even placeholder pages. Makes it look like a real business.</p>
+      <div class="tag">15 min fix</div>
+    </div>
+  </div>
+</div>
+
+<!-- Recommendation -->
+<div class="section" style="--i:7">
+  <div class="section-label">My Recommendation</div>
+  <h2>Suggested execution order</h2>
+
+  <div class="callout callout-sage">
+    <strong>Phase 1 — Ship today (2-3 hours):</strong><br>
+    Fix the JS syntax bugs → Real screenshots in landing page → Mobile responsiveness → OG tags + favicon → Footer links. This makes what we have look polished and credible.
+  </div>
+
+  <div class="callout callout-gold">
+    <strong>Phase 2 — This week:</strong><br>
+    Guided demo walkthrough → Social proof section → Decide on backend (Supabase vs stay static) → API key proxy for chat. This makes the demo actually usable and the landing page convincing.
+  </div>
+
+  <div class="callout callout-terra">
+    <strong>Phase 3 — Next sprint:</strong><br>
+    Backend + auth → Persistent guest links → iCal import → Email delivery. This makes Arrivo a real product someone could pay for.
+  </div>
+</div>
+
+<div style="text-align:center;padding:32px 0;font-size:12px;color:var(--text-dim)">
+  Generated by Fred · March 4, 2026 · Review and tell me what to execute
+</div>
+
+</div>
+</body>
+</html>

@@ -171,11 +171,43 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
 .dash-card.highlight{border:1.5px solid var(--gold);background:linear-gradient(135deg,#1A1A18,#2A2520)}
 .step-img{width:100%;margin-top:16px;border-radius:10px;border:1px solid var(--bdr);box-shadow:0 4px 20px rgba(0,0,0,.08)}
 
+/* ═══ HERO VISUAL (Flighty-style) ═══ */
+.hero-visual{position:relative;max-width:1000px;margin:0 auto;height:580px;display:flex;align-items:center;justify-content:center}
+.hero-phone{position:relative;z-index:10;width:280px;height:560px;background:#1A1A18;border-radius:28px;border:6px solid #2A2520;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;transform:rotate(-2deg)}
+.hero-phone-screen{padding:14px;color:#EDE5DD;font-size:11px;overflow-y:auto;height:100%}
+.hero-day{background:#252218;border-radius:8px;padding:8px 10px;margin-bottom:5px}
+.hero-day strong{color:#EDE5DD;font-size:11px}
+.hero-day-items{margin-top:6px}
+.hero-item{padding:5px 0;border-bottom:1px solid #2A2520;display:flex;gap:6px;font-size:9.5px;color:#BDB8AE;line-height:1.3}
+.hero-item:last-child{border-bottom:none}
+.hero-time{color:var(--gold);min-width:44px;font-size:9px}
+.hero-item.swapping{animation:heroSwapOut .8s ease forwards}
+.hero-item.swap-in{animation:heroSwapIn .8s ease forwards}
+.hero-item.dragging{animation:heroDrag 1.2s ease forwards}
+@keyframes heroSwapOut{0%{opacity:1}50%{opacity:0;transform:scale(.95)}100%{opacity:0}}
+@keyframes heroSwapIn{0%{opacity:0;transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
+@keyframes heroDrag{0%,30%{transform:translateY(0)}50%{transform:translateY(-40px);box-shadow:0 4px 12px rgba(184,150,62,.4)}100%{transform:translateY(0)}}
+
+.hero-notif{position:absolute;background:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 6px 20px rgba(0,0,0,.1);font-size:12px;line-height:1.35;max-width:240px;transition:transform .3s}
+.hero-notif:hover{transform:scale(1.03)}
+.hero-notif strong{display:block;font-weight:600;color:#1A1A18;font-size:11px}
+.hn-meta{font-size:10px;color:#888;margin-top:2px;display:block}
+.hn1{top:20px;left:40px;opacity:.95}
+.hn2{top:90px;right:50px;opacity:.92}
+.hn3{top:240px;left:10px;opacity:.88}
+.hn4{top:320px;right:30px;opacity:.9}
+.hn5{bottom:140px;left:60px;opacity:.85}
+.hn6{bottom:60px;right:70px;opacity:.82}
+
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:768px){
   .ba-grid,.steps,.feat-grid-compact,.stats-grid,.revenue-options,.api-grid,.feat-row{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .hero{padding:120px 0 60px}
+  .hero{padding:100px 0 40px}
+  .hero-visual{height:400px}
+  .hero-phone{width:240px;height:480px}
+  .hero-notif{display:none}
+  .hn1,.hn2{display:block}
   .hero h1{font-size:32px}
   .hero .sub{font-size:16px}
   .hero .ctas{flex-direction:column;align-items:center}
@@ -201,7 +233,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
 <!-- ═══ NAV ═══ -->
 <nav>
   <div class="inner">
-    <div class="logo">arrivo<span>.</span></div>
+    <div class="logo">arrivable<span>.</span></div>
     <div class="nav-links">
       <a href="#how">How It Works</a>
       <a href="#features">Features</a>
@@ -212,14 +244,44 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
   </div>
 </nav>
 
-<!-- ═══ HERO ═══ -->
-<section class="hero">
+<!-- ═══ HERO (Flighty-style) ═══ -->
+<section class="hero" style="padding:130px 0 40px;min-height:auto">
   <div class="container">
     <h1 class="fade-up">Your guests arrive <em>prepared.</em></h1>
-    <p class="sub fade-up delay-1">Turn your city expertise into a personalized pre-trip planner. Guests explore deeper, ask fewer questions, and remember your name.</p>
-    <div class="ctas fade-up delay-2">
+    <p class="sub fade-up delay-1">Build once. Personalize for every guest. They edit, explore, and stop messaging you at 11pm asking where to eat. Your expertise does the work — even when you're off the clock.</p>
+    <div class="ctas fade-up delay-2" style="margin-bottom:48px">
       <a href="#demo" class="cta-primary">Get Started Free →</a>
       <a href="#demo" class="cta-secondary">See Live Demos</a>
+    </div>
+
+    <!-- Phone + floating notifications -->
+    <div class="hero-visual">
+      <div class="hero-phone">
+        <div class="hero-phone-screen">
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px;text-align:center">Your Week</div>
+          <div class="hero-day expanded" id="heroDay1" style="border-left:3px solid #C87A50">
+            <strong>Day 1</strong>
+            <div style="color:#8A8478;font-size:9px;margin-bottom:6px">Arrival Day — 5 stops</div>
+            <div class="hero-day-items">
+              <div class="hero-item"><span class="hero-time">2:30 PM</span><span>Coop Supermarket — wine & prosciutto</span></div>
+              <div class="hero-item"><span class="hero-time">4:00 PM</span><span>Check-in at Molino Nobile</span></div>
+              <div class="hero-item"><span class="hero-time">5:30 PM</span><span>First swim & aperitivo 🏊</span></div>
+              <div class="hero-item" id="heroDinner"><span class="hero-time">7:30 PM</span><span class="hero-desc">Rosso Vivo Pizzeria</span></div>
+              <div class="hero-item"><span class="hero-time">9:00 PM</span><span>Evening stroll through town</span></div>
+            </div>
+          </div>
+          <div class="hero-day" style="border-left:3px solid var(--gold)"><strong>Day 2</strong><span style="color:#8A8478;font-size:9px"> — Wine & Vineyards</span></div>
+          <div class="hero-day" style="border-left:3px solid #4A5A2C"><strong>Day 3</strong><span style="color:#8A8478;font-size:9px"> — Montepulciano & Pienza</span></div>
+          <div class="hero-day" style="border-left:3px solid #3A6090"><strong>Day 4</strong><span style="color:#8A8478;font-size:9px"> — Val d'Orcia Explorer</span></div>
+        </div>
+      </div>
+      <!-- Floating notification cards -->
+      <div class="hero-notif hn1">🍷 <strong>Sarah asked about wineries</strong><br><span class="hn-meta">11:32 PM · Answered with 3 recs near the villa</span></div>
+      <div class="hero-notif hn2">✅ <strong>Booking confirmed</strong><br>La Grotta, 4 guests, 8:00 PM<br><span class="hn-meta">Sent confirmation to host</span></div>
+      <div class="hero-notif hn3">☀️ <strong>Marco's itinerary updated</strong><br><span class="hn-meta">Rainy day plan swapped in for Day 3</span></div>
+      <div class="hero-notif hn4">🗺️ <strong>"Best gelato near Piazza?"</strong><br><span class="hn-meta">Answered instantly with map link</span></div>
+      <div class="hero-notif hn5">🏊 <strong>Chen family checked essentials</strong><br><span class="hn-meta">Pool times, WiFi password, checkout</span></div>
+      <div class="hero-notif hn6">✈️ <strong>Flight delayed — adjusted</strong><br><span class="hn-meta">Day 1 arrival + dinner reservation moved</span></div>
     </div>
   </div>
 </section>
@@ -531,7 +593,7 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
       <a href="#" style="color:var(--mut);font-size:12px;text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mut)'">Privacy</a>
       <a href="#demo" style="color:var(--mut);font-size:12px;text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mut)'">Live Demo</a>
     </div>
-    © 2026 Arrivo · Built for tour operators and vacation rentals who know their city better than anyone.
+    © 2026 Arrivable · Built for tour operators and vacation rentals who know their city better than anyone.
   </div>
 </footer>
 
@@ -770,6 +832,26 @@ document.querySelectorAll('.cta-nav, .cta-primary').forEach(el=>{
   }
 });
 // "See Live Demos" secondary buttons scroll naturally via html{scroll-behavior:smooth}
+
+// ═══ HERO ANIMATION: swap dinner + drag ═══
+(function(){
+  let running=false;
+  function animateHero(){
+    if(running)return;
+    running=true;
+    const dinner=document.getElementById('heroDinner');
+    if(!dinner)return;
+    const desc=dinner.querySelector('.hero-desc');
+    if(!desc)return;
+
+    setTimeout(()=>{dinner.style.background='#2A2520';dinner.style.transition='all .3s';},3000);
+    setTimeout(()=>{dinner.classList.add('swapping');},5000);
+    setTimeout(()=>{desc.textContent='La Grotta — refined Tuscan, terrace';dinner.classList.remove('swapping');dinner.classList.add('swap-in');dinner.style.background='';},6200);
+    setTimeout(()=>{dinner.classList.remove('swap-in');dinner.classList.add('dragging');},8000);
+    setTimeout(()=>{dinner.classList.remove('dragging');desc.textContent='Rosso Vivo Pizzeria';dinner.style.background='';running=false;setTimeout(animateHero,4000);},10500);
+  }
+  setTimeout(animateHero,1500);
+})();
 </script>
 
 </body>

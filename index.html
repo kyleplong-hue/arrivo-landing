@@ -753,7 +753,7 @@ ${ws.map((w,i)=>`<div style="display:flex;gap:6px;margin-bottom:8px"><input valu
 <div style="font-size:11px;color:#6B6860;margin-bottom:16px">Blog posts, guides, restaurant recs — we'll find them.</div>
 <div style="display:flex;gap:10px">
 <button onclick="OB.step=2;renderStep()" ${btnS}>Back</button>
-<button onclick="OB.data.website=OB.data.websites.filter(w=>w.trim()).join(', ');if(OB.data.websites.some(w=>w.trim())){runAnalysis()}else{OB.step=5;renderStep()}" ${btnP}>${ws.some(w=>w.trim())?"Analyze My Site":"Next"}</button>
+<button onclick="OB.data.website=OB.data.websites.filter(w=>w.trim()).join(', ');if(OB.data.websites.some(w=>w.trim())){runAnalysis().catch(e=>{console.error(e);OB.step=5;renderStep();})}else{OB.step=5;renderStep()}" ${btnP}>${ws.some(w=>w.trim())?"Analyze My Site":"Next"}</button>
 </div>
 <button onclick="OB.step=5;renderStep()" ${skip}>Skip — I don't have a website</button>`;
 }
@@ -770,7 +770,10 @@ c.innerHTML=dots()+`<div style="text-align:center;padding:30px 0">
 
 try{
   const urls=OB.data.websites.filter(w=>w.trim());
-  const res=await fetch('/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({urls})});
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),15000);
+  const res=await fetch('/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({urls}),signal:controller.signal});
+  clearTimeout(timeout);
   const data=await res.json();
   if(data.error){
     document.getElementById("ob-scan-status").textContent='Could not analyze site. Skipping...';

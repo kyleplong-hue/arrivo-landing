@@ -691,8 +691,11 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
 </div>
 
 <script>
-const OB={step:0,data:{type:"",name:"",city:"",website:"",pdf:null,listing:"",apis:[],email:"",password:""},analyzed:false};
-const APIS=["Rezdy","FareHarbor","Peek Pro","Bokun","Checkfront","iCal (Airbnb)","iCal (Vrbo)","iCal (Booking.com)","GetYourGuide","Viator","TripAdvisor"];
+const OB={step:0,data:{type:"",name:"",city:"",websites:[""],pdfs:[],listing:"",apis:[],email:"",password:""},analyzed:false};
+const TOUR_APIS=["Rezdy","FareHarbor","Peek Pro","Bokun","Checkfront","GetYourGuide","Viator","TripAdvisor"];
+const RENTAL_APIS=["iCal (Airbnb)","iCal (Vrbo)","iCal (Booking.com)","Guesty","Lodgify","Hostaway","Hospitable"];
+const BOTH_APIS=["Rezdy","FareHarbor","iCal (Airbnb)","iCal (Vrbo)","iCal (Booking.com)","GetYourGuide","Viator","Guesty"];
+function getAPIs(){return OB.data.type==="tour"?TOUR_APIS:OB.data.type==="rental"?RENTAL_APIS:BOTH_APIS;}
 const STEPS=8;
 function openOnboard(){OB.step=0;OB.analyzed=false;document.getElementById("onboard-overlay").style.display="flex";renderStep();}
 function closeOnboard(){document.getElementById("onboard-overlay").style.display="none";}
@@ -742,13 +745,15 @@ return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;
 }
 
 function rS3(){
+const ws=OB.data.websites;
 return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">Got a website?</h3>
 <p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:24px">We'll analyze it and pull in your content automatically.</p>
-<input id="ob-web" value="${OB.data.website}" oninput="OB.data.website=this.value" placeholder="https://yoursite.com" ${inp}>
-<div style="font-size:11px;color:#6B6860;margin-top:6px;margin-bottom:16px">Blog posts, neighborhood guides, restaurant recs — we'll find them.</div>
+${ws.map((w,i)=>`<div style="display:flex;gap:6px;margin-bottom:8px"><input value="${w}" oninput="OB.data.websites[${i}]=this.value;renderStep()" placeholder="https://yoursite.com" ${inp}>${ws.length>1?`<button onclick="OB.data.websites.splice(${i},1);renderStep()" style="background:none;border:1px solid #E8E3D8;border-radius:8px;padding:0 10px;color:#C44;cursor:pointer;font-size:16px">×</button>`:""}</div>`).join("")}
+<button onclick="OB.data.websites.push('');renderStep()" style="font-size:12px;color:#B8963E;background:none;border:none;cursor:pointer;margin-bottom:12px">+ Add another website</button>
+<div style="font-size:11px;color:#6B6860;margin-bottom:16px">Blog posts, guides, restaurant recs — we'll find them.</div>
 <div style="display:flex;gap:10px">
 <button onclick="OB.step=2;renderStep()" ${btnS}>Back</button>
-<button onclick="if(OB.data.website.trim()){runAnalysis()}else{OB.step=5;renderStep()}" ${btnP}>${OB.data.website?"Analyze My Site":"Next"}</button>
+<button onclick="OB.data.website=OB.data.websites.filter(w=>w.trim()).join(', ');if(OB.data.websites.some(w=>w.trim())){runAnalysis()}else{OB.step=5;renderStep()}" ${btnP}>${ws.some(w=>w.trim())?"Analyze My Site":"Next"}</button>
 </div>
 <button onclick="OB.step=5;renderStep()" ${skip}>Skip — I don't have a website</button>`;
 }
@@ -779,7 +784,7 @@ const name=OB.data.name||domain;
 const city=OB.data.city||"your city";
 const mockPages=Math.floor(Math.random()*20)+8;
 const mockRecs=Math.floor(Math.random()*30)+12;
-const mockNeighborhoods=Math.floor(Math.random()*6)+3;
+const mockCategories=Math.floor(Math.random()*4)+3;
 const c=document.getElementById("onboard-steps");
 c.innerHTML=dots()+`<div style="text-align:center;margin-bottom:20px">
 <div style="width:48px;height:48px;border-radius:50%;background:#4A5A2C15;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;color:#4A5A2C;font-weight:700">✓</div>
@@ -796,8 +801,8 @@ c.innerHTML=dots()+`<div style="text-align:center;margin-bottom:20px">
 <div style="font-size:11px;color:#6B6860">Recommendations</div>
 </div>
 <div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
-<div style="font-size:24px;font-weight:700;color:#B8963E">${mockNeighborhoods}</div>
-<div style="font-size:11px;color:#6B6860">Neighborhoods</div>
+<div style="font-size:24px;font-weight:700;color:#B8963E">${mockCategories}</div>
+<div style="font-size:11px;color:#6B6860">Categories</div>
 </div>
 </div>
 <div style="background:#F7F4EE;border-radius:10px;padding:14px;margin-bottom:16px">
@@ -819,12 +824,13 @@ return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;
 ${isRental?`<label style="display:block;font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:6px">Property listing URL</label>
 <input id="ob-listing" value="${OB.data.listing}" oninput="OB.data.listing=this.value" placeholder="https://airbnb.com/rooms/12345" ${inp}>
 <div style="font-size:11px;color:#6B6860;margin-top:4px;margin-bottom:18px">Airbnb, Vrbo, or Booking.com — we'll pull photos, amenities, and house rules.</div>`:""}
-<label style="display:block;font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:6px">Upload a guidebook</label>
-<div id="ob-pdf-zone" onclick="document.getElementById('ob-pdf-input').click()" style="border:2px dashed #E8E3D8;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='#B8963E'" onmouseout="this.style.borderColor='#E8E3D8'">
-<div style="font-size:13px;color:#6B6860" id="ob-pdf-label">${OB.data.pdf?OB.data.pdf.name:"Drop a PDF here or click to browse"}</div>
-<input type="file" id="ob-pdf-input" accept=".pdf" style="display:none" onchange="if(this.files[0]){OB.data.pdf=this.files[0];document.getElementById('ob-pdf-label').textContent=this.files[0].name;}">
+<label style="display:block;font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:6px">Upload guidebooks or documents</label>
+${OB.data.pdfs.length?`<div style="margin-bottom:8px">${OB.data.pdfs.map((f,i)=>`<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#F7F4EE;border-radius:8px;margin-bottom:4px"><span style="font-size:12px;color:#1A1A18;flex:1">📄 ${f.name}</span><button onclick="OB.data.pdfs.splice(${i},1);renderStep()" style="background:none;border:none;color:#C44;cursor:pointer;font-size:14px">×</button></div>`).join("")}</div>`:``}
+<div onclick="document.getElementById('ob-pdf-input').click()" style="border:2px dashed #E8E3D8;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='#B8963E'" onmouseout="this.style.borderColor='#E8E3D8'">
+<div style="font-size:13px;color:#6B6860">${OB.data.pdfs.length?"+ Add more files":"Drop files here or click to browse"}</div>
+<input type="file" id="ob-pdf-input" accept=".pdf,.doc,.docx,.txt" multiple style="display:none" onchange="for(const f of this.files){OB.data.pdfs.push(f);}renderStep();">
 </div>
-<div style="font-size:11px;color:#6B6860;margin-top:4px;margin-bottom:18px">Guest welcome guides, restaurant lists, neighborhood maps.</div>
+<div style="font-size:11px;color:#6B6860;margin-top:4px;margin-bottom:18px">Guest welcome guides, restaurant lists, area info. PDF, DOC, or TXT.</div>
 <div style="display:flex;gap:10px">
 <button onclick="OB.step=${OB.analyzed?4:3};renderStep()" ${btnS}>Back</button>
 <button onclick="OB.step=6;renderStep()" ${btnP}>Next</button>
@@ -833,9 +839,11 @@ ${isRental?`<label style="display:block;font-size:12px;font-weight:600;color:#1A
 }
 
 function rS6(){
-return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">What tools do you use?</h3>
+const apis=getAPIs();
+const label=OB.data.type==="tour"?"What booking tools do you use?":OB.data.type==="rental"?"How do you manage bookings?":"What tools do you use?";
+return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">${label}</h3>
 <p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:20px">We'll connect these automatically. Check all that apply.</p>
-<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">${APIS.map(a=>{
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">${apis.map(a=>{
 const on=OB.data.apis.includes(a);
 return`<button onclick="const i=OB.data.apis.indexOf('${a}');if(i>-1)OB.data.apis.splice(i,1);else OB.data.apis.push('${a}');renderStep()" style="padding:8px 14px;border-radius:20px;border:1.5px solid ${on?"#B8963E":"#E8E3D8"};background:${on?"#B8963E0C":"#fff"};color:${on?"#B8963E":"#6B6860"};font-size:13px;font-weight:${on?600:400};cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s">${a}</button>`}).join("")}</div>
 <div style="display:flex;gap:10px">
@@ -899,38 +907,51 @@ try{
   });
   if(!userRes.ok){
     const err=await userRes.json();
-    const msg=err.data?.email?.message||err.data?.password?.message||err.message||'Signup failed';
-    throw new Error(msg);
+    // If user already exists, try to just log them in
+    if(err.data?.email?.code==='validation_not_unique'){
+      // Fall through to auth below
+    }else{
+      const msg=err.data?.email?.message||err.data?.password?.message||err.message||'Signup failed';
+      throw new Error(msg);
+    }
   }
-  const user=await userRes.json();
 
-  // 2. Auth as the new user
+  // 2. Auth as the new user (or existing user)
   const authRes=await fetch('/api/collections/users/auth-with-password',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({identity:OB.data.email,password:OB.data.password})
   });
-  if(authRes.ok){
-    const auth=await authRes.json();
-    // 3. Create their first property
-    await fetch('/api/collections/properties/records',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+auth.token},
-      body:JSON.stringify({
-        name:OB.data.name,
-        city:OB.data.city,
-        prop_type:OB.data.type,
-        website:OB.data.website||'',
-        pin:Math.floor(1000+Math.random()*9000).toString(),
-        settings:{apis:OB.data.apis,listing:OB.data.listing||''}
-      })
-    });
+  if(!authRes.ok){
+    throw new Error('Invalid email or password. If you already have an account, check your password.');
   }
+  const auth=await authRes.json();
+
+  // 3. Create their first property (skip if they already have one)
+  try{
+    const existingProps=await fetch('/api/collections/properties/records?perPage=1',{
+      headers:{'Authorization':'Bearer '+auth.token}
+    }).then(r=>r.json());
+    if(!existingProps.items?.length){
+      await fetch('/api/collections/properties/records',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+auth.token},
+        body:JSON.stringify({
+          name:OB.data.name,
+          city:OB.data.city,
+          prop_type:OB.data.type,
+          website:OB.data.websites?.filter(w=>w.trim()).join(', ')||'',
+          pin:Math.floor(1000+Math.random()*9000).toString(),
+          settings:{apis:OB.data.apis,listing:OB.data.listing||''}
+        })
+      });
+    }
+  }catch(e){console.warn('Property creation:',e);}
 
   // Also send to Formspree as backup/notification
   fetch('https://formspree.io/f/xbdanzog',{
     method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({...OB.data,source:'pocketbase_signup',userId:user.id})
+    body:JSON.stringify({...OB.data,websites:OB.data.websites,source:'pocketbase_signup',userId:auth.record?.id})
   }).catch(()=>{});
 
   // Store auth for dashboard

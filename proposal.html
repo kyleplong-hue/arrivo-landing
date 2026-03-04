@@ -15,17 +15,18 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 .logo{font-family:'Newsreader',serif;font-size:24px;font-weight:700;color:#000;text-decoration:none}
 .nav-links{display:flex;gap:32px;align-items:center}
 .nav-links a{text-decoration:none;color:#666;font-size:14px;font-weight:500}
-.nav-cta{background:#000;color:#fff;padding:8px 18px;border-radius:8px}
+.nav-cta{background:#B8963E;color:#fff;padding:8px 18px;border-radius:8px;transition:background .2s}
+.nav-cta:hover{background:#8A6F2E}
 
 /* HERO */
 .hero{text-align:center;padding:60px 40px 0;min-height:90vh;position:relative}
 
 .hero h1{
   font-family:'Newsreader',serif;
-  font-size:clamp(48px,7vw,88px);
+  font-size:clamp(42px,6vw,68px);
   font-weight:700;
-  line-height:1.05;
-  margin-bottom:28px;
+  line-height:1.1;
+  margin-bottom:24px;
   letter-spacing:-0.02em;
 }
 
@@ -87,13 +88,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
 .phone-screen{
   width:100%;
   height:100%;
-  background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 640"><rect fill="%231A1A18"/></svg>');
-  background-size:cover;
+  background:#1A1A18;
   display:flex;
   flex-direction:column;
   padding:16px;
   color:#EDE5DD;
-  font-size:12px;
+  font-size:11px;
+  overflow-y:auto;
 }
 .screen-header{
   font-size:10px;
@@ -110,14 +111,82 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
   padding:10px 12px;
   margin-bottom:6px;
   border-left:3px solid #C87A50;
+  cursor:pointer;
+  transition:all .3s;
+}
+.screen-day.collapsed{
+  padding:10px 12px;
+}
+.screen-day.expanded{
+  padding:12px;
+  animation:expandDay 1s ease forwards;
 }
 .screen-day strong{
   color:#EDE5DD;
-  font-size:13px;
+  font-size:12px;
+  display:block;
+  margin-bottom:2px;
 }
-.screen-day span{
+.screen-day .subtitle{
   color:#8A8478;
-  font-size:11px;
+  font-size:10px;
+  margin-bottom:8px;
+}
+.day-items{
+  display:none;
+  margin-top:8px;
+}
+.screen-day.expanded .day-items{
+  display:block;
+}
+.day-item{
+  padding:8px 10px;
+  background:#1A1A18;
+  border-radius:6px;
+  margin-bottom:4px;
+  display:flex;
+  gap:8px;
+  font-size:10px;
+  line-height:1.4;
+  position:relative;
+}
+.day-item.swapping{
+  animation:swapOut 0.8s ease forwards;
+}
+.day-item.swap-in{
+  animation:swapIn 0.8s ease forwards;
+}
+.day-item.dragging{
+  animation:dragMove 1.2s ease forwards;
+  z-index:10;
+}
+.day-item .time{
+  color:#B8963E;
+  min-width:48px;
+  font-size:10px;
+}
+.day-item .desc{
+  color:#BDB8AE;
+  flex:1;
+}
+
+@keyframes expandDay{
+  0%{max-height:40px;opacity:0.8}
+  100%{max-height:400px;opacity:1}
+}
+@keyframes swapOut{
+  0%{opacity:1;transform:scale(1)}
+  50%{opacity:0;transform:scale(0.95)}
+  100%{opacity:0;transform:scale(0.95)}
+}
+@keyframes swapIn{
+  0%{opacity:0;transform:scale(1.05)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes dragMove{
+  0%,30%{transform:translateY(0)}
+  50%{transform:translateY(-60px);box-shadow:0 4px 12px rgba(184,150,62,.4)}
+  100%{transform:translateY(0)}
 }
 
 /* FLOATING NOTIFICATION CARDS */
@@ -265,19 +334,49 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
     
     <!-- PHONE MOCKUP -->
     <div class="phone">
-      <div class="phone-screen">
+      <div class="phone-screen" id="phoneScreen">
         <div class="screen-header">Your Week</div>
-        <div class="screen-day">
-          <strong>Day 1</strong> <span>— Arrival Day</span>
+        
+        <div class="screen-day expanded" id="day1" style="border-color:#C87A50">
+          <strong>Day 1</strong>
+          <div class="subtitle">Arrival Day — 5 stops</div>
+          <div class="day-items">
+            <div class="day-item">
+              <div class="time">2:30 PM</div>
+              <div class="desc">Coop Supermarket — stock up on wine & prosciutto</div>
+            </div>
+            <div class="day-item">
+              <div class="time">4:00 PM</div>
+              <div class="desc">Check-in at Molino Nobile</div>
+            </div>
+            <div class="day-item">
+              <div class="time">5:30 PM</div>
+              <div class="desc">First swim & aperitivo 🏊</div>
+            </div>
+            <div class="day-item" id="dinner">
+              <div class="time">7:30 PM</div>
+              <div class="desc">Rosso Vivo Pizzeria</div>
+            </div>
+            <div class="day-item">
+              <div class="time">9:00 PM</div>
+              <div class="desc">Evening stroll through town</div>
+            </div>
+          </div>
         </div>
-        <div class="screen-day" style="border-color:#B8963E">
-          <strong>Day 2</strong> <span>— Wine & Vineyards</span>
+
+        <div class="screen-day collapsed" style="border-color:#B8963E">
+          <strong>Day 2</strong>
+          <div class="subtitle">Wine & Vineyards — 4 stops</div>
         </div>
-        <div class="screen-day" style="border-color:#4A5A2C">
-          <strong>Day 3</strong> <span>— Montepulciano & Pienza</span>
+
+        <div class="screen-day collapsed" style="border-color:#4A5A2C">
+          <strong>Day 3</strong>
+          <div class="subtitle">Montepulciano & Pienza — 5 stops</div>
         </div>
-        <div class="screen-day" style="border-color:#3A6090">
-          <strong>Day 4</strong> <span>— Val d'Orcia</span>
+
+        <div class="screen-day collapsed" style="border-color:#3A6090">
+          <strong>Day 4</strong>
+          <div class="subtitle">Val d'Orcia Explorer — 3 stops</div>
         </div>
       </div>
     </div>
@@ -332,6 +431,57 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 6
   <a href="#">⭐ After Checkout</a>
   <a href="#">📱 Get Started</a>
 </div>
+
+
+<script>
+// Animate the itinerary: swap dinner reservation and drag it
+let animationRunning = false;
+
+function runAnimation(){
+  if(animationRunning) return;
+  animationRunning = true;
+  
+  const dinner = document.getElementById('dinner');
+  
+  // Step 1: Highlight (already visible, just add emphasis)
+  setTimeout(()=>{
+    dinner.style.background = '#2A2520';
+    dinner.style.transition = 'all 0.3s';
+  }, 2000);
+  
+  // Step 2: Swap out
+  setTimeout(()=>{
+    dinner.classList.add('swapping');
+  }, 3200);
+  
+  // Step 3: Replace content
+  setTimeout(()=>{
+    dinner.querySelector('.desc').textContent = 'La Grotta — refined Tuscan, garden terrace';
+    dinner.classList.remove('swapping');
+    dinner.classList.add('swap-in');
+    dinner.style.background = '#1A1A18';
+  }, 4000);
+  
+  // Step 4: Drag animation
+  setTimeout(()=>{
+    dinner.classList.remove('swap-in');
+    dinner.classList.add('dragging');
+  }, 5200);
+  
+  // Step 5: Reset for next loop
+  setTimeout(()=>{
+    dinner.classList.remove('dragging');
+    dinner.querySelector('.desc').textContent = 'Rosso Vivo Pizzeria';
+    dinner.style.background = '#1A1A18';
+    animationRunning = false;
+    // Loop
+    setTimeout(runAnimation, 3000);
+  }, 7000);
+}
+
+// Start after page loads
+setTimeout(runAnimation, 1000);
+</script>
 
 </body>
 </html>

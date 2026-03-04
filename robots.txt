@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /g/
+Disallow: /api/
+Disallow: /_/
+
+Sitemap: https://arrivable.io/sitemap.xml

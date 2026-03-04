@@ -774,7 +774,7 @@ try{
   const data=await res.json();
   if(data.error){
     document.getElementById("ob-scan-status").textContent='Could not analyze site. Skipping...';
-    setTimeout(()=>OB.step=5&&renderStep(),2000);
+    setTimeout(()=>{OB.step=5;renderStep();},2000);
     return;
   }
   OB.analyzed=true;
@@ -782,7 +782,7 @@ try{
   showAnalysisResults(data);
 }catch(e){
   document.getElementById("ob-scan-status").textContent='Analysis failed. Continuing...';
-  setTimeout(()=>OB.step=5&&renderStep(),2000);
+  setTimeout(()=>{OB.step=5;renderStep();},2000);
 }
 }
 

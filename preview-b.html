@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option B Preview — Before/After Replacement</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:#F5F2EB;color:#1A1A18}
+
+.section{max-width:900px;margin:80px auto;padding:0 28px}
+.section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:10px;text-align:center}
+
+.sleep-section{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch;border-radius:18px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.1)}
+
+/* LEFT: the problem */
+.sleep-left{background:#fff;padding:48px 36px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid #eee}
+.sleep-left .notif{background:#f8f5f0;border:1px solid #e8e3d8;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start}
+.sleep-left .notif .dot{width:8px;height:8px;border-radius:50%;background:#e74c3c;flex-shrink:0;margin-top:5px}
+.sleep-left .notif .msg{font-size:13px;color:#555;line-height:1.4}
+.sleep-left .notif .msg strong{color:#1A1A18;font-weight:600}
+.sleep-left .time{font-size:11px;color:#aaa;text-align:right;margin-top:4px}
+
+/* RIGHT: the solution */
+.sleep-right{background:#1A1A18;padding:48px 36px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.sleep-right .emoji{font-size:48px;margin-bottom:16px}
+.sleep-right h3{font-family:'Newsreader',serif;font-size:28px;color:#EDE5DD;font-weight:500;margin-bottom:8px;line-height:1.2}
+.sleep-right p{font-size:14px;color:#8A8478;line-height:1.6;max-width:280px}
+.sleep-right .badge{display:inline-block;margin-top:16px;font-size:11px;color:#B8963E;background:#B8963E12;border:1px solid #B8963E30;padding:6px 14px;border-radius:20px;font-weight:600}
+
+@media(max-width:768px){
+  .sleep-section{grid-template-columns:1fr}
+  .sleep-left{border-right:none;border-bottom:1px solid #eee}
+}
+</style>
+</head>
+<body>
+
+<div class="section">
+  <div class="section-label">The Problem</div>
+  
+  <div class="sleep-section">
+    <!-- LEFT: Messages at 11pm -->
+    <div class="sleep-left">
+      <div class="notif">
+        <div class="dot"></div>
+        <div class="msg"><strong>Sarah:</strong> Where should we eat tonight? Something local, not touristy 🙏</div>
+      </div>
+      <div class="notif">
+        <div class="dot"></div>
+        <div class="msg"><strong>Sarah:</strong> Also, any wineries open tomorrow? We want to go early</div>
+      </div>
+      <div class="notif">
+        <div class="dot"></div>
+        <div class="msg"><strong>Sarah:</strong> Oh and is the pool heated? Kids are asking</div>
+      </div>
+      <div class="time">11:47 PM · You're asleep.</div>
+    </div>
+    
+    <!-- RIGHT: Solved -->
+    <div class="sleep-right">
+      <div class="emoji">😴</div>
+      <h3>Answered instantly.<br>You slept through it.</h3>
+      <p>Your digital concierge handled all three questions using your recommendations — before you woke up.</p>
+      <div class="badge">✓ 3 questions answered · 0 effort from you</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

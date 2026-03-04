@@ -8,137 +8,284 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#FDFCF9;--fg:#1A1A18;--mut:#6B6860;--gold:#B8963E;--goldL:#D4B36A;--goldD:#8A6F2E;--card:#F7F4EE;--bdr:#E8E3D8;--dark:#1A1A18;--cream:#FDFCF9;--wine:#7A3040;--olive:#4A5A2C;--sky:#3A6090}
+:root{--bg:#FDFCF9;--fg:#1A1A18;--mut:#6B6860;--gold:#B8963E;--goldL:#D4B36A;--goldD:#8A6F2E;--card:#F5F2EB;--bdr:#E8E3D8;--dark:#1A1A18;--cream:#FDFCF9;--wine:#7A3040;--olive:#4A5A2C;--sky:#3A6090}
 html{scroll-behavior:smooth}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;line-height:1.6}
 h1,h2,h3{font-family:'Newsreader',serif}
 a{color:inherit;text-decoration:none}
-.container{max-width:1080px;margin:0 auto;padding:0 24px}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.fade-up{animation:fadeUp .8s ease both}
-.delay-1{animation-delay:.15s}.delay-2{animation-delay:.3s}.delay-3{animation-delay:.45s}.delay-4{animation-delay:.6s}
+.container{max-width:1100px;margin:0 auto;padding:0 28px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .7s ease both}
+.delay-1{animation-delay:.12s}.delay-2{animation-delay:.24s}.delay-3{animation-delay:.36s}
 
 /* ═══ NAV ═══ */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg)ee;backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr)}
-nav .inner{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1080px;margin:0 auto}
-nav .logo{font-family:'Newsreader',serif;font-size:22px;font-weight:600;letter-spacing:-.5px}
+nav .inner{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;max-width:1100px;margin:0 auto}
+nav .logo{font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.3px}
 nav .logo span{color:var(--gold)}
+nav .nav-links{display:flex;gap:28px;align-items:center;font-size:13px;color:var(--mut)}
+nav .nav-links a{transition:color .15s}
+nav .nav-links a:hover{color:var(--fg)}
 nav .cta-nav{padding:10px 22px;background:var(--gold);color:#fff;border-radius:8px;font-size:13px;font-weight:600;transition:all .2s}
 nav .cta-nav:hover{background:var(--goldD)}
 
 /* ═══ HERO ═══ */
-.hero{padding:140px 0 80px;text-align:center}
-.hero h1{font-size:clamp(32px,5vw,52px);font-weight:500;line-height:1.15;max-width:800px;margin:0 auto 20px;letter-spacing:-.5px}
-.hero h1 em{font-style:italic;color:var(--gold)}
-.hero .sub{font-size:17px;color:var(--mut);max-width:560px;margin:0 auto 36px;font-weight:300;line-height:1.6}
+.hero{padding:150px 0 90px;text-align:center}
+.hero h1{font-family:'Outfit',sans-serif;font-size:clamp(36px,5.5vw,56px);font-weight:700;line-height:1.1;max-width:800px;margin:0 auto 22px;letter-spacing:-1px}
+.hero h1 em{font-family:'Newsreader',serif;font-style:italic;font-weight:500;color:var(--gold)}
+.hero .sub{font-size:18px;color:var(--mut);max-width:540px;margin:0 auto 38px;font-weight:300;line-height:1.65}
 .hero .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.hero .cta-primary{padding:14px 32px;background:var(--gold);color:#fff;border-radius:10px;font-size:15px;font-weight:600;transition:all .2s;box-shadow:0 4px 20px #B8963E33}
-.hero .cta-primary:hover{background:var(--goldD);transform:translateY(-1px)}
-.hero .cta-secondary{padding:14px 32px;background:transparent;color:var(--fg);border:1.5px solid var(--bdr);border-radius:10px;font-size:15px;font-weight:500;transition:all .2s}
+.hero .cta-primary{padding:15px 34px;background:var(--gold);color:#fff;border-radius:10px;font-size:15px;font-weight:600;transition:all .2s;box-shadow:0 4px 24px #B8963E33}
+.hero .cta-primary:hover{background:var(--goldD);transform:translateY(-2px)}
+.hero .cta-secondary{padding:15px 34px;background:transparent;color:var(--fg);border:1.5px solid var(--bdr);border-radius:10px;font-size:15px;font-weight:500;transition:all .2s}
 .hero .cta-secondary:hover{border-color:var(--gold);color:var(--gold)}
 
 /* ═══ BEFORE/AFTER ═══ */
-.before-after{padding:0 0 60px}
-.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px;margin:0 auto}
+.before-after{padding:0 0 0;background:var(--card)}
+.ba-inner{padding:80px 0 80px}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:860px;margin:0 auto}
 .ba-card{border-radius:14px;padding:28px 24px;position:relative;overflow:hidden}
-.ba-card.before{background:#FDF5F5;border:1.5px solid #F0D0D0}
-.ba-card.after{background:#F2F8F0;border:1.5px solid #C8E0C0}
+.ba-card.before{background:#fff;border:1.5px solid #F0D0D0}
+.ba-card.after{background:#fff;border:1.5px solid #C8E0C0}
 .ba-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:14px}
 .ba-card.before .ba-label{color:#C44}
 .ba-card.after .ba-label{color:#4A8}
 .ba-msg{padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:6px;line-height:1.4}
-.ba-card.before .ba-msg{background:#fff;border:1px solid #F0D0D0;color:#8B4040}
-.ba-card.after .ba-msg{background:#fff;border:1px solid #C8E0C0;color:#3A7040}
+.ba-card.before .ba-msg{background:#FDF5F5;border:1px solid #F0D0D0;color:#8B4040}
+.ba-card.after .ba-msg{background:#F2F8F0;border:1px solid #C8E0C0;color:#3A7040}
 
 /* ═══ STATS ═══ */
-.stats{background:var(--dark);padding:48px 0;margin:0 0 70px}
+.stats{background:var(--dark);padding:56px 0}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
-.stat-num{font-family:'Newsreader',serif;font-size:36px;color:var(--gold);font-weight:500}
+.stat-num{font-family:'Outfit',sans-serif;font-size:40px;font-weight:700;color:var(--gold);letter-spacing:-1px}
 .stat-label{font-size:12px;color:#7A746A;margin-top:2px;letter-spacing:.5px}
 
-/* ═══ SECTION ═══ */
-.section{padding:70px 0}
-.section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;text-align:center;margin-bottom:8px}
-.section-title{font-family:'Newsreader',serif;font-size:clamp(26px,3.5vw,38px);text-align:center;font-weight:500;margin-bottom:12px;letter-spacing:-.3px}
-.section-title em{font-style:italic;color:var(--gold)}
-.section-sub{font-size:15px;color:var(--mut);text-align:center;max-width:520px;margin:0 auto 40px;font-weight:300}
+/* ═══ SECTION (label → headline → sub pattern) ═══ */
+.section{padding:100px 0}
+.section.alt{background:var(--card)}
+.section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px}
+.section-label.left{text-align:left}
+.section-title{font-family:'Outfit',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;margin-bottom:14px;letter-spacing:-.5px;line-height:1.15}
+.section-title.center{text-align:center}
+.section-title em{font-family:'Newsreader',serif;font-style:italic;font-weight:500;color:var(--gold)}
+.section-sub{font-size:16px;color:var(--mut);max-width:560px;margin-bottom:44px;font-weight:300;line-height:1.65}
+.section-sub.center{text-align:center;margin-left:auto;margin-right:auto}
+
+/* ═══ TWO-COL FEATURE (incident.io style) ═══ */
+.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:100px}
+.feat-row:last-child{margin-bottom:0}
+.feat-row.reverse .feat-text{order:2}
+.feat-row.reverse .feat-visual{order:1}
+.feat-text .section-label{text-align:left;margin-bottom:10px}
+.feat-text .section-title{text-align:left}
+.feat-text .section-sub{text-align:left;margin-left:0}
+.feat-text .feat-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--gold);margin-top:4px;transition:gap .2s}
+.feat-text .feat-link:hover{gap:10px}
+.feat-visual{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:24px;min-height:320px;display:flex;align-items:center;justify-content:center}
+.feat-visual.dark{background:var(--dark);border-color:#2A2520}
+.feat-visual-inner{font-size:13px;color:var(--mut);line-height:1.6;width:100%}
+
+/* ═══ FEATURE GRID (compact) ═══ */
+.feat-grid-compact{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat-card{background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:24px}
+.feat-card h3{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;margin-bottom:5px}
+.feat-card p{font-size:13px;color:var(--mut);line-height:1.5}
 
 /* ═══ HOW IT WORKS ═══ */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.step{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:28px 24px;text-align:center}
+.step{background:var(--bg);border:1px solid var(--bdr);border-radius:14px;padding:28px 24px;text-align:center}
 .step-num{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;margin:0 auto 14px}
 .step h3{font-size:17px;font-weight:600;font-family:'Outfit',sans-serif;margin-bottom:6px}
 .step p{font-size:13px;color:var(--mut);line-height:1.5}
-.step-img{width:100%;margin-top:16px;border-radius:10px;border:1px solid var(--bdr);box-shadow:0 4px 20px rgba(0,0,0,.08);transition:transform .3s}
-.step-img:hover{transform:scale(1.02)}
 
 /* ═══ INTEGRATIONS ═══ */
-.integrations{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:40px;margin-top:50px}
+.integrations{background:var(--bg);border:1px solid var(--bdr);border-radius:16px;padding:40px;margin-top:50px}
 .int-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-top:20px}
-.int-pill{background:var(--bg);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;text-align:center;font-size:14px;font-weight:500;transition:all .2s}
+.int-pill{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;text-align:center;font-size:14px;font-weight:500;transition:all .2s}
 .int-pill:hover{border-color:var(--gold);transform:translateY(-2px)}
 .int-pill .api{font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;display:block;margin-top:2px}
 
-/* ═══ FEATURES ═══ */
-.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.feat{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:24px}
-.feat-icon{font-size:22px;margin-bottom:8px}
-.feat h3{font-size:15px;font-weight:600;font-family:'Outfit',sans-serif;margin-bottom:4px}
-.feat p{font-size:13px;color:var(--mut);line-height:1.5}
-
-/* ═══ DASHBOARD ═══ */
-.dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.dash-card{background:var(--dark);border-radius:14px;padding:28px 24px;color:var(--cream)}
-.dash-card .dash-icon{font-size:28px;margin-bottom:10px}
-.dash-card h3{font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;color:var(--goldL);margin-bottom:6px}
-.dash-card p{font-size:13px;color:#9A958C;line-height:1.55}
-.dash-card.highlight{border:1.5px solid var(--gold);background:linear-gradient(135deg,#1A1A18,#2A2520)}
-
-/* ═══ REVENUE ═══ */
-.revenue-card{background:linear-gradient(135deg,#1A1A18,#2A2520);border-radius:16px;padding:48px;color:var(--cream);text-align:center;margin-top:40px}
-.revenue-card h3{font-family:'Newsreader',serif;font-size:28px;color:var(--gold);margin-bottom:12px}
-.revenue-card p{font-size:15px;color:#AAA59A;max-width:500px;margin:0 auto 24px;line-height:1.6}
-.revenue-options{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:500px;margin:0 auto}
-.rev-opt{background:#2A2520;border:1px solid #3A352E;border-radius:12px;padding:20px}
-.rev-opt h4{font-size:14px;color:var(--goldL);margin-bottom:4px}
-.rev-opt p{font-size:12px;color:#7A746A}
-
-/* ═══ API HIGHLIGHT ═══ */
-.api-section{background:var(--dark);padding:60px 0 70px;margin:40px 0 0}
+/* ═══ DARK SECTION ═══ */
+.dark-section{background:var(--dark);padding:100px 0;color:var(--cream)}
+.dark-section .section-label{color:var(--gold)}
+.dark-section .section-title{color:var(--cream)}
+.dark-section .section-sub{color:#9A958C}
 .api-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:28px}
-.api-card{background:#222018;border:1px solid #3A352E;border-radius:12px;padding:24px;text-align:center}
+.api-card{background:#1E1C16;border:1px solid #302C24;border-radius:12px;padding:24px;text-align:center}
 .api-card h4{font-family:'Outfit',sans-serif;font-size:15px;color:var(--goldL);margin-bottom:6px}
 .api-card p{font-size:12px;color:#7A746A;line-height:1.5}
-.api-code{font-family:monospace;font-size:10px;color:var(--gold);background:#222018;border:1px solid #3A352E;border-radius:8px;padding:14px 18px;margin-top:10px;text-align:left;overflow-x:auto;white-space:pre;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;margin-bottom:0}
+.api-code{font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--gold);background:#1E1C16;border:1px solid #302C24;border-radius:10px;padding:20px 24px;margin-top:10px;text-align:left;overflow-x:auto;white-space:pre;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.8}
+
+/* ═══ REVENUE ═══ */
+.revenue-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:48px;text-align:center;margin-top:0}
+.revenue-card h3{font-family:'Outfit',sans-serif;font-size:28px;font-weight:700;color:var(--fg);margin-bottom:12px;letter-spacing:-.3px}
+.revenue-card p{font-size:15px;color:var(--mut);max-width:500px;margin:0 auto 24px;line-height:1.6}
+.revenue-options{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:500px;margin:0 auto}
+.rev-opt{background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:20px}
+.rev-opt h4{font-size:14px;color:var(--gold);font-weight:600;margin-bottom:4px}
+.rev-opt p{font-size:12px;color:var(--mut)}
 
 /* ═══ DEMO ═══ */
-.demo-section{background:var(--dark);padding:60px 0;text-align:center;margin:60px 0 0}
-.demo-section h2{font-family:'Newsreader',serif;font-size:32px;color:var(--cream);margin-bottom:10px}
-.demo-section p{color:#7A746A;margin-bottom:24px;font-size:15px}
-.demo-btn{display:inline-block;padding:16px 40px;background:var(--gold);color:#fff;border-radius:10px;font-size:16px;font-weight:600;transition:all .2s;box-shadow:0 4px 24px #B8963E44}
-.demo-btn:hover{background:var(--goldD);transform:translateY(-2px)}
-.demo-note{font-size:11px;color:#5A5650;margin-top:12px}
+.demo-section{background:var(--card);padding:80px 0;text-align:center}
+.demo-section h2{font-family:'Outfit',sans-serif;font-size:32px;font-weight:700;color:var(--fg);margin-bottom:10px;letter-spacing:-.3px}
+.demo-section p{color:var(--mut);margin-bottom:24px;font-size:15px}
+.demo-note{font-size:11px;color:var(--mut);margin-top:12px}
 .demo-grid{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
-.demo-link{padding:14px 28px;background:#2A2520;border:1.5px solid #3A352E;color:var(--cream);border-radius:10px;font-size:14px;font-weight:500;transition:all .2s;text-decoration:none}
+.demo-link{padding:14px 28px;background:var(--bg);border:1.5px solid var(--bdr);color:var(--fg);border-radius:10px;font-size:14px;font-weight:500;transition:all .2s;text-decoration:none}
 .demo-link:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
 .demo-link span{font-size:18px;margin-right:6px}
 
 /* ═══ QUOTE ═══ */
-.quote-section{padding:60px 0;text-align:center}
-.quote{font-family:'Newsreader',serif;font-size:24px;font-style:italic;color:var(--fg);max-width:600px;margin:0 auto 12px;line-height:1.5}
+.quote-section{padding:80px 0;text-align:center;background:var(--bg)}
+.quote{font-family:'Newsreader',serif;font-size:26px;font-style:italic;color:var(--fg);max-width:640px;margin:0 auto 14px;line-height:1.45}
 .quote-attr{font-size:13px;color:var(--mut)}
 
 /* ═══ FOOTER ═══ */
-footer{padding:30px 0;text-align:center;font-size:11px;color:var(--mut);border-top:1px solid var(--bdr)}
+footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-top:1px solid var(--bdr)}
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:768px){
-  .ba-grid,.steps,.feat-grid,.stats-grid,.revenue-options,.dash-grid,.api-grid{grid-template-columns:1fr}
+  .ba-grid,.steps,.feat-grid-compact,.stats-grid,.revenue-options,.api-grid,.feat-row{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .hero{padding:110px 0 50px}
+  .hero{padding:120px 0 60px}
+  .feat-row.reverse .feat-text{order:1}
+  .feat-row.reverse .feat-visual{order:2}
+  .feat-row{gap:30px;margin-bottom:60px}
 }
 </style>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<h3 style="font-family:'Newsreader',serif;font-size:22px;font-weight:500;margin-bottom:6px">Analyzing your site...</h3>
+<p id="ob-scan-status" style="font-size:13px;color:#6B6860">Connecting to ${OB.data.website.replace('https://','').replace('http://','').split('/')[0]}</p>
+</div>`;
+
+const domain=OB.data.website.replace('https://','').replace('http://','').split('/')[0];
+const phases=["Crawling pages...","Found blog posts","Extracting recommendations...","Identifying neighborhoods...","Building your content map..."];
+let pi=0;
+const iv=setInterval(()=>{
+  pi++;
+  if(pi<phases.length){document.getElementById("ob-scan-status").textContent=phases[pi];}
+  else{clearInterval(iv);showAnalysisResults(domain);}
+},800);
+}
+
+function showAnalysisResults(domain){
+OB.analyzed=true;
+const name=OB.data.name||domain;
+const city=OB.data.city||"your city";
+const mockPages=Math.floor(Math.random()*20)+8;
+const mockRecs=Math.floor(Math.random()*30)+12;
+const mockNeighborhoods=Math.floor(Math.random()*6)+3;
+const c=document.getElementById("onboard-steps");
+c.innerHTML=dots()+`<div style="text-align:center;margin-bottom:20px">
+<div style="width:48px;height:48px;border-radius:50%;background:#4A5A2C15;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;color:#4A5A2C;font-weight:700">✓</div>
+<h3 style="font-family:'Newsreader',serif;font-size:22px;font-weight:500;margin-bottom:4px">We found a lot to work with</h3>
+<p style="font-size:13px;color:#6B6860">Here's what we pulled from <strong>${domain}</strong></p>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:16px">
+<div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
+<div style="font-size:24px;font-weight:700;color:#B8963E">${mockPages}</div>
+<div style="font-size:11px;color:#6B6860">Pages crawled</div>
+</div>
+<div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
+<div style="font-size:24px;font-weight:700;color:#B8963E">${mockRecs}</div>
+<div style="font-size:11px;color:#6B6860">Recommendations</div>
+</div>
+<div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
+<div style="font-size:24px;font-weight:700;color:#B8963E">${mockNeighborhoods}</div>
+<div style="font-size:11px;color:#6B6860">Neighborhoods</div>
+</div>
+</div>
+<div style="background:#F7F4EE;border-radius:10px;padding:14px;margin-bottom:16px">
+<div style="font-size:11px;color:#6B6860;font-weight:600;margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">Sample recommendations found</div>
+<div style="font-size:13px;color:#1A1A18;line-height:1.6">Restaurants, cafés, and local spots from your blog posts will be imported as your recommendations bank. You can edit, add, or remove any of them after setup.</div>
+</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=3;renderStep()" ${btnS}>Back</button>
+<button onclick="OB.step=5;renderStep()" ${btnP}>Looks great — continue</button>
+</div>`;
+}
+
+function rS4(){return"";}
+
+function rS5(){
+return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">Anything else to import?</h3>
+<p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:24px">Both optional — you can always add these later.</p>
+<label style="display:block;font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:6px">Property listing URL</label>
+<input id="ob-listing" value="${OB.data.listing}" oninput="OB.data.listing=this.value" placeholder="https://airbnb.com/rooms/12345" ${inp}>
+<div style="font-size:11px;color:#6B6860;margin-top:4px;margin-bottom:18px">Airbnb, Vrbo, or Booking.com — we'll pull photos, amenities, and house rules.</div>
+<label style="display:block;font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:6px">Upload a guidebook</label>
+<div id="ob-pdf-zone" onclick="document.getElementById('ob-pdf-input').click()" style="border:2px dashed #E8E3D8;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='#B8963E'" onmouseout="this.style.borderColor='#E8E3D8'">
+<div style="font-size:13px;color:#6B6860" id="ob-pdf-label">${OB.data.pdf?OB.data.pdf.name:"Drop a PDF here or click to browse"}</div>
+<input type="file" id="ob-pdf-input" accept=".pdf" style="display:none" onchange="if(this.files[0]){OB.data.pdf=this.files[0];document.getElementById('ob-pdf-label').textContent=this.files[0].name;}">
+</div>
+<div style="font-size:11px;color:#6B6860;margin-top:4px;margin-bottom:18px">Guest welcome guides, restaurant lists, neighborhood maps.</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=${OB.analyzed?4:3};renderStep()" ${btnS}>Back</button>
+<button onclick="OB.step=6;renderStep()" ${btnP}>Next</button>
+</div>
+<button onclick="OB.step=6;renderStep()" ${skip}>Skip for now</button>`;
+}
+
+function rS6(){
+return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">What tools do you use?</h3>
+<p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:20px">We'll connect these automatically. Check all that apply.</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">${APIS.map(a=>{
+const on=OB.data.apis.includes(a);
+return`<button onclick="const i=OB.data.apis.indexOf('${a}');if(i>-1)OB.data.apis.splice(i,1);else OB.data.apis.push('${a}');renderStep()" style="padding:8px 14px;border-radius:20px;border:1.5px solid ${on?"#B8963E":"#E8E3D8"};background:${on?"#B8963E0C":"#fff"};color:${on?"#B8963E":"#6B6860"};font-size:13px;font-weight:${on?600:400};cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s">${a}</button>`}).join("")}</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=5;renderStep()" ${btnS}>Back</button>
+<button onclick="OB.step=7;renderStep()" ${btnP}>Next</button>
+</div>
+<button onclick="OB.step=7;renderStep()" ${skip}>None of these — skip</button>`;
+}
+
+function rS7(){
+return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">You're almost there</h3>
+<p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:20px">Create your account to get started.</p>
+<input id="ob-email" type="email" value="${OB.data.email}" oninput="OB.data.email=this.value" placeholder="you@yourcompany.com" ${inp}>
+<div style="height:10px"></div>
+<input id="ob-pass" type="password" value="${OB.data.password}" oninput="OB.data.password=this.value" placeholder="Create a password" ${inp}>
+<div style="height:16px"></div>
+<div style="display:flex;gap:10px;margin-bottom:16px">
+<div style="flex:1;border:1.5px solid #B8963E;border-radius:12px;padding:14px;background:#B8963E06;position:relative">
+<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:6px">Free</div>
+<div style="font-size:22px;font-weight:700;color:#1A1A18;margin-bottom:4px">$0<span style="font-size:12px;font-weight:400;color:#6B6860">/mo</span></div>
+<div style="font-size:11px;color:#6B6860;line-height:1.5">1 property<br>5 guest links/mo<br>AI concierge<br>Drag & drop builder</div>
+</div>
+<div style="flex:1;border:1.5px solid #E8E3D8;border-radius:12px;padding:14px;position:relative">
+<div style="position:absolute;top:-8px;right:12px;background:#B8963E;color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.5px">POPULAR</div>
+<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#6B6860;font-weight:700;margin-bottom:6px">Pro</div>
+<div style="font-size:22px;font-weight:700;color:#1A1A18;margin-bottom:4px">$29<span style="font-size:12px;font-weight:400;color:#6B6860">/mo</span></div>
+<div style="font-size:11px;color:#6B6860;line-height:1.5">Unlimited properties<br>Unlimited links<br>Tour API integration<br>Custom branding</div>
+</div>
+</div>
+<button id="ob-submit" onclick="submitOnboard()" ${btnP}>Start Free →</button>
+<div style="font-size:12px;color:#6B6860;text-align:center;margin-top:8px">No credit card required. Upgrade anytime.</div>
+<div style="display:flex;gap:10px;margin-top:14px">
+<button onclick="OB.step=6;renderStep()" ${btnS}>Back</button>
+</div>
+<div style="font-size:11px;color:#6B6860;text-align:center;margin-top:10px">By signing up you agree to our <span style="text-decoration:underline;cursor:pointer">Terms</span> and <span style="text-decoration:underline;cursor:pointer">Privacy Policy</span>.</div>`;
+}
+
+function submitOnboard(){
+const btn=document.getElementById("ob-submit");
+btn.textContent="Creating your Arrivo...";btn.style.background="#8A6F2E";
+setTimeout(()=>{
+  btn.textContent="You're in! Check your email.";btn.style.background="#4A5A2C";
+  setTimeout(()=>closeOnboard(),2200);
+},1500);
+}
+
+document.querySelectorAll('.cta-nav, .cta-primary').forEach(el=>{
+  if(el.href&&(el.href.includes('#demo')||el.href.includes('mailto:'))){
+    el.addEventListener('click',e=>{e.preventDefault();openOnboard();});
+  }
+});
+</script>
+
+</body>
+</html>
+
 </head>
 <body>
 
@@ -519,7 +666,286 @@ OB.step=4;
 const c=document.getElementById("onboard-steps");
 c.innerHTML=dots()+`<div style="text-align:center;padding:30px 0">
 <div id="ob-spinner" style="width:40px;height:40px;border:3px solid #E8E3D8;border-top:3px solid #B8963E;border-radius:50%;margin:0 auto 20px;animation:spin 1s linear infinite"></div>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#FDFCF9;--fg:#1A1A18;--mut:#6B6860;--gold:#B8963E;--goldL:#D4B36A;--goldD:#8A6F2E;--card:#F5F2EB;--bdr:#E8E3D8;--dark:#1A1A18;--cream:#FDFCF9;--wine:#7A3040;--olive:#4A5A2C;--sky:#3A6090}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;line-height:1.6}
+h1,h2,h3{font-family:'Newsreader',serif}
+a{color:inherit;text-decoration:none}
+.container{max-width:1100px;margin:0 auto;padding:0 28px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .7s ease both}
+.delay-1{animation-delay:.12s}.delay-2{animation-delay:.24s}.delay-3{animation-delay:.36s}
+
+/* ═══ NAV ═══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg)ee;backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr)}
+nav .inner{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;max-width:1100px;margin:0 auto}
+nav .logo{font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;letter-spacing:-.3px}
+nav .logo span{color:var(--gold)}
+nav .nav-links{display:flex;gap:28px;align-items:center;font-size:13px;color:var(--mut)}
+nav .nav-links a{transition:color .15s}
+nav .nav-links a:hover{color:var(--fg)}
+nav .cta-nav{padding:10px 22px;background:var(--gold);color:#fff;border-radius:8px;font-size:13px;font-weight:600;transition:all .2s}
+nav .cta-nav:hover{background:var(--goldD)}
+
+/* ═══ HERO ═══ */
+.hero{padding:150px 0 90px;text-align:center}
+.hero h1{font-family:'Outfit',sans-serif;font-size:clamp(36px,5.5vw,56px);font-weight:700;line-height:1.1;max-width:800px;margin:0 auto 22px;letter-spacing:-1px}
+.hero h1 em{font-family:'Newsreader',serif;font-style:italic;font-weight:500;color:var(--gold)}
+.hero .sub{font-size:18px;color:var(--mut);max-width:540px;margin:0 auto 38px;font-weight:300;line-height:1.65}
+.hero .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero .cta-primary{padding:15px 34px;background:var(--gold);color:#fff;border-radius:10px;font-size:15px;font-weight:600;transition:all .2s;box-shadow:0 4px 24px #B8963E33}
+.hero .cta-primary:hover{background:var(--goldD);transform:translateY(-2px)}
+.hero .cta-secondary{padding:15px 34px;background:transparent;color:var(--fg);border:1.5px solid var(--bdr);border-radius:10px;font-size:15px;font-weight:500;transition:all .2s}
+.hero .cta-secondary:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ═══ BEFORE/AFTER ═══ */
+.before-after{padding:0 0 0;background:var(--card)}
+.ba-inner{padding:80px 0 80px}
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:860px;margin:0 auto}
+.ba-card{border-radius:14px;padding:28px 24px;position:relative;overflow:hidden}
+.ba-card.before{background:#fff;border:1.5px solid #F0D0D0}
+.ba-card.after{background:#fff;border:1.5px solid #C8E0C0}
+.ba-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:14px}
+.ba-card.before .ba-label{color:#C44}
+.ba-card.after .ba-label{color:#4A8}
+.ba-msg{padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:6px;line-height:1.4}
+.ba-card.before .ba-msg{background:#FDF5F5;border:1px solid #F0D0D0;color:#8B4040}
+.ba-card.after .ba-msg{background:#F2F8F0;border:1px solid #C8E0C0;color:#3A7040}
+
+/* ═══ STATS ═══ */
+.stats{background:var(--dark);padding:56px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.stat-num{font-family:'Outfit',sans-serif;font-size:40px;font-weight:700;color:var(--gold);letter-spacing:-1px}
+.stat-label{font-size:12px;color:#7A746A;margin-top:2px;letter-spacing:.5px}
+
+/* ═══ SECTION (label → headline → sub pattern) ═══ */
+.section{padding:100px 0}
+.section.alt{background:var(--card)}
+.section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px}
+.section-label.left{text-align:left}
+.section-title{font-family:'Outfit',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:700;margin-bottom:14px;letter-spacing:-.5px;line-height:1.15}
+.section-title.center{text-align:center}
+.section-title em{font-family:'Newsreader',serif;font-style:italic;font-weight:500;color:var(--gold)}
+.section-sub{font-size:16px;color:var(--mut);max-width:560px;margin-bottom:44px;font-weight:300;line-height:1.65}
+.section-sub.center{text-align:center;margin-left:auto;margin-right:auto}
+
+/* ═══ TWO-COL FEATURE (incident.io style) ═══ */
+.feat-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-bottom:100px}
+.feat-row:last-child{margin-bottom:0}
+.feat-row.reverse .feat-text{order:2}
+.feat-row.reverse .feat-visual{order:1}
+.feat-text .section-label{text-align:left;margin-bottom:10px}
+.feat-text .section-title{text-align:left}
+.feat-text .section-sub{text-align:left;margin-left:0}
+.feat-text .feat-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--gold);margin-top:4px;transition:gap .2s}
+.feat-text .feat-link:hover{gap:10px}
+.feat-visual{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:24px;min-height:320px;display:flex;align-items:center;justify-content:center}
+.feat-visual.dark{background:var(--dark);border-color:#2A2520}
+.feat-visual-inner{font-size:13px;color:var(--mut);line-height:1.6;width:100%}
+
+/* ═══ FEATURE GRID (compact) ═══ */
+.feat-grid-compact{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat-card{background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:24px}
+.feat-card h3{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;margin-bottom:5px}
+.feat-card p{font-size:13px;color:var(--mut);line-height:1.5}
+
+/* ═══ HOW IT WORKS ═══ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.step{background:var(--bg);border:1px solid var(--bdr);border-radius:14px;padding:28px 24px;text-align:center}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;margin:0 auto 14px}
+.step h3{font-size:17px;font-weight:600;font-family:'Outfit',sans-serif;margin-bottom:6px}
+.step p{font-size:13px;color:var(--mut);line-height:1.5}
+
+/* ═══ INTEGRATIONS ═══ */
+.integrations{background:var(--bg);border:1px solid var(--bdr);border-radius:16px;padding:40px;margin-top:50px}
+.int-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-top:20px}
+.int-pill{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;text-align:center;font-size:14px;font-weight:500;transition:all .2s}
+.int-pill:hover{border-color:var(--gold);transform:translateY(-2px)}
+.int-pill .api{font-size:10px;color:var(--gold);letter-spacing:1px;text-transform:uppercase;display:block;margin-top:2px}
+
+/* ═══ DARK SECTION ═══ */
+.dark-section{background:var(--dark);padding:100px 0;color:var(--cream)}
+.dark-section .section-label{color:var(--gold)}
+.dark-section .section-title{color:var(--cream)}
+.dark-section .section-sub{color:#9A958C}
+.api-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:28px}
+.api-card{background:#1E1C16;border:1px solid #302C24;border-radius:12px;padding:24px;text-align:center}
+.api-card h4{font-family:'Outfit',sans-serif;font-size:15px;color:var(--goldL);margin-bottom:6px}
+.api-card p{font-size:12px;color:#7A746A;line-height:1.5}
+.api-code{font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--gold);background:#1E1C16;border:1px solid #302C24;border-radius:10px;padding:20px 24px;margin-top:10px;text-align:left;overflow-x:auto;white-space:pre;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.8}
+
+/* ═══ REVENUE ═══ */
+.revenue-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:48px;text-align:center;margin-top:0}
+.revenue-card h3{font-family:'Outfit',sans-serif;font-size:28px;font-weight:700;color:var(--fg);margin-bottom:12px;letter-spacing:-.3px}
+.revenue-card p{font-size:15px;color:var(--mut);max-width:500px;margin:0 auto 24px;line-height:1.6}
+.revenue-options{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:500px;margin:0 auto}
+.rev-opt{background:var(--bg);border:1px solid var(--bdr);border-radius:12px;padding:20px}
+.rev-opt h4{font-size:14px;color:var(--gold);font-weight:600;margin-bottom:4px}
+.rev-opt p{font-size:12px;color:var(--mut)}
+
+/* ═══ DEMO ═══ */
+.demo-section{background:var(--card);padding:80px 0;text-align:center}
+.demo-section h2{font-family:'Outfit',sans-serif;font-size:32px;font-weight:700;color:var(--fg);margin-bottom:10px;letter-spacing:-.3px}
+.demo-section p{color:var(--mut);margin-bottom:24px;font-size:15px}
+.demo-note{font-size:11px;color:var(--mut);margin-top:12px}
+.demo-grid{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.demo-link{padding:14px 28px;background:var(--bg);border:1.5px solid var(--bdr);color:var(--fg);border-radius:10px;font-size:14px;font-weight:500;transition:all .2s;text-decoration:none}
+.demo-link:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
+.demo-link span{font-size:18px;margin-right:6px}
+
+/* ═══ QUOTE ═══ */
+.quote-section{padding:80px 0;text-align:center;background:var(--bg)}
+.quote{font-family:'Newsreader',serif;font-size:26px;font-style:italic;color:var(--fg);max-width:640px;margin:0 auto 14px;line-height:1.45}
+.quote-attr{font-size:13px;color:var(--mut)}
+
+/* ═══ FOOTER ═══ */
+footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-top:1px solid var(--bdr)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:768px){
+  .ba-grid,.steps,.feat-grid-compact,.stats-grid,.revenue-options,.api-grid,.feat-row{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .hero{padding:120px 0 60px}
+  .feat-row.reverse .feat-text{order:1}
+  .feat-row.reverse .feat-visual{order:2}
+  .feat-row{gap:30px;margin-bottom:60px}
+}
+</style>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<h3 style="font-family:'Newsreader',serif;font-size:22px;font-weight:500;margin-bottom:6px">Analyzing your site...</h3>
+<p id="ob-scan-status" style="font-size:13px;color:#6B6860">Connecting to ${OB.data.website.replace('https://','').replace('http://','').split('/')[0]}</p>
+</div>`;
+
+const domain=OB.data.website.replace('https://','').replace('http://','').split('/')[0];
+const phases=["Crawling pages...","Found blog posts","Extracting recommendations...","Identifying neighborhoods...","Building your content map..."];
+let pi=0;
+const iv=setInterval(()=>{
+  pi++;
+  if(pi<phases.length){document.getElementById("ob-scan-status").textContent=phases[pi];}
+  else{clearInterval(iv);showAnalysisResults(domain);}
+},800);
+}
+
+function showAnalysisResults(domain){
+OB.analyzed=true;
+const name=OB.data.name||domain;
+const city=OB.data.city||"your city";
+const mockPages=Math.floor(Math.random()*20)+8;
+const mockRecs=Math.floor(Math.random()*30)+12;
+const mockNeighborhoods=Math.floor(Math.random()*6)+3;
+const c=document.getElementById("onboard-steps");
+c.innerHTML=dots()+`<div style="text-align:center;margin-bottom:20px">
+<div style="width:48px;height:48px;border-radius:50%;background:#4A5A2C15;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px;color:#4A5A2C;font-weight:700">✓</div>
+<h3 style="font-family:'Newsreader',serif;font-size:22px;font-weight:500;margin-bottom:4px">We found a lot to work with</h3>
+<p style="font-size:13px;color:#6B6860">Here's what we pulled from <strong>${domain}</strong></p>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:16px">
+<div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
+<div style="font-size:24px;font-weight:700;color:#B8963E">${mockPages}</div>
+<div style="font-size:11px;color:#6B6860">Pages crawled</div>
+</div>
+<div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
+<div style="font-size:24px;font-weight:700;color:#B8963E">${mockRecs}</div>
+<div style="font-size:11px;color:#6B6860">Recommendations</div>
+</div>
+<div style="flex:1;background:#F7F4EE;border-radius:10px;padding:14px;text-align:center">
+<div style="font-size:24px;font-weight:700;color:#B8963E">${mockNeighborhoods}</div>
+<div style="font-size:11px;color:#6B6860">Neighborhoods</div>
+</div>
+</div>
+<div style="background:#F7F4EE;border-radius:10px;padding:14px;margin-bottom:16px">
+<div style="font-size:11px;color:#6B6860;font-weight:600;margin-bottom:6px;letter-spacing:1px;text-transform:uppercase">Sample recommendations found</div>
+<div style="font-size:13px;color:#1A1A18;line-height:1.6">Restaurants, cafés, and local spots from your blog posts will be imported as your recommendations bank. You can edit, add, or remove any of them after setup.</div>
+</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=3;renderStep()" ${btnS}>Back</button>
+<button onclick="OB.step=5;renderStep()" ${btnP}>Looks great — continue</button>
+</div>`;
+}
+
+function rS4(){return"";}
+
+function rS5(){
+return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">Anything else to import?</h3>
+<p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:24px">Both optional — you can always add these later.</p>
+<label style="display:block;font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:6px">Property listing URL</label>
+<input id="ob-listing" value="${OB.data.listing}" oninput="OB.data.listing=this.value" placeholder="https://airbnb.com/rooms/12345" ${inp}>
+<div style="font-size:11px;color:#6B6860;margin-top:4px;margin-bottom:18px">Airbnb, Vrbo, or Booking.com — we'll pull photos, amenities, and house rules.</div>
+<label style="display:block;font-size:12px;font-weight:600;color:#1A1A18;margin-bottom:6px">Upload a guidebook</label>
+<div id="ob-pdf-zone" onclick="document.getElementById('ob-pdf-input').click()" style="border:2px dashed #E8E3D8;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:border-color .15s" onmouseover="this.style.borderColor='#B8963E'" onmouseout="this.style.borderColor='#E8E3D8'">
+<div style="font-size:13px;color:#6B6860" id="ob-pdf-label">${OB.data.pdf?OB.data.pdf.name:"Drop a PDF here or click to browse"}</div>
+<input type="file" id="ob-pdf-input" accept=".pdf" style="display:none" onchange="if(this.files[0]){OB.data.pdf=this.files[0];document.getElementById('ob-pdf-label').textContent=this.files[0].name;}">
+</div>
+<div style="font-size:11px;color:#6B6860;margin-top:4px;margin-bottom:18px">Guest welcome guides, restaurant lists, neighborhood maps.</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=${OB.analyzed?4:3};renderStep()" ${btnS}>Back</button>
+<button onclick="OB.step=6;renderStep()" ${btnP}>Next</button>
+</div>
+<button onclick="OB.step=6;renderStep()" ${skip}>Skip for now</button>`;
+}
+
+function rS6(){
+return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">What tools do you use?</h3>
+<p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:20px">We'll connect these automatically. Check all that apply.</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">${APIS.map(a=>{
+const on=OB.data.apis.includes(a);
+return`<button onclick="const i=OB.data.apis.indexOf('${a}');if(i>-1)OB.data.apis.splice(i,1);else OB.data.apis.push('${a}');renderStep()" style="padding:8px 14px;border-radius:20px;border:1.5px solid ${on?"#B8963E":"#E8E3D8"};background:${on?"#B8963E0C":"#fff"};color:${on?"#B8963E":"#6B6860"};font-size:13px;font-weight:${on?600:400};cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s">${a}</button>`}).join("")}</div>
+<div style="display:flex;gap:10px">
+<button onclick="OB.step=5;renderStep()" ${btnS}>Back</button>
+<button onclick="OB.step=7;renderStep()" ${btnP}>Next</button>
+</div>
+<button onclick="OB.step=7;renderStep()" ${skip}>None of these — skip</button>`;
+}
+
+function rS7(){
+return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;text-align:center;margin-bottom:6px">You're almost there</h3>
+<p style="font-size:13px;color:#6B6860;text-align:center;margin-bottom:20px">Create your account to get started.</p>
+<input id="ob-email" type="email" value="${OB.data.email}" oninput="OB.data.email=this.value" placeholder="you@yourcompany.com" ${inp}>
+<div style="height:10px"></div>
+<input id="ob-pass" type="password" value="${OB.data.password}" oninput="OB.data.password=this.value" placeholder="Create a password" ${inp}>
+<div style="height:16px"></div>
+<div style="display:flex;gap:10px;margin-bottom:16px">
+<div style="flex:1;border:1.5px solid #B8963E;border-radius:12px;padding:14px;background:#B8963E06;position:relative">
+<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:6px">Free</div>
+<div style="font-size:22px;font-weight:700;color:#1A1A18;margin-bottom:4px">$0<span style="font-size:12px;font-weight:400;color:#6B6860">/mo</span></div>
+<div style="font-size:11px;color:#6B6860;line-height:1.5">1 property<br>5 guest links/mo<br>AI concierge<br>Drag & drop builder</div>
+</div>
+<div style="flex:1;border:1.5px solid #E8E3D8;border-radius:12px;padding:14px;position:relative">
+<div style="position:absolute;top:-8px;right:12px;background:#B8963E;color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.5px">POPULAR</div>
+<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#6B6860;font-weight:700;margin-bottom:6px">Pro</div>
+<div style="font-size:22px;font-weight:700;color:#1A1A18;margin-bottom:4px">$29<span style="font-size:12px;font-weight:400;color:#6B6860">/mo</span></div>
+<div style="font-size:11px;color:#6B6860;line-height:1.5">Unlimited properties<br>Unlimited links<br>Tour API integration<br>Custom branding</div>
+</div>
+</div>
+<button id="ob-submit" onclick="submitOnboard()" ${btnP}>Start Free →</button>
+<div style="font-size:12px;color:#6B6860;text-align:center;margin-top:8px">No credit card required. Upgrade anytime.</div>
+<div style="display:flex;gap:10px;margin-top:14px">
+<button onclick="OB.step=6;renderStep()" ${btnS}>Back</button>
+</div>
+<div style="font-size:11px;color:#6B6860;text-align:center;margin-top:10px">By signing up you agree to our <span style="text-decoration:underline;cursor:pointer">Terms</span> and <span style="text-decoration:underline;cursor:pointer">Privacy Policy</span>.</div>`;
+}
+
+function submitOnboard(){
+const btn=document.getElementById("ob-submit");
+btn.textContent="Creating your Arrivo...";btn.style.background="#8A6F2E";
+setTimeout(()=>{
+  btn.textContent="You're in! Check your email.";btn.style.background="#4A5A2C";
+  setTimeout(()=>closeOnboard(),2200);
+},1500);
+}
+
+document.querySelectorAll('.cta-nav, .cta-primary').forEach(el=>{
+  if(el.href&&(el.href.includes('#demo')||el.href.includes('mailto:'))){
+    el.addEventListener('click',e=>{e.preventDefault();openOnboard();});
+  }
+});
+</script>
+
+</body>
+</html>
+
 <h3 style="font-family:'Newsreader',serif;font-size:22px;font-weight:500;margin-bottom:6px">Analyzing your site...</h3>
 <p id="ob-scan-status" style="font-size:13px;color:#6B6860">Connecting to ${OB.data.website.replace('https://','').replace('http://','').split('/')[0]}</p>
 </div>`;

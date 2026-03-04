@@ -652,11 +652,36 @@ return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;
 
 function submitOnboard(){
 const btn=document.getElementById("ob-submit");
-btn.textContent="Creating your Arrivo...";btn.style.background="#8A6F2E";
-setTimeout(()=>{
-  btn.textContent="You're in! Check your email.";btn.style.background="#4A5A2C";
-  setTimeout(()=>closeOnboard(),2200);
-},1500);
+btn.textContent="Creating your Arrivo...";
+btn.style.background="#8A6F2E"; // Darker gold for "Creating..."
+
+fetch('https://formspree.io/f/xbdanzog', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(OB.data)
+})
+.then(response => {
+    if (response.ok) {
+        btn.textContent="You're in! Check your email.";
+        btn.style.background="#4A5A2C"; // Green for success
+        setTimeout(() => closeOnboard(), 2200);
+    } else {
+        return response.json().then(errorData => {
+            throw new Error(errorData.error || 'Unknown error');
+        });
+    }
+})
+.catch(error => {
+    console.error('Formspree submission error:', error);
+    btn.textContent="Error. Please try again.";
+    btn.style.background="#C94E38"; // Red for error
+    setTimeout(() => {
+        btn.textContent="Start Free →"; // Reset button text after a delay
+        btn.style.background="var(--gold)"; // Reset button color
+    }, 3000);
+});
 }
 
 document.querySelectorAll('.cta-nav, .cta-primary').forEach(el=>{

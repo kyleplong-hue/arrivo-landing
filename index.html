@@ -56,19 +56,39 @@ nav .cta-nav:hover{background:var(--goldD)}
 .hero .cta-secondary{padding:15px 34px;background:transparent;color:var(--fg);border:1.5px solid var(--bdr);border-radius:10px;font-size:15px;font-weight:500;transition:all .2s}
 .hero .cta-secondary:hover{border-color:var(--gold);color:var(--gold)}
 
-/* ═══ BEFORE/AFTER ═══ */
-.before-after{padding:0 0 0;background:var(--card)}
-.ba-inner{padding:80px 0 80px}
-.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:860px;margin:0 auto}
-.ba-card{border-radius:14px;padding:28px 24px;position:relative;overflow:hidden}
-.ba-card.before{background:#fff;border:1.5px solid #F0D0D0}
-.ba-card.after{background:#fff;border:1.5px solid #C8E0C0}
-.ba-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:14px}
-.ba-card.before .ba-label{color:#C44}
-.ba-card.after .ba-label{color:#4A8}
-.ba-msg{padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:6px;line-height:1.4}
-.ba-card.before .ba-msg{background:#FDF5F5;border:1px solid #F0D0D0;color:#8B4040}
-.ba-card.after .ba-msg{background:#F2F8F0;border:1px solid #C8E0C0;color:#3A7040}
+/* ═══ CHAT→ITINERARY ANIMATION ═══ */
+.sleeper{padding:80px 0;background:var(--card)}
+.sleeper-inner{max-width:720px;margin:0 auto}
+.sleep-screen{background:#1A1A18;border-radius:18px;padding:28px 24px;min-height:340px;box-shadow:0 12px 48px rgba(0,0,0,.15);position:relative;overflow:hidden}
+.sleep-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid #2A2520}
+.sleep-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:600}
+.sleep-name{font-size:13px;color:#EDE5DD;font-weight:600}
+.sleep-sub-text{font-size:10px;color:#8A8478}
+.sleep-time{margin-left:auto;font-size:10px;color:#6B6860}
+.sleep-phase{position:absolute;left:24px;right:24px;top:72px;bottom:24px;opacity:0;transition:opacity .6s ease}
+.sleep-phase.active{opacity:1}
+.sleep-q{background:#2A2520;border-radius:14px 14px 14px 4px;padding:12px 16px;margin-bottom:10px;max-width:85%;font-size:13px;color:#EDE5DD;line-height:1.45;opacity:0;transform:translateY(10px);transition:all .4s ease}
+.sleep-q.show{opacity:1;transform:translateY(0)}
+.sleep-ql{font-size:9px;color:#8A8478;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.sleep-a{background:#B8963E15;border:1px solid #B8963E30;border-radius:14px 14px 4px 14px;padding:12px 16px;margin-left:auto;max-width:88%;font-size:13px;color:#D4B36A;line-height:1.5;margin-bottom:10px;opacity:0;transform:translateY(10px);transition:all .4s ease}
+.sleep-a.show{opacity:1;transform:translateY(0)}
+.sleep-a strong{color:#EDE5DD}
+.sleep-al{font-size:9px;color:#B8963E;margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:1px;text-align:right}
+.sleep-trans{text-align:center;margin-top:16px;font-size:12px;color:var(--gold);opacity:0;transition:opacity .5s}
+.sleep-trans.show{opacity:1}
+.itin-hdr{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:12px;text-align:center}
+.itin-day-lbl{font-size:11px;font-weight:600;color:#EDE5DD;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.itin-day-lbl .ibar{width:3px;height:14px;border-radius:2px}
+.itin-item2{display:flex;gap:8px;padding:7px 10px;background:#252218;border-radius:8px;margin-bottom:4px;font-size:11px;color:#BDB8AE}
+.itin-item2 .itime{color:var(--gold);min-width:48px;font-size:10px}
+.itin-item2.newi{opacity:0;transform:translateX(20px);background:#B8963E12;border:1px solid #B8963E25}
+.itin-item2.newi.show{opacity:1;transform:translateX(0)}
+.itin-item2.newi .idesc{color:#D4B36A}
+.nbadge{font-size:8px;color:var(--gold);background:#B8963E20;padding:1px 5px;border-radius:4px;margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.sleep-summary{text-align:center;margin-top:24px;opacity:0;transition:all .5s ease}
+.sleep-summary.show{opacity:1}
+.sleep-summary-badge{display:inline-block;font-size:11px;color:var(--gold);background:#B8963E12;border:1px solid #B8963E30;padding:8px 18px;border-radius:20px;font-weight:600}
+.sleep-summary-sub{font-size:11px;color:var(--mut);margin-top:6px}
 
 /* ═══ STATS ═══ */
 .stats{background:var(--dark);padding:56px 0}
@@ -297,48 +317,51 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
   </div>
 </section>
 
-<!-- ═══ BEFORE / AFTER (warm gray bg) ═══ -->
-<section class="before-after">
+<!-- ═══ CHAT → ITINERARY ANIMATION ═══ -->
+<section class="sleeper">
   <div class="container">
-    <div class="ba-inner">
-    <div style="text-align:center;margin-bottom:36px">
-      <div class="section-label">The Problem</div>
-      <div class="section-title center">Every guest asks the <em>same questions.</em></div>
+    <div class="sleeper-inner">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="section-label">11:47 PM · You're asleep</div>
+      <div class="section-title center">Your concierge <em>never sleeps.</em></div>
     </div>
-    <div class="ba-grid">
-      <div class="ba-card before fade-up delay-1">
-        <div class="ba-label">Your inbox right now</div>
-        <div class="ba-msg">"What should we do on our first night?"</div>
-        <div class="ba-msg">"Any wineries open on Sunday?"</div>
-        <div class="ba-msg">"Is there a good restaurant near the villa?"</div>
-        <div class="ba-msg">"Where's the closest supermarket?"</div>
-        <div class="ba-msg">"Can you book us a restaurant for Saturday?"</div>
-        <div class="ba-msg">"What should we do on a rainy day?"</div>
-        <div style="font-size:11px;color:#C44;text-align:center;margin-top:10px;font-weight:600">× 40 guests per week × every week</div>
+    <div class="sleep-screen" id="sleepScreen">
+      <div class="sleep-header">
+        <div class="sleep-avatar">S</div>
+        <div><div class="sleep-name">Sarah & James</div><div class="sleep-sub-text">Molino Nobile · Jun 15–22</div></div>
+        <div class="sleep-time" id="sleepTime">11:47 PM</div>
       </div>
-      <div class="ba-card after fade-up delay-2" style="background:#1A1A18;border-color:#2A2520;padding:20px 18px">
-        <div class="ba-label" style="color:#B8963E">With Arrivable</div>
-        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#B8963E;font-weight:700;margin-bottom:8px;text-align:center">Sarah & James · Jun 15–22</div>
-        <div style="background:#252218;border-radius:8px;padding:8px 10px;margin-bottom:5px;border-left:3px solid #C87A50;display:flex;justify-content:space-between;align-items:center">
-          <span style="color:#EDE5DD;font-size:12px;font-weight:500">Day 1 — Arrival</span>
-          <span style="font-size:9px;color:#C87A50;background:#C87A5015;padding:1px 6px;border-radius:8px">5 stops</span>
-        </div>
-        <div style="background:#252218;border-radius:8px;padding:8px 10px;margin-bottom:5px;border-left:3px solid #B8963E;display:flex;justify-content:space-between;align-items:center">
-          <span style="color:#EDE5DD;font-size:12px;font-weight:500">Day 2 — Wine & Vineyards</span>
-          <span style="font-size:9px;color:#8A8478">4 stops</span>
-        </div>
-        <div style="background:#252218;border-radius:8px;padding:8px 10px;margin-bottom:5px;border-left:3px solid #4A5A2C;display:flex;justify-content:space-between;align-items:center">
-          <span style="color:#EDE5DD;font-size:12px;font-weight:500">Day 3 — Hill Towns</span>
-          <span style="font-size:9px;color:#8A8478">5 stops</span>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:10px;margin-bottom:8px">
-          <span style="font-size:9px;padding:4px 8px;background:#252218;border:1px solid #3A352A;border-radius:10px;color:#8A8478">🗺️ Maps</span>
-          <span style="font-size:9px;padding:4px 8px;background:#252218;border:1px solid #3A352A;border-radius:10px;color:#8A8478">⟳ Swap</span>
-          <span style="font-size:9px;padding:4px 8px;background:#252218;border:1px solid #3A352A;border-radius:10px;color:#8A8478">💬 Chat</span>
-          <span style="font-size:9px;padding:4px 8px;background:#252218;border:1px solid #3A352A;border-radius:10px;color:#8A8478">📋 Book</span>
-        </div>
-        <div style="font-size:10px;color:#4A8;text-align:center;font-weight:600">Sent automatically when they book ✓</div>
+      <div class="sleep-phase" id="chatPh">
+        <div class="sleep-q" id="sq1"><div class="sleep-ql">Sarah</div>Where should we eat tonight? Something local 🙏</div>
+        <div class="sleep-a" id="sa1"><div class="sleep-al">Concierge</div>Try <strong>La Grotta</strong> — refined Tuscan, garden terrace. I'll add it to your evening!</div>
+        <div class="sleep-q" id="sq2"><div class="sleep-ql">Sarah</div>Any wineries open tomorrow morning?</div>
+        <div class="sleep-a" id="sa2"><div class="sleep-al">Concierge</div><strong>De Ricci</strong> at 10 AM, no booking needed. Adding to Day 2! 🍷</div>
+        <div class="sleep-trans" id="strans">Updating your itinerary...</div>
       </div>
+      <div class="sleep-phase" id="itinPh">
+        <div class="itin-hdr">Your Updated Week</div>
+        <div style="margin-bottom:10px">
+          <div class="itin-day-lbl"><div class="ibar" style="background:#C87A50"></div>Today — Evening</div>
+          <div class="itin-item2"><span class="itime">5:30 PM</span><span class="idesc">Aperitivo by the pool 🏊</span></div>
+          <div class="itin-item2 newi" id="si1"><span class="itime">7:30 PM</span><span class="idesc">La Grotta — garden terrace dinner</span><span class="nbadge">new</span></div>
+          <div class="itin-item2"><span class="itime">9:30 PM</span><span class="idesc">Evening stroll through Montepulciano</span></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="itin-day-lbl"><div class="ibar" style="background:#B8963E"></div>Tomorrow — Wine Day</div>
+          <div class="itin-item2 newi" id="si2"><span class="itime">10:00 AM</span><span class="idesc">De Ricci winery — walk-in tasting</span><span class="nbadge">new</span></div>
+          <div class="itin-item2"><span class="itime">12:30 PM</span><span class="idesc">Lunch at Bindella</span></div>
+          <div class="itin-item2"><span class="itime">3:00 PM</span><span class="idesc">Salcheto sunset tasting</span></div>
+        </div>
+        <div>
+          <div class="itin-day-lbl"><div class="ibar" style="background:#4A5A2C"></div>Day 3 — Hill Towns</div>
+          <div class="itin-item2"><span class="itime">9:30 AM</span><span class="idesc">Montepulciano walking tour</span></div>
+          <div class="itin-item2"><span class="itime">1:00 PM</span><span class="idesc">Pienza pecorino tasting & lunch</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="sleep-summary" id="sleepSummary">
+      <div class="sleep-summary-badge">😴 Questions answered, itinerary updated — all while you slept</div>
+      <div class="sleep-summary-sub">Your expertise does the work. Even at midnight.</div>
     </div>
     </div>
   </div>
@@ -893,6 +916,36 @@ document.querySelectorAll('.cta-nav, .cta-primary').forEach(el=>{
   }
 });
 // "See Live Demos" secondary buttons scroll naturally via html{scroll-behavior:smooth}
+
+// ═══ SLEEPER ANIMATION: chat → itinerary ═══
+(function(){
+  let sRunning=false;
+  function runSleeper(){
+    if(sRunning)return;sRunning=true;
+    const cp=document.getElementById('chatPh'),ip=document.getElementById('itinPh');
+    if(!cp||!ip)return;
+    cp.classList.remove('active');ip.classList.remove('active');
+    ['sq1','sa1','sq2','sa2','strans'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('show')});
+    ['si1','si2'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.remove('show')});
+    const sum=document.getElementById('sleepSummary');if(sum)sum.classList.remove('show');
+    const st=document.getElementById('sleepTime');if(st)st.textContent='11:47 PM';
+
+    setTimeout(()=>cp.classList.add('active'),300);
+    setTimeout(()=>{const e=document.getElementById('sq1');if(e)e.classList.add('show')},800);
+    setTimeout(()=>{const e=document.getElementById('sa1');if(e)e.classList.add('show')},2200);
+    setTimeout(()=>{const e=document.getElementById('sq2');if(e)e.classList.add('show')},4200);
+    setTimeout(()=>{const e=document.getElementById('sa2');if(e)e.classList.add('show')},5800);
+    setTimeout(()=>{const e=document.getElementById('strans');if(e)e.classList.add('show')},7500);
+    setTimeout(()=>{cp.classList.remove('active');ip.classList.add('active');if(st)st.textContent='Updated'},9000);
+    setTimeout(()=>{const e=document.getElementById('si1');if(e)e.classList.add('show')},10000);
+    setTimeout(()=>{const e=document.getElementById('si2');if(e)e.classList.add('show')},11200);
+    setTimeout(()=>{if(sum)sum.classList.add('show')},12800);
+    setTimeout(()=>{sRunning=false;setTimeout(runSleeper,3000)},17000);
+  }
+  const sObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)runSleeper()})},{threshold:.3});
+  const sEl=document.getElementById('sleepScreen');
+  if(sEl)sObs.observe(sEl);
+})();
 
 // ═══ HERO ANIMATION: swap dinner + drag ═══
 (function(){

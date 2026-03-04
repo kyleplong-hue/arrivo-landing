@@ -969,11 +969,14 @@ try{
   // Signup notification logged server-side (Formspree removed)
 
   // Store auth for dashboard
-  localStorage.setItem('pb_auth',JSON.stringify({token:auth.token,user:auth.record}));
-
-  btn.textContent="You're in! Redirecting...";
-  btn.style.background="#4A5A2C";
-  setTimeout(()=>{closeOnboard();window.location.href='/dashboard/';},1500);
+  if(auth?.token){
+    localStorage.setItem('pb_auth',JSON.stringify({token:auth.token,user:auth.record}));
+    btn.textContent="You're in! Redirecting...";
+    btn.style.background="#4A5A2C";
+    setTimeout(()=>{closeOnboard();window.location.href='/dashboard/';},1500);
+  }else{
+    throw new Error('Authentication succeeded but no token received. Please try logging in at /dashboard/');
+  }
 
 }catch(error){
   console.error('Signup error:',error);

@@ -4,6 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Arrivo — Pre-Trip Planning for Tour Companies & Vacation Rentals</title>
+<meta name="description" content="Turn your city expertise into personalized pre-trip planners. Guests explore deeper, ask fewer questions, and remember your name. Built for tour operators and vacation rentals.">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Arrivo — Your Guests Arrive Prepared">
+<meta property="og:description" content="Turn your city expertise into a personalized pre-trip planner. Drag-and-drop itineraries, AI concierge, smart recommendations. Free to start.">
+<meta property="og:url" content="https://arrivo.montepulciano-rental.com/">
+<meta property="og:site_name" content="Arrivo">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Arrivo — Your Guests Arrive Prepared">
+<meta name="twitter:description" content="Pre-trip planning for tour companies & vacation rentals. AI concierge, drag-and-drop itineraries, smart recommendations.">
+
+<!-- Favicon -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -160,9 +175,23 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
   .ba-grid,.steps,.feat-grid-compact,.stats-grid,.revenue-options,.api-grid,.feat-row{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
   .hero{padding:120px 0 60px}
+  .hero h1{font-size:32px}
+  .hero .sub{font-size:16px}
+  .hero .ctas{flex-direction:column;align-items:center}
   .feat-row.reverse .feat-text{order:1}
   .feat-row.reverse .feat-visual{order:2}
   .feat-row{gap:30px;margin-bottom:60px}
+  .section-title{font-size:26px}
+  .feat-visual{min-height:240px;padding:16px}
+  .int-grid{grid-template-columns:repeat(2,1fr)}
+  nav .nav-links{gap:12px;font-size:11px}
+  nav .nav-links a:not(.cta-nav){display:none}
+  nav .cta-nav{padding:8px 16px;font-size:12px}
+  .container{padding:0 16px}
+  .revenue-card{padding:28px 20px}
+  .quote{font-size:20px}
+  .demo-grid{flex-direction:column;align-items:center}
+  #onboard-modal{padding:28px 20px;border-radius:14px}
 }
 </style>
 </head>
@@ -454,6 +483,12 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
 
 <footer>
   <div class="container">
+    <div style="display:flex;gap:20px;justify-content:center;margin-bottom:10px;flex-wrap:wrap">
+      <a href="mailto:kyle@arrivo.io" style="color:var(--mut);font-size:12px;text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mut)'">Contact</a>
+      <a href="#" style="color:var(--mut);font-size:12px;text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mut)'">Terms</a>
+      <a href="#" style="color:var(--mut);font-size:12px;text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mut)'">Privacy</a>
+      <a href="#demo" style="color:var(--mut);font-size:12px;text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mut)'">Live Demo</a>
+    </div>
     © 2026 Arrivo · Built for tour operators and vacation rentals who know their city better than anyone.
   </div>
 </footer>
@@ -683,11 +718,16 @@ fetch('https://formspree.io/f/xbdanzog', {
 });
 }
 
+// Only hijack "Get Started" buttons — not demo links or nav anchors
 document.querySelectorAll('.cta-nav, .cta-primary').forEach(el=>{
-  if(el.href&&(el.href.includes('#demo')||el.href.includes('mailto:'))){
+  const href = el.getAttribute('href') || '';
+  const text = el.textContent.trim().toLowerCase();
+  // Open onboard for "Get Started" buttons and mailto links only
+  if(text.includes('get started') || href.includes('mailto:')){
     el.addEventListener('click',e=>{e.preventDefault();openOnboard();});
   }
 });
+// "See Live Demos" secondary buttons scroll naturally via html{scroll-behavior:smooth}
 </script>
 
 </body>

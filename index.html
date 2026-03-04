@@ -872,38 +872,76 @@ return`<h3 style="font-family:'Newsreader',serif;font-size:26px;font-weight:500;
 <div style="font-size:11px;color:#6B6860;text-align:center;margin-top:10px">By signing up you agree to our <span style="text-decoration:underline;cursor:pointer">Terms</span> and <span style="text-decoration:underline;cursor:pointer">Privacy Policy</span>.</div>`;
 }
 
-function submitOnboard(){
+async function submitOnboard(){
 const btn=document.getElementById("ob-submit");
-btn.textContent="Creating your Arrivo...";
-btn.style.background="#8A6F2E"; // Darker gold for "Creating..."
+btn.textContent="Creating your account...";
+btn.style.background="#8A6F2E";
 
-fetch('https://formspree.io/f/xbdanzog', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(OB.data)
-})
-.then(response => {
-    if (response.ok) {
-        btn.textContent="You're in! Check your email.";
-        btn.style.background="#4A5A2C"; // Green for success
-        setTimeout(() => closeOnboard(), 2200);
-    } else {
-        return response.json().then(errorData => {
-            throw new Error(errorData.error || 'Unknown error');
-        });
-    }
-})
-.catch(error => {
-    console.error('Formspree submission error:', error);
-    btn.textContent="Error. Please try again.";
-    btn.style.background="#C94E38"; // Red for error
-    setTimeout(() => {
-        btn.textContent="Start Free →"; // Reset button text after a delay
-        btn.style.background="var(--gold)"; // Reset button color
-    }, 3000);
-});
+try{
+  // 1. Create user account
+  const userRes=await fetch('/api/collections/users/records',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      email:OB.data.email,
+      password:OB.data.password,
+      passwordConfirm:OB.data.password,
+      name:OB.data.name,
+      business_name:OB.data.name,
+      city:OB.data.city,
+      business_type:OB.data.type,
+      website:OB.data.website||'',
+      listing_url:OB.data.listing||'',
+      apis:OB.data.apis,
+      onboarded:true
+    })
+  });
+  if(!userRes.ok){
+    const err=await userRes.json();
+    const msg=err.data?.email?.message||err.data?.password?.message||err.message||'Signup failed';
+    throw new Error(msg);
+  }
+  const user=await userRes.json();
+
+  // 2. Auth as the new user
+  const authRes=await fetch('/api/collections/users/auth-with-password',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({identity:OB.data.email,password:OB.data.password})
+  });
+  if(authRes.ok){
+    const auth=await authRes.json();
+    // 3. Create their first property
+    await fetch('/api/collections/properties/records',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+auth.token},
+      body:JSON.stringify({
+        name:OB.data.name,
+        city:OB.data.city,
+        prop_type:OB.data.type,
+        website:OB.data.website||'',
+        pin:Math.floor(1000+Math.random()*9000).toString(),
+        settings:{apis:OB.data.apis,listing:OB.data.listing||''}
+      })
+    });
+  }
+
+  // Also send to Formspree as backup/notification
+  fetch('https://formspree.io/f/xbdanzog',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({...OB.data,source:'pocketbase_signup',userId:user.id})
+  }).catch(()=>{});
+
+  btn.textContent="You're in! Welcome aboard.";
+  btn.style.background="#4A5A2C";
+  setTimeout(()=>closeOnboard(),2200);
+
+}catch(error){
+  console.error('Signup error:',error);
+  btn.textContent=error.message||"Error. Please try again.";
+  btn.style.background="#C94E38";
+  setTimeout(()=>{btn.textContent="Start Free →";btn.style.background="#B8963E";},4000);
+}
 }
 
 // Only hijack "Get Started" buttons — not demo links or nav anchors

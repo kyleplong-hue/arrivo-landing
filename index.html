@@ -397,41 +397,6 @@ footer{padding:36px 0;text-align:center;font-size:11px;color:var(--mut);border-t
   </div>
 </section>
 
-<!-- ═══ TOUR API SECTION (DARK) ═══ -->
-<section class="dark-section" id="api" style="background:#1A1A18;color:#FDFCF9">
-  <div class="container" style="text-align:center">
-    <div class="section-label">For Tour Companies</div>
-    <div class="section-title center" style="color:var(--cream)">Plug into your existing <em>booking system.</em></div>
-    <div class="section-sub center" style="color:#9A958C">Connect your Rezdy, FareHarbor, or Peek Pro account. When a guest books a tour, Arrivo automatically generates their personalized pre-trip guide and sends it via email or WhatsApp.</div>
-    <div class="api-grid">
-      <div class="api-card" style="background:#252218;border:1px solid #3A352A;color:#8A8478">
-        <h4 style="color:#D4B36A">Auto-Import Bookings</h4>
-        <p>iCal sync pulls new reservations every hour. Guest name, dates, party size, contact info — parsed and ready. Booked tours slot directly into the guest's day-by-day itinerary with meeting point, time, and confirmation details.</p>
-      </div>
-      <div class="api-card" style="background:#252218;border:1px solid #3A352A;color:#8A8478">
-        <h4 style="color:#D4B36A">Auto-Send Guides</h4>
-        <p>When a guest imports, their guide link is ready to send. One-click email with a pre-filled body: "Here's your personalized trip planner." Or automate it via Zapier webhook.</p>
-      </div>
-      <div class="api-card" style="background:#252218;border:1px solid #3A352A;color:#8A8478">
-        <h4 style="color:#D4B36A">Track Engagement</h4>
-        <p>See which guests opened their guide, what they swapped, what bookings they requested. Know who's engaged before they arrive — and who might need a nudge.</p>
-      </div>
-    </div>
-    <div style="margin-top:28px">
-      <div class="api-code">POST /api/v1/guests
-{
-  "name": "Sarah Johnson",
-  "checkin": "2026-06-15",
-  "checkout": "2026-06-22",
-  "template": "wine-week",
-  "notify": "email"
-}
-
-→ 201 { "guide_url": "https://your-brand.arrivo.io/g/abc123" }</div>
-      <p style="font-size:11px;color:#5A5650;margin-top:8px">REST API available for custom integrations. Full docs at api.arrivo.io</p>
-    </div>
-  </div>
-</section>
 
 <!-- ═══ REVENUE ═══ -->
 <section class="section alt">

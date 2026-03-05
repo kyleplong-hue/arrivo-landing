@@ -772,7 +772,7 @@ try{
   const urls=OB.data.websites.filter(w=>w.trim());
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),15000);
-  const res=await fetch('/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({urls}),signal:controller.signal});
+  const res=await fetch('/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({urls,city:OB.data.city}),signal:controller.signal});
   clearTimeout(timeout);
   const data=await res.json();
   if(data.error){

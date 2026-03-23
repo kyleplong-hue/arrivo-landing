@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amanpulo — Your Island Stay</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bone: #F5F0E8;
+  --bone-dark: #EDE7DB;
+  --sand: #E8DFD0;
+  --ink: #1C1814;
+  --ink-soft: #3A3430;
+  --muted: #8A8178;
+  --gold: #9B7D45;
+  --gold-light: #C4A96B;
+  --teal: #2A7C6F;
+  --line: rgba(28,24,20,0.1);
+  --line-soft: rgba(28,24,20,0.06);
+  --included: #2A5C4A;
+  --included-bg: rgba(42,92,74,0.07);
+  --danger: #8B3A3A;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  background: var(--bone);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── WELCOME SCREEN ── */
+#welcome-screen {
+  position: fixed; inset: 0; z-index: 500;
+  background: var(--ink);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px;
+  transition: opacity .6s ease, transform .6s ease;
+}
+#welcome-screen.exit { opacity: 0; pointer-events: none; }
+.welcome-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; letter-spacing: 8px; text-transform: uppercase;
+  color: rgba(245,240,232,0.5); margin-bottom: 48px;
+}
+.welcome-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 5vw, 48px); font-weight: 300;
+  color: var(--bone); text-align: center; line-height: 1.2;
+  margin-bottom: 12px;
+}
+.welcome-sub {
+  font-size: 14px; color: rgba(245,240,232,0.55); text-align: center;
+  margin-bottom: 48px; font-weight: 300;
+}
+.welcome-guest-cards {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  max-width: 750px;
+}
+.guest-card-select {
+  background: rgba(245,240,232,0.04);
+  border: 1px solid rgba(245,240,232,0.12);
+  border-radius: 2px; padding: 18px 22px;
+  cursor: pointer; transition: all .25s;
+  text-align: left; min-width: 160px; flex: 1;
+}
+.guest-card-select:hover {
+  background: rgba(245,240,232,0.1);
+  border-color: rgba(196,169,107,0.5);
+}
+.gc-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,232,0.35); margin-bottom: 8px; }
+.gc-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--bone); margin-bottom: 4px; }
+.gc-detail { font-size: 12px; color: rgba(245,240,232,0.5); margin-bottom: 6px; }
+.gc-package { font-size: 11px; color: var(--gold-light); }
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(245,240,232,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--ink); font-weight: 400;
+}
+.nav-guest { display: flex; align-items: center; gap: 14px; }
+.nav-name { font-size: 13px; font-weight: 500; }
+.nav-detail { font-size: 11px; color: var(--muted); }
+.nav-folio-badge {
+  font-size: 11px; font-weight: 500; letter-spacing: 1px;
+  padding: 7px 16px; background: var(--ink); color: var(--bone);
+  border-radius: 2px; cursor: pointer; transition: all .2s;
+}
+.nav-folio-badge:hover { background: var(--ink-soft); }
+
+/* ── PACKAGE HERO ── */
+.package-hero {
+  padding: 40px 24px 32px;
+  background: linear-gradient(135deg, rgba(42,92,74,0.06), rgba(155,125,69,0.04));
+  border-bottom: 1px solid var(--line);
+}
+.ph-inner { max-width: 800px; margin: 0 auto; }
+.ph-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--included); margin-bottom: 8px; }
+.ph-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px,4vw,38px); font-weight: 300; margin-bottom: 8px; }
+.ph-desc { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+.ph-includes { display: flex; flex-wrap: wrap; gap: 8px; }
+.ph-item {
+  font-size: 12px; padding: 6px 14px;
+  background: var(--included-bg); color: var(--included);
+  border: 1px solid rgba(42,92,74,0.15); border-radius: 2px;
+}
+.ph-item.scheduled { border-color: var(--gold); background: rgba(155,125,69,0.08); color: var(--gold); }
+
+/* ── MAIN LAYOUT ── */
+.main-content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+/* ── DAY TABS ── */
+.day-tabs-wrap {
+  display: flex; gap: 6px; overflow-x: auto; padding: 0 0 16px;
+  scrollbar-width: none;
+}
+.day-tabs-wrap::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0;
+  padding: 8px 18px; font-size: 12px; font-weight: 400;
+  background: transparent; border: 1px solid var(--line);
+  border-radius: 2px; cursor: pointer; transition: all .2s;
+  white-space: nowrap; color: var(--muted);
+}
+.day-tab:hover { border-color: var(--ink); color: var(--ink); }
+.day-tab.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+/* ── MY ITINERARY (per-day) ── */
+.section-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin: 24px 0 12px;
+}
+.itinerary-empty {
+  padding: 40px 20px; text-align: center;
+  border: 1px dashed var(--line); border-radius: 2px;
+  color: var(--muted); font-size: 13px;
+}
+.itin-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; background: white;
+  border: 1px solid var(--line); border-radius: 2px;
+  margin-bottom: 8px; position: relative;
+  cursor: grab; transition: box-shadow .2s, border-color .2s;
+}
+.itin-item:active { cursor: grabbing; }
+.itin-item.dragging { opacity: 0.5; border-color: var(--gold); }
+.itin-item.drag-over { border-top: 2px solid var(--gold); }
+.itin-item.included {
+  background: var(--included-bg);
+  border-color: rgba(42,92,74,0.2);
+}
+.itin-item .itin-img {
+  width: 56px; height: 56px; border-radius: 2px;
+  object-fit: cover; flex-shrink: 0;
+}
+.itin-item .itin-info { flex: 1; min-width: 0; }
+.itin-item .itin-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.itin-item .itin-meta { font-size: 11px; color: var(--muted); }
+.itin-item .itin-badge {
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 2px;
+  display: inline-block; margin-top: 4px;
+}
+.itin-item .itin-badge.inc { background: var(--included-bg); color: var(--included); }
+.itin-item .itin-badge.addon { background: rgba(155,125,69,0.08); color: var(--gold); }
+.itin-item .itin-time-btn {
+  font-size: 11px; color: var(--gold); cursor: pointer;
+  text-decoration: underline; background: none; border: none;
+  padding: 0; font-family: inherit;
+}
+.itin-item .itin-remove {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 16px; color: var(--muted); cursor: pointer;
+  background: none; border: none; line-height: 1;
+  opacity: 0.5; transition: opacity .2s;
+}
+.itin-item .itin-remove:hover { opacity: 1; color: var(--danger); }
+.itin-item .itin-guests-ctrl {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 4px;
+}
+.itin-item .itin-guests-ctrl span { font-size: 11px; color: var(--muted); }
+.itin-item .itin-guests-ctrl button {
+  width: 22px; height: 22px; border-radius: 2px;
+  border: 1px solid var(--line); background: white;
+  cursor: pointer; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); transition: all .15s;
+}
+.itin-item .itin-guests-ctrl button:hover { border-color: var(--gold); }
+.itin-item .itin-price {
+  font-size: 13px; font-weight: 500; white-space: nowrap;
+  margin-left: auto; padding-left: 10px; align-self: center;
+}
+.itin-item .itin-price.free { color: var(--included); }
+
+/* ── CATALOG ── */
+.catalog-header {
+  margin: 32px 0 16px;
+}
+.catalog-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px,3vw,30px); font-weight: 300;
+  margin-bottom: 4px;
+}
+.catalog-sub { font-size: 13px; color: var(--muted); }
+
+.cat-filters {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.cat-filter {
+  font-size: 11px; padding: 6px 14px;
+  border: 1px solid var(--line); border-radius: 2px;
+  background: transparent; cursor: pointer; transition: all .2s;
+  color: var(--muted);
+}
+.cat-filter:hover { border-color: var(--ink); color: var(--ink); }
+.cat-filter.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+.activity-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.activity-card {
+  background: white; border: 1px solid var(--line);
+  border-radius: 2px; overflow: hidden; cursor: pointer;
+  transition: all .25s;
+}
+.activity-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+.ac-img-wrap {
+  position: relative; width: 100%; height: 180px;
+  overflow: hidden; background: var(--sand);
+}
+.ac-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .4s;
+}
+.activity-card:hover .ac-img-wrap img { transform: scale(1.04); }
+.ac-img-wrap .ac-badge-float {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 2px;
+  background: rgba(28,24,20,0.75); color: var(--bone);
+  backdrop-filter: blur(4px);
+}
+.ac-img-wrap .ac-emoji {
+  position: absolute; bottom: 10px; right: 10px;
+  font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.ac-body { padding: 14px 16px; }
+.ac-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.ac-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ac-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+.ac-meta { font-size: 11px; color: var(--muted); }
+.ac-price { font-size: 13px; font-weight: 500; color: var(--gold); }
+.ac-price.free { color: var(--included); }
+
+/* ── ACTIVITY DETAIL MODAL ── */
+.modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(28,24,20,0.5);
+  backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal-box {
+  background: var(--bone); border-radius: 3px;
+  max-width: 560px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.modal-img {
+  width: 100%; height: 240px; object-fit: cover;
+}
+.modal-content { padding: 24px; }
+.modal-badge {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 300; margin-bottom: 6px;
+}
+.modal-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.modal-desc { font-size: 14px; line-height: 1.7; color: var(--ink-soft); margin-bottom: 20px; }
+
+.modal-section-label {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+
+/* Date picker in modal */
+.modal-date-picker {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+}
+.modal-date-btn {
+  padding: 6px 14px; font-size: 12px;
+  border: 1px solid var(--line); border-radius: 2px;
+  background: white; cursor: pointer; transition: all .2s;
+  font-family: inherit; color: var(--ink);
+}
+.modal-date-btn:hover { border-color: var(--gold); }
+.modal-date-btn.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+/* Time picker in modal */
+.modal-time-picker {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+}
+.time-opt {
+  padding: 6px 14px; font-size: 12px;
+  border: 1px solid var(--line); border-radius: 2px;
+  background: white; cursor: pointer; transition: all .2s;
+  font-family: inherit; color: var(--ink);
+}
+.time-opt:hover { border-color: var(--gold); }
+.time-opt.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+/* Guest count in modal */
+.modal-guests {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+}
+.modal-guests label { font-size: 13px; color: var(--ink); }
+.guest-stepper {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--line); border-radius: 2px; overflow: hidden;
+}
+.guest-stepper button {
+  width: 34px; height: 34px; border: none;
+  background: white; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s; color: var(--ink);
+}
+.guest-stepper button:hover { background: var(--sand); }
+.guest-stepper .guest-count {
+  width: 40px; text-align: center; font-size: 14px; font-weight: 500;
+  border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+  line-height: 34px;
+}
+.modal-price-line {
+  font-size: 14px; color: var(--muted); margin-bottom: 20px;
+}
+.modal-price-line strong { color: var(--ink); font-weight: 500; }
+
+/* Modal buttons — aligned */
+.modal-actions {
+  display: flex; gap: 10px; align-items: stretch;
+}
+.modal-actions button {
+  flex: 1; padding: 12px 20px; font-size: 13px;
+  font-family: inherit; border-radius: 2px;
+  cursor: pointer; transition: all .2s;
+  font-weight: 400; letter-spacing: 0.5px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 46px;
+}
+.btn-modal-close {
+  background: white; border: 1px solid var(--line); color: var(--ink);
+}
+.btn-modal-close:hover { border-color: var(--ink); }
+.btn-modal-add {
+  background: var(--ink); border: 1px solid var(--ink); color: var(--bone);
+}
+.btn-modal-add:hover { background: var(--ink-soft); }
+
+/* ── FOLIO / CONFIRM MODAL ── */
+.folio-modal .modal-box {
+  max-width: 620px;
+}
+.folio-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.folio-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.folio-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; }
+.folio-body { padding: 0 24px 24px; }
+
+/* Day headers in folio */
+.folio-day-header {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 400; color: var(--ink);
+  padding: 20px 0 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+.folio-day-header:first-child { padding-top: 16px; }
+.folio-day-header .folio-day-date {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--muted); font-weight: 300;
+  letter-spacing: 1px; text-transform: uppercase;
+  display: block; margin-top: 2px;
+}
+
+.folio-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--line-soft);
+}
+.folio-item:last-child { border-bottom: none; }
+.folio-item-img {
+  width: 44px; height: 44px; border-radius: 2px;
+  object-fit: cover; flex-shrink: 0;
+}
+.folio-item-info { flex: 1; }
+.folio-item-name { font-size: 13px; font-weight: 500; }
+.folio-item-detail { font-size: 11px; color: var(--muted); }
+.folio-item-price { font-size: 13px; font-weight: 500; white-space: nowrap; }
+.folio-item-price.free { color: var(--included); }
+
+.folio-totals {
+  padding: 16px 0; margin-top: 8px;
+  border-top: 2px solid var(--ink);
+}
+.folio-total-row {
+  display: flex; justify-content: space-between;
+  font-size: 13px; margin-bottom: 6px; color: var(--muted);
+}
+.folio-total-row.grand {
+  font-size: 16px; font-weight: 500; color: var(--ink);
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
+}
+
+.folio-footer {
+  padding: 16px 24px 24px;
+  display: flex; gap: 10px;
+}
+.folio-footer button {
+  flex: 1; padding: 13px 20px; font-size: 13px;
+  font-family: inherit; border-radius: 2px;
+  cursor: pointer; transition: all .2s;
+  min-height: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-folio-edit {
+  background: white; border: 1px solid var(--line); color: var(--ink);
+}
+.btn-folio-edit:hover { border-color: var(--ink); }
+.btn-folio-send {
+  background: var(--ink); border: 1px solid var(--ink); color: var(--bone);
+  font-weight: 400; letter-spacing: 0.5px;
+}
+.btn-folio-send:hover { background: var(--ink-soft); }
+
+/* ── SUCCESS STATE ── */
+.success-state { text-align: center; padding: 48px 24px; }
+.success-icon { font-size: 48px; margin-bottom: 16px; }
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 8px; }
+.success-msg { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.success-ref { font-size: 12px; color: var(--gold); letter-spacing: 1px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--bone);
+  font-size: 13px; padding: 12px 24px;
+  border-radius: 2px; opacity: 0; transition: all .3s;
+  z-index: 400; pointer-events: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .activity-grid { grid-template-columns: 1fr; }
+  .welcome-guest-cards { flex-direction: column; }
+  .guest-card-select { min-width: unset; }
+  .top-nav { padding: 12px 16px; }
+  .nav-logo { font-size: 10px; letter-spacing: 4px; }
+  .main-content { padding: 16px; }
+  .modal-box { max-height: 95vh; }
+  .modal-actions { flex-direction: column; }
+  .folio-footer { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div id="welcome-screen">
+  <div class="welcome-logo">Ā M A N P U L O</div>
+  <div class="welcome-title">Plan Your Island Stay</div>
+  <div class="welcome-sub">Browse, choose and request — we'll arrange everything.</div>
+  <div class="welcome-guest-cards" id="welcome-cards"></div>
+</div>
+
+<!-- MAIN APP (hidden until guest selected) -->
+<div id="app" style="display:none">
+  <nav class="top-nav">
+    <div class="nav-logo">Ā M A N P U L O</div>
+    <div class="nav-guest">
+      <div>
+        <div class="nav-name" id="nav-name"></div>
+        <div class="nav-detail" id="nav-detail"></div>
+      </div>
+      <div class="nav-folio-badge" onclick="openFolio()">View Folio →</div>
+    </div>
+  </nav>
+
+  <div class="package-hero" id="package-hero" style="display:none">
+    <div class="ph-inner">
+      <div class="ph-eyebrow">Package Included</div>
+      <div class="ph-title" id="ph-title"></div>
+      <div class="ph-desc" id="ph-desc"></div>
+      <div class="ph-includes" id="ph-includes"></div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="section-label">Your Itinerary</div>
+    <div class="day-tabs-wrap" id="dayTabs"></div>
+    <div id="itineraryBody"></div>
+
+    <div class="catalog-header">
+      <div class="catalog-title">Experiences & Activities</div>
+      <div class="catalog-sub">Tap any experience to learn more and add it to your day.</div>
+    </div>
+    <div class="cat-filters" id="catFilters"></div>
+    <div class="activity-grid" id="activityGrid"></div>
+  </div>
+</div>
+
+<!-- ACTIVITY DETAIL MODAL -->
+<div class="modal-bg" id="detail-modal" onclick="if(event.target===this)closeDetail()">
+  <div class="modal-box" id="detail-box"></div>
+</div>
+
+<!-- FOLIO MODAL -->
+<div class="modal-bg folio-modal" id="folio-modal" onclick="if(event.target===this)closeFolio()">
+  <div class="modal-box" id="folio-box"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// AMANPULO GUEST APP — DATA
+// ═══════════════════════════════════════════
+
+const AMAN_CDN = 'https://www.aman.com/sites/default/files/styles/full_size_extra_large/public/';
+const PEXELS_PROXY = 'https://images.pexels.com/photos/';
+
+const GUESTS = [
+  {
+    id: 0, name: 'Mr. & Mrs. Long', detail: 'Beach Casita · Apr 12–17, 2026',
+    arrival: '2026-04-12', nights: 5,
+    pkg: {
+      id: 'romance', name: 'Romance at Amanpulo', value: 2800,
+      desc: 'An intimate escape curated for two.',
+      includes: [
+        { actId: 'sunset-cruise', name: 'Private Sunset Cruise', note: 'With live music & champagne', suggestedDay: 1 },
+        { actId: 'beach-dinner', name: 'Beach Fireside Dinner', note: 'Private beachfront for two', suggestedDay: 2 },
+        { actId: 'couples-spa', name: 'Couples Signature Massage', note: '90 min · Aman Spa', suggestedDay: 3 },
+        { actId: 'flower-turndown', name: 'Flower & Champagne Turndown', note: 'Nightly', suggestedDay: 0 },
+      ]
+    }
+  },
+  {
+    id: 1, name: 'The Tanaka Family', detail: 'Hillside Casita · Apr 14–20, 2026',
+    arrival: '2026-04-14', nights: 6,
+    pkg: {
+      id: 'family', name: 'Family Adventure Package', value: 3200,
+      desc: 'A week of discovery for all ages.',
+      includes: [
+        { actId: 'snorkel-reef', name: 'Family Reef Snorkelling', note: 'All equipment included', suggestedDay: 1 },
+        { actId: 'cooking-class', name: 'Filipino Cooking Class', note: 'Farm-to-table', suggestedDay: 2 },
+        { actId: 'nature-walk', name: 'Nature Walk & Ecology', note: '90 min guided', suggestedDay: 3 },
+        { actId: 'kayak-lagoon', name: 'Kayak Tour of the Lagoon', note: 'Half day', suggestedDay: 4 },
+      ]
+    }
+  },
+  {
+    id: 2, name: 'Mr. Okonkwo', detail: 'Beach Pool Villa · Apr 16–21, 2026',
+    arrival: '2026-04-16', nights: 5,
+    pkg: {
+      id: 'ocean', name: 'Ocean & Wellness Package', value: 2600,
+      desc: 'Between the sea and the spa.',
+      includes: [
+        { actId: 'scuba-intro', name: 'Introductory Scuba Dive', note: 'All gear included', suggestedDay: 1 },
+        { actId: 'spa-journey', name: 'Holistic Spa Journey', note: '3 hrs', suggestedDay: 2 },
+        { actId: 'snorkel-reef', name: 'Reef Snorkelling', note: 'Guided', suggestedDay: 3 },
+        { actId: 'sunrise-yoga', name: 'Daily Sunrise Yoga', note: 'Every morning', suggestedDay: 0 },
+      ]
+    }
+  },
+  {
+    id: 3, name: 'Ms. Chen', detail: 'Hill Casita · Apr 18–22, 2026',
+    arrival: '2026-04-18', nights: 4,
+    pkg: null
+  }
+];
+
+const ACTIVITIES = [
+  // ─── WATER & ADVENTURE ───
+  { id: 'sunset-cruise', cat: 'Water & Adventure', emoji: '⛵', title: 'Private Sunset Cruise',
+    duration: '2 hrs', price: 450, perPerson: false,
+    desc: 'Sail along the Pamalican coastline as the sun sets over the Sulu Sea, champagne and canapés served onboard.',
+    longDesc: 'Your private outrigger departs from the main pier, sailing around the island\'s western coast. Live acoustic music, Amanpulo\'s signature cocktails, and a spectacular sunset — the most romantic two hours on Pamalican.',
+    img: AMAN_CDN + '2021-03/Aman_Amanpulo_Experiences_7.jpg',
+    fallbackImg: PEXELS_PROXY + '3601425/pexels-photo-3601425.jpeg?auto=compress&w=600',
+    times: ['4:30 PM', '5:00 PM', '5:30 PM'],
+    best: 'Evening' },
+  { id: 'snorkel-reef', cat: 'Water & Adventure', emoji: '🤿', title: 'Guided Reef Snorkelling',
+    duration: '2 hrs', price: 120, perPerson: true,
+    desc: 'Explore Pamalican\'s house reef — home to over 300 species of coral and tropical fish.',
+    longDesc: 'Guided by our marine biologist, snorkel through the protected house reef. Spot clownfish, sea turtles, giant clams, and reef sharks in water so clear visibility exceeds 30 metres.',
+    img: AMAN_CDN + '2024-06/amanpulo_philippines_-_snorkelling_2.jpg',
+    fallbackImg: PEXELS_PROXY + '3386748/pexels-photo-3386748.jpeg?auto=compress&w=600',
+    times: ['8:00 AM', '10:00 AM', '2:00 PM'],
+    best: 'Morning' },
+  { id: 'scuba-intro', cat: 'Water & Adventure', emoji: '🐠', title: 'Introductory Scuba Dive',
+    duration: '3 hrs', price: 280, perPerson: true,
+    desc: 'No certification needed — our PADI instructors guide you through your first underwater experience on the reef.',
+    longDesc: 'A 30-minute pool session, followed by a shallow reef dive to 8 metres. All equipment provided. Encounter reef fish, corals, and the calm beauty of Pamalican\'s underwater world.',
+    img: AMAN_CDN + '2024-06/amanpulo_philippines_-_diving.jpg',
+    fallbackImg: PEXELS_PROXY + '3113225/pexels-photo-3113225.jpeg?auto=compress&w=600',
+    times: ['8:00 AM', '9:00 AM'],
+    best: 'Morning' },
+  { id: 'kayak-lagoon', cat: 'Water & Adventure', emoji: '🛶', title: 'Kayak Tour of the Lagoon',
+    duration: '3 hrs', price: 95, perPerson: true,
+    desc: 'Paddle through mangroves and turquoise shallows, stopping at a secluded sandbar for fresh coconut.',
+    longDesc: 'A gentle kayak excursion along the island\'s sheltered eastern side, weaving through mangrove channels. Your guide shares the island\'s ecology along the way.',
+    img: PEXELS_PROXY + '1430672/pexels-photo-1430672.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '1430672/pexels-photo-1430672.jpeg?auto=compress&w=600',
+    times: ['7:00 AM', '8:00 AM', '3:00 PM'],
+    best: 'Morning' },
+  { id: 'island-hopping', cat: 'Water & Adventure', emoji: '🏝️', title: 'Island Hopping by Boat',
+    duration: '6 hrs', price: 680, perPerson: false,
+    desc: 'Visit two neighbouring islands — swim, picnic on a private beach, and snorkel a pristine reef.',
+    longDesc: 'A full-day boat excursion to the uninhabited islands near Pamalican. A packed gourmet lunch, snorkelling gear, and your own skipper. Absolute solitude.',
+    img: PEXELS_PROXY + '1174732/pexels-photo-1174732.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '1174732/pexels-photo-1174732.jpeg?auto=compress&w=600',
+    times: ['8:00 AM', '9:00 AM'],
+    best: 'Full day' },
+  { id: 'kitesurfing', cat: 'Water & Adventure', emoji: '🪁', title: 'Kitesurfing Lesson',
+    duration: '2 hrs', price: 220, perPerson: true,
+    desc: 'The flat lagoon and trade winds create perfect conditions — IKO-certified instructors for all levels.',
+    longDesc: 'Pamalican\'s protected lagoon offers textbook kitesurfing conditions. Board rental, harness, and safety equipment included.',
+    img: AMAN_CDN + '2024-06/amanpulo_philippines_-_kite_surfing_.jpg',
+    fallbackImg: PEXELS_PROXY + '1604869/pexels-photo-1604869.jpeg?auto=compress&w=600',
+    times: ['8:00 AM', '10:00 AM', '2:00 PM'],
+    best: 'Afternoon' },
+
+  // ─── DINING ───
+  { id: 'beach-dinner', cat: 'Dining', emoji: '🔥', title: 'Beach Fireside Dinner',
+    duration: '2.5 hrs', price: 520, perPerson: false,
+    desc: 'An exclusively private dining experience on the sand, lit by a driftwood fire.',
+    longDesc: 'Your private table is set directly on the beach, metres from the water, with a driftwood fire and lanterns. A bespoke multi-course menu featuring the day\'s fresh catch, organic farm produce, and Filipino flavours — paired with wines selected by our sommelier.',
+    img: AMAN_CDN + '2021-03/Aman_Amanpulo_Experiences_6.jpg',
+    fallbackImg: PEXELS_PROXY + '1268558/pexels-photo-1268558.jpeg?auto=compress&w=600',
+    times: ['6:30 PM', '7:00 PM', '7:30 PM'],
+    best: 'Evening' },
+  { id: 'cooking-class', cat: 'Dining', emoji: '👨‍🍳', title: 'Filipino Cooking Class',
+    duration: '2.5 hrs', price: 180, perPerson: true,
+    desc: 'Learn to prepare traditional Filipino dishes using ingredients harvested from the farm that morning.',
+    longDesc: 'Our culinary team leads a hands-on class in the outdoor kitchen. Sinigang, kinilaw (Philippine ceviche), and fresh coconut preparation — finishing with a full lunch of everything you\'ve prepared.',
+    img: AMAN_CDN + '2021-03/Aman_Amanpulo_Experiences_3.jpg',
+    fallbackImg: PEXELS_PROXY + '2284166/pexels-photo-2284166.jpeg?auto=compress&w=600',
+    times: ['9:30 AM', '10:00 AM'],
+    best: 'Morning' },
+  { id: 'kawayan-brunch', cat: 'Dining', emoji: '🛖', title: 'Floating Kawayan Hut Brunch',
+    duration: '2 hrs', price: 180, perPerson: true,
+    desc: 'Brunch served on the iconic floating bamboo hut — above a crystal-clear coral garden.',
+    longDesc: 'The Kawayan Hut floats over a coral garden. Reach it by kayak or paddleboard. A personal steward paddles out alongside, serving freshly caught seafood, farm eggs, and tropical fruits with an Amanpulo Farm Gin cocktail.',
+    img: AMAN_CDN + '2022-11/Amanpulo_Manamoc_Island-7503-2.jpg',
+    fallbackImg: PEXELS_PROXY + '1579739/pexels-photo-1579739.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '10:00 AM', '11:00 AM'],
+    best: 'Mid-morning' },
+  { id: 'gin-tasting', cat: 'Dining', emoji: '🍸', title: 'Amanpulo Farm Gin Tasting',
+    duration: '1 hr', price: 85, perPerson: true,
+    desc: 'A guided tasting of Amanpulo\'s own botanical gin — distilled from the resort\'s organic farm.',
+    longDesc: 'Three expressions: the classic, the seasonal botanical, and the barrel-aged reserve. Paired with house-made tonic and Filipino small plates.',
+    img: PEXELS_PROXY + '1283219/pexels-photo-1283219.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '1283219/pexels-photo-1283219.jpeg?auto=compress&w=600',
+    times: ['4:00 PM', '5:00 PM', '6:00 PM'],
+    best: 'Afternoon' },
+
+  // ─── SPA & WELLNESS ───
+  { id: 'couples-spa', cat: 'Spa & Wellness', emoji: '💆', title: 'Couples Signature Massage',
+    duration: '90 min', price: 340, perPerson: false,
+    desc: 'A deeply restorative treatment for two — Filipino healing traditions in our open-air couples suite.',
+    longDesc: 'Traditional hilot massage, warm coconut oil with local botanicals, and gentle reflexology. Side by side in the open-air couples suite overlooking the jungle canopy.',
+    img: AMAN_CDN + '2024-08/amanpulo_philippines_-_spa_wellness_smoking_ceremony_1.jpg',
+    fallbackImg: PEXELS_PROXY + '3757942/pexels-photo-3757942.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM'],
+    best: 'Anytime' },
+  { id: 'spa-journey', cat: 'Spa & Wellness', emoji: '🧖', title: 'Holistic Spa Journey',
+    duration: '3 hrs', price: 480, perPerson: true,
+    desc: 'Hydrotherapy, body treatment, and restoration — Amanpulo\'s deepest wellness immersion.',
+    longDesc: 'Begins in the hydrotherapy suite with heated mineral pool, cold plunge, and steam room. Progresses through sea salt body scrub, 60-minute signature massage, and ends with guided breathwork.',
+    img: PEXELS_PROXY + '3757952/pexels-photo-3757952.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '3757952/pexels-photo-3757952.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '2:00 PM'],
+    best: 'Morning' },
+  { id: 'sunrise-yoga', cat: 'Spa & Wellness', emoji: '🧘', title: 'Daily Sunrise Yoga',
+    duration: '45 min', price: 0, perPerson: false,
+    desc: 'Begin each morning in the beach pavilion — guided yoga as the sun rises over the Sulu Sea.',
+    longDesc: 'Hatha and Vinyasa traditions, adapted for all levels. A meditation session follows. Mats, blocks, and light refreshments provided. Complimentary for all guests.',
+    img: PEXELS_PROXY + '3822864/pexels-photo-3822864.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '3822864/pexels-photo-3822864.jpeg?auto=compress&w=600',
+    times: ['6:00 AM', '6:30 AM'],
+    best: 'Sunrise' },
+
+  // ─── NATURE & CULTURE ───
+  { id: 'nature-walk', cat: 'Nature & Culture', emoji: '🌿', title: 'Nature Walk & Island Ecology',
+    duration: '90 min', price: 0, perPerson: false,
+    desc: 'A guided walk through Pamalican\'s forest — birds, flora, and the island\'s conservation story.',
+    longDesc: 'Walk through the island\'s interior with our resident naturalist. Spot endemic species, learn about the coconut crab conservation programme, and visit the organic farm.',
+    img: PEXELS_PROXY + '3408744/pexels-photo-3408744.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '3408744/pexels-photo-3408744.jpeg?auto=compress&w=600',
+    times: ['6:30 AM', '7:00 AM', '4:00 PM'],
+    best: 'Early morning' },
+  { id: 'stargazing', cat: 'Nature & Culture', emoji: '🌌', title: 'Stargazing on the Beach',
+    duration: '1 hr', price: 0, perPerson: false,
+    desc: 'With zero light pollution, Pamalican offers some of the clearest skies in Southeast Asia.',
+    longDesc: 'Our astronomy guide sets up a telescope on the south beach. Identify constellations, watch for satellites, and learn about celestial navigation — accompanied by warm calamansi tea.',
+    img: PEXELS_PROXY + '1906658/pexels-photo-1906658.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '1906658/pexels-photo-1906658.jpeg?auto=compress&w=600',
+    times: ['7:30 PM', '8:00 PM', '8:30 PM'],
+    best: 'Night' },
+  { id: 'farm-tour', cat: 'Nature & Culture', emoji: '🥬', title: 'Organic Farm Tour',
+    duration: '1 hr', price: 0, perPerson: false,
+    desc: 'Visit the resort\'s organic farm — the source of much of Amanpulo\'s kitchen produce.',
+    longDesc: 'See how lettuce, herbs, and tropical fruits are grown without pesticides. Learn about Amanpulo\'s sustainability commitments. Pick your own herbs to take to the cooking class.',
+    img: PEXELS_PROXY + '2286895/pexels-photo-2286895.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '2286895/pexels-photo-2286895.jpeg?auto=compress&w=600',
+    times: ['7:00 AM', '8:00 AM', '4:30 PM'],
+    best: 'Morning' },
+  // Package-only / special
+  { id: 'flower-turndown', cat: 'Special', emoji: '💐', title: 'Flower & Champagne Turndown',
+    duration: 'Nightly', price: 120, perPerson: false,
+    desc: 'A nightly ritual — your casita prepared with fresh flowers, champagne, and handmade treats.',
+    longDesc: 'Each evening your casita is transformed with fragrant jasmine and frangipani, a chilled bottle of champagne, and handmade Filipino sweets. A romantic touch for every night of your stay.',
+    img: PEXELS_PROXY + '3737625/pexels-photo-3737625.jpeg?auto=compress&w=600',
+    fallbackImg: PEXELS_PROXY + '3737625/pexels-photo-3737625.jpeg?auto=compress&w=600',
+    times: ['Nightly'],
+    best: 'Evening' },
+];
+
+const CATEGORIES = ['All', 'Water & Adventure', 'Dining', 'Spa & Wellness', 'Nature & Culture'];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentGuest = null;
+let activeDay = 0;
+let activeCatFilter = 'All';
+// plan: { dayIndex: [{ actId, time, guests, isIncluded }] }
+let plan = {};
+
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+function getDayLabels() {
+  if (!currentGuest) return [];
+  const labels = [];
+  const d = new Date(currentGuest.arrival + 'T00:00:00');
+  for (let i = 0; i < currentGuest.nights; i++) {
+    const dd = new Date(d); dd.setDate(d.getDate() + i);
+    const mon = dd.toLocaleDateString('en-US', { month: 'short' });
+    const day = dd.getDate();
+    labels.push({ short: `Day ${i + 1}`, full: `Day ${i + 1} — ${mon} ${day}`, date: dd });
+  }
+  return labels;
+}
+
+function getActivity(actId) {
+  return ACTIVITIES.find(a => a.id === actId);
+}
+
+function calcItemPrice(item) {
+  if (item.isIncluded) return 0;
+  const act = getActivity(item.actId);
+  if (!act) return 0;
+  if (act.perPerson) return act.price * (item.guests || 1);
+  return act.price;
+}
+
+function calcTotals() {
+  let addonTotal = 0;
+  for (const dayItems of Object.values(plan)) {
+    for (const item of dayItems) {
+      addonTotal += calcItemPrice(item);
+    }
+  }
+  return { addonTotal, packageValue: currentGuest.pkg ? currentGuest.pkg.value : 0 };
+}
+
+function imgError(el) {
+  // Try fallback
+  const fb = el.getAttribute('data-fallback');
+  if (fb && el.src !== fb) {
+    el.src = fb;
+  } else {
+    el.style.display = 'none';
+    const sib = el.nextElementSibling;
+    if (sib && sib.classList.contains('img-fallback')) sib.style.display = 'flex';
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════
+// WELCOME SCREEN
+// ═══════════════════════════════════════════
+function initWelcome() {
+  const wrap = document.getElementById('welcome-cards');
+  wrap.innerHTML = GUESTS.map((g, i) => `
+    <div class="guest-card-select" onclick="loadGuest(${i})">
+      <div class="gc-label">${g.pkg ? 'Reservation' : 'Reservation — No Package'}</div>
+      <div class="gc-name">${g.name}</div>
+      <div class="gc-detail">${g.detail}</div>
+      <div class="gc-package" style="${g.pkg ? '' : 'color:rgba(245,240,232,0.25)'}">${g.pkg ? '✦ ' + g.pkg.name : 'Room only'}</div>
+    </div>
+  `).join('');
+}
+
+function loadGuest(idx) {
+  currentGuest = GUESTS[idx];
+  plan = {};
+
+  // Pre-arrange package items
+  if (currentGuest.pkg) {
+    currentGuest.pkg.includes.forEach(inc => {
+      const dayIdx = inc.suggestedDay;
+      if (!plan[dayIdx]) plan[dayIdx] = [];
+      const act = getActivity(inc.actId);
+      const defaultTime = act ? act.times[0] : '';
+      plan[dayIdx].push({
+        actId: inc.actId,
+        time: defaultTime,
+        guests: 2,
+        isIncluded: true,
+      });
+    });
+  }
+
+  document.getElementById('welcome-screen').classList.add('exit');
+  setTimeout(() => {
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderApp();
+  }, 500);
+}
+
+// ═══════════════════════════════════════════
+// RENDER APP
+// ═══════════════════════════════════════════
+function renderApp() {
+  // Nav
+  document.getElementById('nav-name').textContent = currentGuest.name;
+  document.getElementById('nav-detail').textContent = currentGuest.detail;
+
+  // Package hero
+  if (currentGuest.pkg) {
+    document.getElementById('package-hero').style.display = '';
+    document.getElementById('ph-title').textContent = currentGuest.pkg.name;
+    document.getElementById('ph-desc').textContent = currentGuest.pkg.desc;
+    const dayLabels = getDayLabels();
+    document.getElementById('ph-includes').innerHTML = currentGuest.pkg.includes.map(inc => {
+      // Check if scheduled
+      let scheduled = false;
+      for (const [di, items] of Object.entries(plan)) {
+        if (items.some(it => it.actId === inc.actId && it.isIncluded)) { scheduled = true; break; }
+      }
+      return `<div class="ph-item ${scheduled ? 'scheduled' : ''}">${inc.name}${scheduled ? ' ✓' : ''}</div>`;
+    }).join('');
+  } else {
+    document.getElementById('package-hero').style.display = 'none';
+  }
+
+  renderDayTabs();
+  renderItinerary();
+  renderFilters();
+  renderCatalog();
+}
+
+// ── DAY TABS ──
+function renderDayTabs() {
+  const labels = getDayLabels();
+  document.getElementById('dayTabs').innerHTML = labels.map((l, i) => {
+    const count = (plan[i] || []).length;
+    return `<button class="day-tab${i === activeDay ? ' active' : ''}" onclick="selectDay(${i})">${l.short}${count ? ' · ' + count : ''}</button>`;
+  }).join('');
+}
+
+function selectDay(i) {
+  activeDay = i;
+  renderDayTabs();
+  renderItinerary();
+}
+
+// ── ITINERARY ──
+function renderItinerary() {
+  const body = document.getElementById('itineraryBody');
+  const items = plan[activeDay] || [];
+
+  if (items.length === 0) {
+    body.innerHTML = `<div class="itinerary-empty">No activities planned for this day yet.<br>Browse below and add experiences.</div>`;
+    return;
+  }
+
+  body.innerHTML = items.map((item, idx) => {
+    const act = getActivity(item.actId);
+    if (!act) return '';
+    const price = calcItemPrice(item);
+    const priceLabel = item.isIncluded ? 'Included' : (price === 0 ? 'Complimentary' : '$' + price.toLocaleString());
+    return `
+      <div class="itin-item ${item.isIncluded ? 'included' : ''}"
+           draggable="true"
+           ondragstart="dragStart(event, ${activeDay}, ${idx})"
+           ondragover="dragOver(event)"
+           ondragenter="dragEnter(event)"
+           ondragleave="dragLeave(event)"
+           ondrop="dropItem(event, ${activeDay}, ${idx})"
+           ondragend="dragEnd(event)">
+        <img class="itin-img" src="${act.img}" data-fallback="${act.fallbackImg}" onerror="imgError(this)">
+        <div class="itin-info">
+          <div class="itin-title">${act.title}</div>
+          <div class="itin-meta">${act.duration} · ${item.time || 'Time TBD'}</div>
+          <span class="itin-badge ${item.isIncluded ? 'inc' : 'addon'}">${item.isIncluded ? '✦ Package included' : 'Add-on'}</span>
+          <div class="itin-guests-ctrl">
+            <span>Guests:</span>
+            <button onclick="changeGuests(${activeDay},${idx},-1)">−</button>
+            <span style="font-weight:500;min-width:16px;text-align:center">${item.guests || 1}</span>
+            <button onclick="changeGuests(${activeDay},${idx},1)">+</button>
+            ${act.perPerson && !item.isIncluded ? `<span style="margin-left:4px;color:var(--gold)">($${act.price}/pp)</span>` : ''}
+          </div>
+        </div>
+        <div class="itin-price ${price === 0 ? 'free' : ''}">${priceLabel}</div>
+        <button class="itin-remove" onclick="removeItem(${activeDay},${idx})" title="Remove">✕</button>
+      </div>`;
+  }).join('');
+}
+
+function changeGuests(day, idx, delta) {
+  const items = plan[day];
+  if (!items || !items[idx]) return;
+  const newG = Math.max(1, Math.min(20, (items[idx].guests || 1) + delta));
+  items[idx].guests = newG;
+  renderItinerary();
+}
+
+function removeItem(day, idx) {
+  if (!plan[day]) return;
+  plan[day].splice(idx, 1);
+  if (plan[day].length === 0) delete plan[day];
+  renderItinerary();
+  renderDayTabs();
+  if (currentGuest.pkg) renderApp(); // refresh package hero badges
+}
+
+// Drag and drop
+let dragData = null;
+function dragStart(e, day, idx) {
+  dragData = { day, idx };
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function dragEnter(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function dragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+function dropItem(e, day, targetIdx) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragData || dragData.day !== day) return;
+  const items = plan[day];
+  if (!items) return;
+  const [moved] = items.splice(dragData.idx, 1);
+  items.splice(targetIdx, 0, moved);
+  dragData = null;
+  renderItinerary();
+}
+
+// ── FILTERS ──
+function renderFilters() {
+  document.getElementById('catFilters').innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-filter${c === activeCatFilter ? ' active' : ''}" onclick="filterCat('${c}')">${c}</button>`
+  ).join('');
+}
+function filterCat(c) {
+  activeCatFilter = c;
+  renderFilters();
+  renderCatalog();
+}
+
+// ── CATALOG ──
+function renderCatalog() {
+  const grid = document.getElementById('activityGrid');
+  const acts = activeCatFilter === 'All'
+    ? ACTIVITIES.filter(a => a.cat !== 'Special')
+    : ACTIVITIES.filter(a => a.cat === activeCatFilter);
+
+  grid.innerHTML = acts.map(a => `
+    <div class="activity-card" onclick="openDetail('${a.id}')">
+      <div class="ac-img-wrap">
+        <img src="${a.img}" data-fallback="${a.fallbackImg}" onerror="imgError(this)" alt="${a.title}" loading="lazy">
+        <div class="img-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:48px;background:var(--sand)">${a.emoji}</div>
+        <div class="ac-badge-float">${a.cat}</div>
+        <div class="ac-emoji">${a.emoji}</div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-title">${a.title}</div>
+        <div class="ac-desc">${a.desc}</div>
+        <div class="ac-footer">
+          <div class="ac-meta">${a.duration}</div>
+          <div class="ac-price ${a.price === 0 ? 'free' : ''}">${a.price === 0 ? 'Complimentary' : (a.perPerson ? 'From $' + a.price + '/pp' : '$' + a.price)}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// DETAIL MODAL
+// ═══════════════════════════════════════════
+let modalState = { actId: null, selectedDay: null, selectedTime: null, guests: 2 };
+
+function openDetail(actId) {
+  const act = getActivity(actId);
+  if (!act) return;
+  modalState = { actId, selectedDay: activeDay, selectedTime: act.times[0], guests: 2 };
+
+  const dayLabels = getDayLabels();
+  const priceDisplay = act.price === 0 ? 'Complimentary'
+    : act.perPerson ? `$${act.price} × ${modalState.guests} = <strong>$${act.price * modalState.guests}</strong>`
+    : `<strong>$${act.price}</strong>`;
+
+  document.getElementById('detail-box').innerHTML = `
+    <img class="modal-img" src="${act.img}" data-fallback="${act.fallbackImg}" onerror="imgError(this)">
+    <div class="modal-content">
+      <div class="modal-badge">${act.cat} · ${act.duration}</div>
+      <div class="modal-title">${act.title}</div>
+      <div class="modal-meta">Best: ${act.best}</div>
+      <div class="modal-desc">${act.longDesc}</div>
+
+      <div class="modal-section-label">Choose a day</div>
+      <div class="modal-date-picker" id="modal-dates">
+        ${dayLabels.map((l, i) => `<button class="modal-date-btn${i === modalState.selectedDay ? ' active' : ''}" onclick="modalSelectDay(${i})">${l.full}</button>`).join('')}
+      </div>
+
+      <div class="modal-section-label">Choose a time</div>
+      <div class="modal-time-picker" id="modal-times">
+        ${act.times.map(t => `<button class="time-opt${t === modalState.selectedTime ? ' active' : ''}" onclick="modalSelectTime('${t}')">${t}</button>`).join('')}
+      </div>
+
+      <div class="modal-section-label">Number of guests</div>
+      <div class="modal-guests">
+        <div class="guest-stepper">
+          <button onclick="modalChangeGuests(-1)">−</button>
+          <div class="guest-count" id="modal-guest-count">${modalState.guests}</div>
+          <button onclick="modalChangeGuests(1)">+</button>
+        </div>
+      </div>
+
+      <div class="modal-price-line" id="modal-price-line">${priceDisplay}</div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-close" onclick="closeDetail()">Close</button>
+        <button class="btn-modal-add" onclick="addFromModal()">Add to Day ${modalState.selectedDay + 1}</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function modalSelectDay(i) {
+  modalState.selectedDay = i;
+  document.querySelectorAll('.modal-date-btn').forEach((b, idx) => b.classList.toggle('active', idx === i));
+  document.querySelector('.btn-modal-add').textContent = `Add to Day ${i + 1}`;
+}
+
+function modalSelectTime(t) {
+  modalState.selectedTime = t;
+  document.querySelectorAll('.time-opt').forEach(b => b.classList.toggle('active', b.textContent === t));
+}
+
+function modalChangeGuests(delta) {
+  modalState.guests = Math.max(1, Math.min(20, modalState.guests + delta));
+  document.getElementById('modal-guest-count').textContent = modalState.guests;
+  updateModalPrice();
+}
+
+function updateModalPrice() {
+  const act = getActivity(modalState.actId);
+  if (!act) return;
+  const el = document.getElementById('modal-price-line');
+  if (act.price === 0) { el.innerHTML = 'Complimentary'; return; }
+  if (act.perPerson) {
+    el.innerHTML = `$${act.price} × ${modalState.guests} = <strong>$${act.price * modalState.guests}</strong>`;
+  } else {
+    el.innerHTML = `<strong>$${act.price}</strong>`;
+  }
+}
+
+function addFromModal() {
+  const day = modalState.selectedDay;
+  if (!plan[day]) plan[day] = [];
+  plan[day].push({
+    actId: modalState.actId,
+    time: modalState.selectedTime,
+    guests: modalState.guests,
+    isIncluded: false,
+  });
+  closeDetail();
+  activeDay = day;
+  renderDayTabs();
+  renderItinerary();
+  showToast(`Added to Day ${day + 1}`);
+}
+
+function closeDetail() {
+  document.getElementById('detail-modal').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════
+// FOLIO MODAL
+// ═══════════════════════════════════════════
+function openFolio() {
+  const dayLabels = getDayLabels();
+  const { addonTotal, packageValue } = calcTotals();
+
+  // Build folio body grouped by day
+  let bodyHTML = '';
+  const allDays = Object.keys(plan).map(Number).sort((a, b) => a - b);
+
+  if (allDays.length === 0) {
+    bodyHTML = '<div style="padding:32px 0;text-align:center;color:var(--muted);font-size:13px">No activities scheduled yet.</div>';
+  } else {
+    for (const di of allDays) {
+      const label = dayLabels[di] || { full: `Day ${di + 1}` };
+      bodyHTML += `<div class="folio-day-header">${label.full}<span class="folio-day-date">${label.date ? label.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : ''}</span></div>`;
+      for (const item of plan[di]) {
+        const act = getActivity(item.actId);
+        if (!act) continue;
+        const price = calcItemPrice(item);
+        const priceLabel = item.isIncluded ? 'Included' : (price === 0 ? 'Free' : '$' + price.toLocaleString());
+        bodyHTML += `
+          <div class="folio-item">
+            <img class="folio-item-img" src="${act.img}" data-fallback="${act.fallbackImg}" onerror="imgError(this)">
+            <div class="folio-item-info">
+              <div class="folio-item-name">${act.title}</div>
+              <div class="folio-item-detail">${item.time || 'TBD'} · ${item.guests || 1} guest${(item.guests || 1) > 1 ? 's' : ''}</div>
+            </div>
+            <div class="folio-item-price ${price === 0 ? 'free' : ''}">${priceLabel}</div>
+          </div>`;
+      }
+    }
+  }
+
+  // Totals
+  let totalsHTML = '';
+  if (currentGuest.pkg) {
+    totalsHTML += `<div class="folio-total-row"><span>${currentGuest.pkg.name}</span><span>Included (value $${packageValue.toLocaleString()})</span></div>`;
+  }
+  totalsHTML += `<div class="folio-total-row"><span>Additional experiences</span><span>$${addonTotal.toLocaleString()}</span></div>`;
+  totalsHTML += `<div class="folio-total-row grand"><span>Estimated at check-out</span><span>$${addonTotal.toLocaleString()}</span></div>`;
+
+  document.getElementById('folio-box').innerHTML = `
+    <div class="folio-header">
+      <div class="folio-eyebrow">Stay Folio · Pre-Arrival</div>
+      <div class="folio-title">${currentGuest.name}</div>
+    </div>
+    <div class="folio-body" id="folio-body">${bodyHTML}</div>
+    <div class="folio-body"><div class="folio-totals">${totalsHTML}</div></div>
+    <div class="folio-footer">
+      <button class="btn-folio-edit" onclick="closeFolio()">Edit</button>
+      <button class="btn-folio-send" onclick="sendToTeam()">Send to Experiences Team</button>
+    </div>
+  `;
+  document.getElementById('folio-modal').classList.add('open');
+}
+
+function closeFolio() {
+  document.getElementById('folio-modal').classList.remove('open');
+}
+
+function sendToTeam() {
+  const ref = 'AMP-' + Date.now().toString(36).toUpperCase();
+  document.getElementById('folio-box').innerHTML = `
+    <div class="success-state">
+      <div class="success-icon">✉️</div>
+      <div class="success-title">Sent to your concierge</div>
+      <div class="success-msg">Your itinerary has been sent to the experiences team.<br>They will confirm each activity and leave a note in your casita within the hour.</div>
+      <div class="success-ref">Ref: ${ref}</div>
+      <div style="margin-top:24px">
+        <button class="btn-folio-edit" onclick="closeFolio()" style="padding:10px 28px;border-radius:2px">Done</button>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+initWelcome();
+</script>
+</body>
+</html>

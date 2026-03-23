@@ -3,212 +3,1020 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arrivo — Answer Every Guest Question Before They Ask It</title>
-<meta name="description" content="Arrivo turns your local expertise into a personalized pre-arrival experience. Guests plan their trip with your insider knowledge — so they stop texting you.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Arrivo — Concierge Platform MVP</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:#FDFCF9;-webkit-font-smoothing:antialiased;font-family:'Outfit',sans-serif;color:#1A1714}
-::selection{background:#B8963E33}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+/* ═══════════════════════════════════════════
+   ARRIVO CONCIERGE PLATFORM — MVP
+   Two products: Hotel Concierge + Cruise Planner
+═══════════════════════════════════════════ */
+:root {
+  /* Shared neutrals */
+  --ink: #0F0D0A;
+  --ink-soft: #1E1B17;
+  --ash: #8A8279;
+  --line: rgba(255,255,255,0.08);
+
+  /* Hotel theme (Aman-inspired — bone, sand, obsidian) */
+  --h-bg: #F5F1EB;
+  --h-card: #FFFFFF;
+  --h-text: #1A1714;
+  --h-muted: #7A7168;
+  --h-gold: #8B6E3C;
+  --h-gold-light: #C8A96E;
+  --h-accent: #2C2420;
+  --h-border: rgba(139,110,60,0.18);
+  --h-green: #2E5E3E;
+
+  /* Cruise theme (nautical — deep navy, aqua, white) */
+  --c-bg: #0B1828;
+  --c-card: #122236;
+  --c-text: #E8F4FF;
+  --c-muted: #6B8FAF;
+  --c-teal: #00B4D8;
+  --c-teal-light: #90E0EF;
+  --c-accent: #CAF0F8;
+  --c-border: rgba(0,180,216,0.2);
+  --c-green: #06D6A0;
+
+  /* Current theme vars (switched by JS) */
+  --bg: var(--h-bg);
+  --card: var(--h-card);
+  --text: var(--h-text);
+  --muted: var(--h-muted);
+  --brand: var(--h-gold);
+  --brand-light: var(--h-gold-light);
+  --accent: var(--h-accent);
+  --border: var(--h-border);
+  --confirm: var(--h-green);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; font-weight: 300; background: var(--bg); color: var(--text); min-height: 100vh; transition: background .4s, color .4s; }
+
+/* ── PRODUCT SWITCHER ── */
+.product-switcher {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px 20px; gap: 6px;
+  background: rgba(15,13,10,0.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.ps-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-right: 6px; }
+.ps-btn {
+  background: transparent; border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5); font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 500; padding: 6px 16px; border-radius: 20px;
+  cursor: pointer; transition: all .2s; letter-spacing: 0.3px;
+}
+.ps-btn.active { border-color: var(--brand-active,#C8A96E); color: var(--brand-active,#C8A96E); background: rgba(200,169,110,0.1); }
+.ps-btn.hotel.active { border-color: #C8A96E; color: #C8A96E; background: rgba(200,169,110,0.1); }
+.ps-btn.cruise.active { border-color: #00B4D8; color: #00B4D8; background: rgba(0,180,216,0.1); }
+.ps-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.15); margin: 0 4px; }
+
+/* ── LAYOUT ── */
+.app { display: grid; grid-template-columns: 320px 1fr; min-height: 100vh; padding-top: 44px; }
+@media(max-width: 768px) { .app { grid-template-columns: 1fr; } }
+
+/* ── LEFT PANEL — Guest itinerary builder ── */
+.guest-panel {
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: var(--card);
+  position: sticky; top: 44px; height: calc(100vh - 44px);
+  overflow-y: auto;
+}
+.panel-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.brand-lockup { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.brand-logo {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.hotel-mode .brand-logo { background: #1A1714; color: #C8A96E; }
+.cruise-mode .brand-logo { background: #00B4D8; color: #fff; }
+.brand-name { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--text); }
+.brand-sub { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+.guest-info-bar {
+  background: var(--bg); border-radius: 8px; padding: 10px 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.guest-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 500; flex-shrink: 0;
+}
+.hotel-mode .guest-avatar { background: rgba(139,110,60,0.15); color: var(--h-gold); }
+.cruise-mode .guest-avatar { background: rgba(0,180,216,0.15); color: var(--c-teal); }
+.guest-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.guest-detail { font-size: 10px; color: var(--muted); }
+
+/* Day tabs */
+.day-tabs { display: flex; gap: 5px; padding: 12px 20px 0; overflow-x: auto; flex-shrink: 0; }
+.day-tab {
+  flex-shrink: 0; background: transparent; border: 1px solid var(--border);
+  color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 11px;
+  padding: 5px 12px; border-radius: 14px; cursor: pointer; transition: all .18s; white-space: nowrap;
+}
+.day-tab:hover { color: var(--brand); border-color: var(--brand); }
+.day-tab.active { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 500; }
+.hotel-mode .day-tab.active { background: var(--h-gold); border-color: var(--h-gold); }
+.cruise-mode .day-tab.active { background: var(--c-teal); border-color: var(--c-teal); color: var(--c-bg); }
+
+/* Itinerary stops */
+.itinerary-body { padding: 14px 20px; flex: 1; }
+.itin-day-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--brand); margin-bottom: 12px; padding-top: 4px; }
+.hotel-mode .itin-day-label { color: var(--h-gold); }
+.cruise-mode .itin-day-label { color: var(--c-teal); }
+
+.stop-row {
+  display: flex; gap: 10px; margin-bottom: 0; position: relative;
+}
+.stop-row:not(:last-child)::after {
+  content: ''; position: absolute; left: 15px; top: 32px; bottom: -16px;
+  width: 1px; background: var(--border);
+}
+.stop-marker {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; border: 1px solid var(--border);
+  background: var(--card); color: var(--brand);
+}
+.stop-marker.filled { background: var(--brand); color: #fff; border-color: var(--brand); }
+.hotel-mode .stop-marker.filled { background: var(--h-gold); border-color: var(--h-gold); }
+.cruise-mode .stop-marker.filled { background: var(--c-teal); border-color: var(--c-teal); color: var(--c-bg); }
+
+.stop-card {
+  flex: 1; border: 1px solid var(--border); border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 16px; background: var(--card);
+  position: relative; transition: border-color .18s;
+}
+.stop-card:hover { border-color: var(--brand); }
+.hotel-mode .stop-card:hover { border-color: rgba(139,110,60,0.4); }
+.cruise-mode .stop-card:hover { border-color: rgba(0,180,216,0.4); }
+.stop-time { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--brand); margin-bottom: 2px; }
+.hotel-mode .stop-time { color: var(--h-gold); }
+.cruise-mode .stop-time { color: var(--c-teal); }
+.stop-title { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--text); margin-bottom: 2px; line-height: 1.3; }
+.stop-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.stop-price { font-size: 11px; color: var(--brand); font-weight: 500; margin-top: 4px; }
+.hotel-mode .stop-price { color: var(--h-gold); }
+.cruise-mode .stop-price { color: var(--c-teal); }
+.stop-actions { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+.stop-btn {
+  font-size: 10px; padding: 3px 9px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border); color: var(--muted); background: transparent;
+  font-family: 'DM Sans', sans-serif; transition: all .18s;
+}
+.stop-btn:hover { border-color: var(--brand); color: var(--brand); }
+.stop-btn.danger:hover { border-color: #E57373; color: #E57373; }
+.stop-btn.confirmed { border-color: var(--confirm); color: var(--confirm); }
+.capacity-badge {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 9px; padding: 2px 7px; border-radius: 8px;
+  font-weight: 500; letter-spacing: 0.3px;
+}
+.cap-ok { background: rgba(46,94,62,0.15); color: #2E5E3E; }
+.cap-low { background: rgba(217,119,6,0.12); color: #B45309; }
+.cap-full { background: rgba(220,38,38,0.12); color: #DC2626; }
+
+/* Submit bar */
+.submit-bar {
+  padding: 14px 20px; border-top: 1px solid var(--border);
+  flex-shrink: 0; background: var(--card);
+}
+.cost-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.cost-label { font-size: 11px; color: var(--muted); }
+.cost-total { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); }
+.btn-submit {
+  width: 100%; padding: 13px; border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .2s; letter-spacing: 0.3px;
+}
+.hotel-mode .btn-submit { background: var(--h-gold); color: #fff; }
+.hotel-mode .btn-submit:hover { background: #7A5E2C; }
+.cruise-mode .btn-submit { background: var(--c-teal); color: var(--c-bg); }
+.cruise-mode .btn-submit:hover { background: #00A0C0; }
+
+/* ── RIGHT PANEL — Activity catalog + Staff view ── */
+.main-panel { display: flex; flex-direction: column; overflow: hidden; }
+
+/* View tabs */
+.view-tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  padding: 0 24px; background: var(--card); flex-shrink: 0;
+}
+.view-tab {
+  background: transparent; border: none; border-bottom: 2px solid transparent;
+  color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 12px;
+  font-weight: 500; padding: 14px 16px; cursor: pointer; transition: all .18s;
+  margin-bottom: -1px;
+}
+.view-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+.hotel-mode .view-tab.active { color: var(--h-gold); border-bottom-color: var(--h-gold); }
+.cruise-mode .view-tab.active { color: var(--c-teal); border-bottom-color: var(--c-teal); }
+
+.panel-content { flex: 1; overflow-y: auto; }
+
+/* ── CATALOG VIEW ── */
+.catalog-wrap { padding: 20px 24px; max-width: 900px; }
+.catalog-hero { margin-bottom: 20px; }
+.catalog-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--brand); margin-bottom: 6px; }
+.hotel-mode .catalog-eyebrow { color: var(--h-gold); }
+.cruise-mode .catalog-eyebrow { color: var(--c-teal); }
+.catalog-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--text); margin-bottom: 4px; }
+.catalog-sub { font-size: 13px; color: var(--muted); font-weight: 300; }
+.cat-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.cat-filter {
+  font-size: 11px; padding: 5px 13px; border-radius: 16px; cursor: pointer;
+  border: 1px solid var(--border); color: var(--muted); background: transparent;
+  font-family: 'DM Sans', sans-serif; transition: all .18s;
+}
+.cat-filter.on { font-weight: 500; }
+.hotel-mode .cat-filter.on { border-color: var(--h-gold); color: var(--h-gold); background: rgba(139,110,60,0.08); }
+.cruise-mode .cat-filter.on { border-color: var(--c-teal); color: var(--c-teal); background: rgba(0,180,216,0.08); }
+
+.activity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.activity-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; cursor: pointer; transition: all .2s; position: relative;
+}
+.activity-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: var(--brand); }
+.hotel-mode .activity-card:hover { border-color: rgba(139,110,60,0.35); }
+.cruise-mode .activity-card:hover { border-color: rgba(0,180,216,0.35); }
+.activity-card.in-plan { border-color: var(--brand); }
+.hotel-mode .activity-card.in-plan { border-color: var(--h-gold); }
+.cruise-mode .activity-card.in-plan { border-color: var(--c-teal); }
+.act-img {
+  width: 100%; height: 140px; object-fit: cover; display: block;
+  background: var(--bg);
+}
+.act-img-placeholder {
+  width: 100%; height: 140px; display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+}
+.hotel-mode .act-img-placeholder { background: #F0EAE0; }
+.cruise-mode .act-img-placeholder { background: #0D1F35; }
+.act-body { padding: 12px 14px 14px; }
+.act-category { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--brand); margin-bottom: 4px; }
+.hotel-mode .act-category { color: var(--h-gold); }
+.cruise-mode .act-category { color: var(--c-teal); }
+.act-title { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+.act-desc { font-size: 11px; color: var(--muted); line-height: 1.4; margin-bottom: 8px; }
+.act-meta { display: flex; justify-content: space-between; align-items: center; }
+.act-duration { font-size: 10px; color: var(--muted); }
+.act-price { font-size: 14px; font-weight: 500; color: var(--text); }
+.act-badge {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 9px; padding: 3px 8px; border-radius: 8px; font-weight: 500;
+}
+.badge-hotel { background: rgba(139,110,60,0.9); color: #fff; }
+.badge-local { background: rgba(44,36,32,0.8); color: #C8A96E; }
+.badge-cruise { background: rgba(0,180,216,0.9); color: #fff; }
+.badge-shore { background: rgba(6,214,160,0.9); color: #0B1828; }
+.act-footer { padding: 0 14px 12px; display: flex; gap: 6px; }
+.btn-add {
+  flex: 1; padding: 8px; border: none; border-radius: 7px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all .18s; text-align: center;
+}
+.hotel-mode .btn-add { background: var(--h-gold); color: #fff; }
+.hotel-mode .btn-add:hover { background: #7A5E2C; }
+.cruise-mode .btn-add { background: var(--c-teal); color: var(--c-bg); }
+.cruise-mode .btn-add:hover { background: #00A0C0; }
+.btn-add.added { background: rgba(46,94,62,0.15) !important; color: var(--confirm) !important; cursor: default; }
+.btn-add-time {
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 7px;
+  font-size: 11px; color: var(--muted); background: transparent; cursor: pointer;
+}
+.cap-indicator { padding: 0 14px 10px; }
+.cap-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.cap-bar { height: 100%; border-radius: 2px; transition: width .3s; }
+.cap-ok-bar { background: var(--confirm); }
+.cap-low-bar { background: #D97706; }
+.cap-full-bar { background: #DC2626; }
+.cap-text { font-size: 9px; color: var(--muted); margin-top: 3px; }
+
+/* ── STAFF DASHBOARD ── */
+.staff-wrap { padding: 20px 24px; }
+.staff-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.staff-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--text); }
+.staff-date { font-size: 12px; color: var(--muted); }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px;
+}
+.stat-val { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; }
+.stat-delta { font-size: 10px; color: var(--confirm); margin-top: 2px; }
+
+.bookings-table { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.table-header {
+  display: grid; padding: 10px 16px;
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.booking-row {
+  display: grid; padding: 12px 16px;
+  border-bottom: 1px solid var(--border); align-items: center;
+  transition: background .15s; cursor: pointer;
+}
+.booking-row:hover { background: var(--bg); }
+.booking-row:last-child { border-bottom: none; }
+.guest-cell { display: flex; align-items: center; gap: 8px; }
+.mini-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500;
+}
+.hotel-mode .mini-avatar { background: rgba(139,110,60,0.12); color: var(--h-gold); }
+.cruise-mode .mini-avatar { background: rgba(0,180,216,0.12); color: var(--c-teal); }
+.booking-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.booking-ref { font-size: 10px; color: var(--muted); }
+.status-pill {
+  font-size: 9px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 10px;
+}
+.s-pending { background: rgba(217,119,6,0.12); color: #B45309; }
+.s-confirmed { background: rgba(46,94,62,0.12); color: #2E5E3E; }
+.s-cancelled { background: rgba(220,38,38,0.1); color: #DC2626; }
+.confirm-btn {
+  font-size: 10px; padding: 4px 12px; border-radius: 6px;
+  border: 1px solid var(--confirm); color: var(--confirm);
+  background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all .18s;
+}
+.confirm-btn:hover { background: var(--confirm); color: #fff; }
+.confirm-btn.done { background: var(--confirm); color: #fff; cursor: default; }
+.table-5col { grid-template-columns: 2fr 2fr 1fr 1fr 100px; }
+.table-6col { grid-template-columns: 2fr 2fr 1fr 1fr 1fr 100px; }
+
+/* Inventory view (cruise) */
+.inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 20px; }
+.inv-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+}
+.inv-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.inv-port { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+.inv-bar-wrap { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+.inv-bar { height: 100%; border-radius: 3px; }
+.inv-numbers { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
+.inv-booked { color: var(--text); font-weight: 500; }
+
+/* ── MODAL — Review & Confirm ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  z-index: 300; display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  width: 100%; max-width: 500px; overflow: hidden;
+}
+.modal-header { padding: 20px 22px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--text); }
+.modal-close { background: transparent; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+.modal-body { padding: 20px 22px; }
+.confirm-stop { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.confirm-stop:last-of-type { border-bottom: none; }
+.confirm-stop-name { font-size: 13px; color: var(--text); }
+.confirm-stop-time { font-size: 11px; color: var(--muted); }
+.confirm-stop-price { font-size: 13px; font-weight: 500; color: var(--brand); }
+.hotel-mode .confirm-stop-price { color: var(--h-gold); }
+.cruise-mode .confirm-stop-price { color: var(--c-teal); }
+.confirm-total { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.confirm-total-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.confirm-total-val { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); }
+.modal-footer { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.btn-confirm {
+  flex: 1; padding: 11px; border: none; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer;
+}
+.hotel-mode .btn-confirm { background: var(--h-gold); color: #fff; }
+.cruise-mode .btn-confirm { background: var(--c-teal); color: var(--c-bg); }
+.btn-cancel-modal {
+  padding: 11px 18px; border: 1px solid var(--border); border-radius: 8px;
+  background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; cursor: pointer;
+}
+.success-state { text-align: center; padding: 24px; }
+.success-icon { font-size: 40px; margin-bottom: 12px; }
+.success-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--text); margin-bottom: 6px; }
+.success-msg { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.success-ref { font-size: 11px; margin-top: 12px; color: var(--brand); font-weight: 500; letter-spacing: 1px; }
+.hotel-mode .success-ref { color: var(--h-gold); }
+.cruise-mode .success-ref { color: var(--c-teal); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: #1A1714; color: #F5F1EB; font-size: 13px; font-weight: 500;
+  padding: 10px 20px; border-radius: 24px; z-index: 400;
+  transition: transform .3s; white-space: nowrap; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Port day indicator (cruise) */
+.port-indicator {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  background: rgba(0,180,216,0.08); border-radius: 8px; margin-bottom: 10px;
+  border: 1px solid rgba(0,180,216,0.15);
+}
+.port-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-teal); flex-shrink: 0; }
+.port-name { font-size: 11px; font-weight: 500; color: var(--c-teal); }
+.port-time { font-size: 10px; color: var(--c-muted); margin-left: auto; }
 </style>
 </head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-const {useState,useEffect,useRef}=React;
-const C={bg:"#FDFCF9",bgS:"#F5F2EC",dark:"#0E0D0B",text:"#1A1714",sub:"#6B645A",dim:"#A09888",gold:"#B8963E",gL:"#D4B868",red:"#C44",grn:"#3D7A5A",bdr:"#E5DFD4"};
+<body class="hotel-mode">
 
-function useV(th=.15){const r=useRef(null);const[v,s]=useState(false);useEffect(()=>{const el=r.current;if(!el)return;const o=new IntersectionObserver(([e])=>{if(e.isIntersecting){s(true);o.disconnect();}},{threshold:th});o.observe(el);return()=>o.disconnect();},[th]);return[r,v];}
-function F({children,d=0,s={}}){const[r,v]=useV();return<div ref={r} style={{opacity:v?1:0,transform:v?"none":"translateY(20px)",transition:`opacity .6s ease ${d}s, transform .6s ease ${d}s`,...s}}>{children}</div>;}
-function Ct({end,suffix="",dur=1.5}){const[r,v]=useV();const[n,sN]=useState(0);useEffect(()=>{if(!v)return;let s=Date.now();const f=()=>{const p=Math.min((Date.now()-s)/(dur*1000),1);sN(Math.round(end*p));if(p<1)requestAnimationFrame(f);};requestAnimationFrame(f);},[v,end,dur]);return<span ref={r}>{n}{suffix}</span>;}
+<!-- Product switcher -->
+<div class="product-switcher">
+  <span class="ps-label">Arrivo</span>
+  <button class="ps-btn hotel active" onclick="setMode('hotel')">🏨 Hotel Concierge</button>
+  <div class="ps-dot"></div>
+  <button class="ps-btn cruise" onclick="setMode('cruise')">⚓ Cruise Planner</button>
+</div>
 
-function Nav(){const[s,sS]=useState(false);useEffect(()=>{const h=()=>sS(window.scrollY>30);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h);},[]);
-return<nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:s?"rgba(253,252,249,.95)":"transparent",backdropFilter:s?"blur(20px)":"none",borderBottom:s?"1px solid "+C.bdr:"none",transition:"all .3s"}}>
-  <div style={{maxWidth:1100,margin:"0 auto",padding:"0 28px",height:56,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-    <div style={{display:"flex",alignItems:"center",gap:7}}><div style={{width:26,height:26,borderRadius:7,background:C.dark,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:13,fontWeight:600,fontFamily:"'Newsreader',serif"}}>A</div><span style={{fontFamily:"'Newsreader',serif",fontSize:19,fontWeight:500}}>Arrivo</span></div>
-    <div style={{display:"flex",alignItems:"center",gap:24}}>
-      {["How it Works","Pricing"].map(l=><a key={l} href={"#"+l.toLowerCase().replace(/\s/g,"")} style={{fontSize:13,color:C.sub,textDecoration:"none"}}>{l}</a>)}
-      <a href="#cta" style={{padding:"7px 18px",background:C.dark,color:"#fff",borderRadius:8,fontSize:13,fontWeight:500,textDecoration:"none"}}>Get Early Access</a>
+<!-- Main app grid -->
+<div class="app" id="app">
+
+  <!-- LEFT: Guest itinerary panel -->
+  <div class="guest-panel" id="guestPanel">
+    <div class="panel-header">
+      <div class="brand-lockup">
+        <div class="brand-logo" id="brandLogo">🏨</div>
+        <div>
+          <div class="brand-name" id="brandName">Aman Venice</div>
+          <div class="brand-sub" id="brandSub">Digital Concierge</div>
+        </div>
+      </div>
+      <div class="guest-info-bar">
+        <div class="guest-avatar" id="guestAvatar">JS</div>
+        <div>
+          <div class="guest-name" id="guestName">Mr. & Mrs. Sharma</div>
+          <div class="guest-detail" id="guestDetail">Suite 14 · Arrival Mar 22</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-tabs" id="dayTabs"></div>
+
+    <div class="itinerary-body" id="itineraryBody">
+      <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:10px">✦</div>
+        <div style="font-family:'Playfair Display',serif;font-size:15px;margin-bottom:6px;color:var(--text)">Build your stay</div>
+        <div style="font-size:12px;line-height:1.5">Browse experiences and add them to plan your perfect day. Your concierge will confirm everything.</div>
+      </div>
+    </div>
+
+    <div class="submit-bar">
+      <div class="cost-row">
+        <span class="cost-label" id="costLabel">Estimated total</span>
+        <span class="cost-total" id="costTotal">€0</span>
+      </div>
+      <button class="btn-submit" id="submitBtn" onclick="openConfirmModal()">Request this itinerary →</button>
     </div>
   </div>
-</nav>;}
 
-function Hero(){
-  const msgs=["What's the WiFi password?","Any restaurant tips for tonight?","How do we get to the house?","Is there a grocery store nearby?","Best winery that's close?","What should we do tomorrow?","Can you book us a restaurant?","Where's the nearest bakery?"];
-  const[mi,sMi]=useState(0);
-  useEffect(()=>{const iv=setInterval(()=>sMi(p=>(p+1)%msgs.length),2000);return()=>clearInterval(iv);},[]);
-
-return<section style={{paddingTop:100,paddingBottom:72}}>
-  <div style={{maxWidth:1100,margin:"0 auto",padding:"0 28px"}}>
-    <div style={{maxWidth:680,margin:"0 auto",textAlign:"center"}}>
-      <F><div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",background:C.grn+"12",borderRadius:20,marginBottom:24,border:"1px solid "+C.grn+"20"}}><span style={{width:5,height:5,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,color:C.grn,fontWeight:600,letterSpacing:.8}}>EARLY ACCESS</span></div></F>
-      <F d={.06}><h1 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(36px, 5.5vw, 56px)",lineHeight:1.1,fontWeight:400,marginBottom:20}}>Answer every guest question<br/><em style={{fontStyle:"italic",color:C.gold}}>before they ask it.</em></h1></F>
-      <F d={.12}><p style={{fontSize:18,lineHeight:1.65,color:C.sub,fontWeight:300,maxWidth:500,margin:"0 auto 32px"}}>Send guests a personalized trip planner built from your insider knowledge. They arrive prepared. You stop repeating yourself.</p></F>
-      <F d={.18}><div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
-        <a href="#cta" style={{padding:"14px 28px",background:C.dark,color:"#fff",borderRadius:10,fontSize:15,fontWeight:500,textDecoration:"none"}}>Create Your First Guide</a>
-        <a href="#howitworks" style={{padding:"14px 28px",color:C.sub,borderRadius:10,fontSize:15,textDecoration:"none",border:"1px solid "+C.bdr}}>See How It Works</a>
-      </div></F>
+  <!-- RIGHT: Main content area -->
+  <div class="main-panel">
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="showView('catalog')">Browse Experiences</button>
+      <button class="view-tab" onclick="showView('staff')">Staff Dashboard</button>
     </div>
 
-    <F d={.25}><div style={{display:"grid",gridTemplateColumns:"1fr 40px 1fr",gap:0,alignItems:"start",marginTop:56,maxWidth:860,margin:"56px auto 0"}}>
-      <div style={{background:"#FFF8F6",borderRadius:16,padding:24,border:"1px solid #F0D8D0"}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:16}}><span style={{width:8,height:8,borderRadius:"50%",background:C.red,animation:"blink 1.5s ease infinite"}}/><span style={{fontSize:11,fontWeight:600,color:C.red,letterSpacing:.5}}>YOUR PHONE RIGHT NOW</span></div>
-        <div style={{minHeight:170,position:"relative",overflow:"hidden"}}>
-          {msgs.map((m,i)=><div key={i} style={{position:"absolute",left:0,right:0,opacity:i===mi?1:0,transform:i===mi?"translateY(0)":"translateY(6px)",transition:"all .3s"}}>
-            <div style={{background:"#fff",borderRadius:12,padding:"10px 14px",marginBottom:6,border:"1px solid #eee",boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-              <div style={{fontSize:10,color:C.dim,marginBottom:3}}>Guest · just now</div>
-              <div style={{fontSize:14,color:C.text}}>{m}</div>
-            </div>
-          </div>)}
-        </div>
-        <div style={{fontSize:13,fontWeight:600,color:C.red,textAlign:"center",marginTop:8}}>× Same 8 questions, every booking</div>
+    <div class="panel-content" id="panelContent">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirmModal" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div id="modalInner">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Review your itinerary</div>
+        <button class="modal-close" onclick="closeModalDirect()">✕</button>
       </div>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"center",alignSelf:"center"}}><span style={{fontSize:24,color:C.dim}}>→</span></div>
-      <div style={{background:C.dark,borderRadius:16,padding:24,color:"#F5F0E8"}}>
-        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:16}}><span style={{width:8,height:8,borderRadius:"50%",background:C.grn}}/><span style={{fontSize:11,fontWeight:600,color:C.grn,letterSpacing:.5}}>WITH ARRIVO</span></div>
-        <div style={{background:"#1A1816",borderRadius:12,padding:14,marginBottom:8}}>
-          <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:10}}>
-            <div style={{width:24,height:24,borderRadius:"50%",background:"linear-gradient(135deg,"+C.gold+",#C17246)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>🏡</div>
-            <div><div style={{fontSize:12,fontWeight:600}}>Your Villa · Day 3</div><div style={{fontSize:9,color:"#8A8279"}}>Thu, Jun 12</div></div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="btn-cancel-modal" onclick="closeModalDirect()">Edit</button>
+        <button class="btn-confirm" onclick="confirmBooking()">Send to concierge →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════ DATA ═══════════════
+
+const HOTEL_DATA = {
+  brand: 'Aman Venice', logo: '🏨', sub: 'Digital Concierge',
+  guest: 'Mr. & Mrs. Sharma', detail: 'Suite 14 · Arrival Mar 22',
+  avatar: 'SS', currency: '€',
+  days: ['Mar 22', 'Mar 23', 'Mar 24', 'Mar 25'],
+  ports: null,
+  catalogEyebrow: 'Curated Experiences',
+  catalogTitle: 'Your stay, your way',
+  catalogSub: 'Each experience is arranged personally by your concierge.',
+  filters: ['All', 'On Property', 'Private Tours', 'Dining', 'Wellness', 'Cultural'],
+  activities: [
+    {id:'h1',emoji:'🚣',category:'On Property',title:'Private Gondola at Dawn',desc:'A 90-minute private gondola through quiet canals before the city wakes. Prosecco and cicchetti included.',duration:'90 min',price:380,maxCap:4,booked:2,badge:'hotel',badgeLabel:'Hotel exclusive',location:'Hotel dock',mapsQ:'Aman+Venice+Canal+Grande',filter:['On Property']},
+    {id:'h2',emoji:'🍽️',category:'Dining',title:'Chef\'s Table — Arva Restaurant',desc:'Eight-course tasting menu with the executive chef, featuring seasonal Venetian ingredients and aged wine pairings.',duration:'3 hrs',price:290,maxCap:8,booked:7,badge:'hotel',badgeLabel:'Hotel exclusive',location:'Arva Restaurant',mapsQ:'Arva+Aman+Venice',filter:['Dining']},
+    {id:'h3',emoji:'🏛️',category:'Cultural',title:'After-Hours Doge\'s Palace',desc:'Private access to the Doge\'s Palace after it closes to the public. Expert art historian guide.',duration:'2 hrs',price:480,maxCap:6,booked:2,badge:'local',badgeLabel:'Private tour',location:'Doge\'s Palace',mapsQ:'Palazzo+Ducale+Venice',filter:['Cultural','Private Tours']},
+    {id:'h4',emoji:'🎭',category:'Cultural',title:'La Fenice Opera — Private Box',desc:'Reserved box seating at Teatro La Fenice with champagne and pre-opera dinner at Harry\'s Bar.',duration:'5 hrs',price:860,maxCap:4,booked:0,badge:'local',badgeLabel:'Private tour',location:'La Fenice',mapsQ:'Teatro+La+Fenice+Venice',filter:['Cultural']},
+    {id:'h5',emoji:'💆',category:'Wellness',title:'Signature Aman Spa Journey',desc:'Three-hour journey across our seven treatment rooms. Begins with a ritual bath and ends with a private terrace relaxation.',duration:'3 hrs',price:420,maxCap:2,booked:1,badge:'hotel',badgeLabel:'Hotel exclusive',location:'Aman Spa',mapsQ:'Aman+Venice+Spa',filter:['Wellness','On Property']},
+    {id:'h6',emoji:'🌅',category:'Private Tours',title:'Murano Glass — Master\'s Studio',desc:'Private session with a third-generation maestro in his Murano studio. Watch, learn, and create your own piece to take home.',duration:'3 hrs',price:340,maxCap:6,booked:4,badge:'local',badgeLabel:'Private tour',location:'Murano Island',mapsQ:'Murano+glass+studio',filter:['Private Tours']},
+    {id:'h7',emoji:'🍕',category:'Dining',title:'Cicchetti & Canalside Lunch',desc:'A curated bar crawl through six bacari (Venetian wine bars) with your personal food historian. Prosecco, ombre, and the best cicchetti in Venice.',duration:'2.5 hrs',price:180,maxCap:8,booked:3,badge:'local',badgeLabel:'Local experience',location:'Rialto area',mapsQ:'Rialto+cicchetti+Venice',filter:['Dining']},
+    {id:'h8',emoji:'🏊',category:'Wellness',title:'Rooftop Yoga & Meditation',desc:'Daily sunrise session on our private rooftop terrace with views over the Grand Canal and San Marco.',duration:'75 min',price:95,maxCap:6,booked:2,badge:'hotel',badgeLabel:'Hotel exclusive',location:'Rooftop Terrace',mapsQ:'Aman+Venice',filter:['Wellness','On Property']},
+    {id:'h9',emoji:'🎨',category:'Cultural',title:'Private Accademia Gallery',desc:'Early morning private access to the Gallerie dell\'Accademia with an art historian. See Bellini, Titian, and Veronese without the crowds.',duration:'2 hrs',price:390,maxCap:4,booked:1,badge:'local',badgeLabel:'Private tour',location:'Accademia',mapsQ:'Gallerie+Accademia+Venice',filter:['Cultural','Private Tours']},
+  ]
+};
+
+const CRUISE_DATA = {
+  brand: 'Silversea Silver Muse', logo: '⚓', sub: 'Shore Excursion Planner',
+  guest: 'Anderson, Robert & Diane', detail: 'Suite 703 · 12-Night Med',
+  avatar: 'RA', currency: '$',
+  days: null,
+  ports: [
+    {name:'Civitavecchia (Rome)', date:'Mar 24', arrival:'7:00 AM', departure:'6:00 PM'},
+    {name:'Naples', date:'Mar 25', arrival:'8:00 AM', departure:'5:00 PM'},
+    {name:'Palermo', date:'Mar 26', arrival:'9:00 AM', departure:'8:00 PM'},
+    {name:'Malta (Valletta)', date:'Mar 27', arrival:'7:00 AM', departure:'11:00 PM'},
+    {name:'Dubrovnik', date:'Mar 29', arrival:'8:00 AM', departure:'6:00 PM'},
+  ],
+  catalogEyebrow: 'Shore Excursions',
+  catalogTitle: 'Your ports, your adventure',
+  catalogSub: 'All excursions return to the ship at least 45 minutes before departure.',
+  filters: ['All', 'Cultural', 'Active', 'Culinary', 'Panoramic', 'Private'],
+  activities: [
+    {id:'c1',emoji:'🏛️',category:'Cultural',title:'Vatican & Sistine Chapel',desc:'Private early-entry access before general opening. Expert art historian guide, skip-all-lines.',duration:'5 hrs',price:285,maxCap:16,booked:14,badge:'cruise',badgeLabel:'Ship exclusive',port:'Civitavecchia (Rome)',mapsQ:'Vatican+Museums+Rome',filter:['Cultural','Private']},
+    {id:'c2',emoji:'🚗',category:'Private',title:'Colosseum & Ancient Rome — Private',desc:'Private car and guide. Colosseum arena floor access, Roman Forum, Palatine Hill. Lunch at a Roman trattoria.',duration:'7 hrs',price:420,maxCap:8,booked:3,badge:'cruise',badgeLabel:'Ship exclusive',port:'Civitavecchia (Rome)',mapsQ:'Colosseum+Rome',filter:['Cultural','Private']},
+    {id:'c3',emoji:'🌋',category:'Active',title:'Vesuvius Crater & Pompeii',desc:'Guided hike to Vesuvius crater, then a private Pompeii tour with an archaeologist guide.',duration:'8 hrs',price:195,maxCap:20,booked:18,badge:'shore',badgeLabel:'Shore excursion',port:'Naples',mapsQ:'Vesuvius+Pompeii',filter:['Active','Cultural']},
+    {id:'c4',emoji:'🍋',category:'Culinary',title:'Amalfi Coast & Limoncello',desc:'Scenic coastal drive to Ravello, Amalfi, and Positano. Private cooking class with limoncello and pasta making.',duration:'9 hrs',price:245,maxCap:12,booked:6,badge:'shore',badgeLabel:'Shore excursion',port:'Naples',mapsQ:'Amalfi+Coast',filter:['Culinary']},
+    {id:'c5',emoji:'🏰',category:'Panoramic',title:'Palermo City & Monreale Cathedral',desc:'The Arab-Norman mosaic of Monreale, Palermo street food market, and the Palatine Chapel.',duration:'6 hrs',price:145,maxCap:20,booked:9,badge:'shore',badgeLabel:'Shore excursion',port:'Palermo',mapsQ:'Monreale+Cathedral+Palermo',filter:['Cultural','Panoramic']},
+    {id:'c6',emoji:'🏍️',category:'Active',title:'Sicily by Tuk-Tuk',desc:'An irreverent self-drive tuk-tuk tour through Palermo\'s hidden markets, street art, and baroque churches.',duration:'3.5 hrs',price:95,maxCap:8,booked:4,badge:'shore',badgeLabel:'Shore excursion',port:'Palermo',mapsQ:'Palermo+old+town',filter:['Active']},
+    {id:'c7',emoji:'⚔️',category:'Cultural',title:'Valletta UNESCO Old City Walk',desc:'Private guided walk through the fortified capital — Grand Master\'s Palace, St. John\'s Co-Cathedral, and the Grand Harbour.',duration:'4 hrs',price:125,maxCap:16,booked:5,badge:'shore',badgeLabel:'Shore excursion',port:'Malta (Valletta)',mapsQ:'Valletta+Malta',filter:['Cultural']},
+    {id:'c8',emoji:'🤿',category:'Active',title:'Blue Lagoon Gozo Kayak & Snorkel',desc:'Fast boat to Gozo, kayak through the Blue Lagoon sea caves, and snorkel with crystal visibility.',duration:'6 hrs',price:175,maxCap:12,booked:2,badge:'shore',badgeLabel:'Shore excursion',port:'Malta (Valletta)',mapsQ:'Blue+Lagoon+Gozo+Malta',filter:['Active']},
+    {id:'c9',emoji:'🏯',category:'Panoramic',title:'Dubrovnik Old City & City Walls',desc:'Walk the entire circuit of the medieval city walls (2km), private guide through Stradun. Game of Thrones filming sites.',duration:'4 hrs',price:140,maxCap:16,booked:11,badge:'shore',badgeLabel:'Shore excursion',port:'Dubrovnik',mapsQ:'Dubrovnik+Old+City+Walls',filter:['Cultural','Panoramic']},
+    {id:'c10',emoji:'🚤',category:'Private',title:'Elafiti Islands Private Boat Charter',desc:'Private speedboat to the unspoiled Elafiti islands. Swimming, lunch on Šipan, back through sunset.',duration:'8 hrs',price:890,maxCap:8,booked:0,badge:'cruise',badgeLabel:'Ship exclusive',port:'Dubrovnik',mapsQ:'Elafiti+Islands+Dubrovnik',filter:['Active','Private']},
+  ]
+};
+
+// ═══════════════ STATE ═══════════════
+let mode = 'hotel';
+let data = HOTEL_DATA;
+let plan = {}; // {dayIndex: [{activityId, time}]}
+let activeDay = 0;
+let activeView = 'catalog';
+let activeCatFilter = 'All';
+
+// ═══════════════ MODE SWITCH ═══════════════
+function setMode(m) {
+  mode = m;
+  data = m === 'hotel' ? HOTEL_DATA : CRUISE_DATA;
+  plan = {};
+  activeDay = 0;
+  activeCatFilter = 'All';
+  document.body.className = m === 'hotel' ? 'hotel-mode' : 'cruise-mode';
+  document.querySelectorAll('.ps-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.ps-btn.${m}`).classList.add('active');
+  // Update brand
+  document.getElementById('brandLogo').textContent = data.logo;
+  document.getElementById('brandName').textContent = data.brand;
+  document.getElementById('brandSub').textContent = data.sub;
+  document.getElementById('guestAvatar').textContent = data.avatar;
+  document.getElementById('guestName').textContent = data.guest;
+  document.getElementById('guestDetail').textContent = data.detail;
+  renderDayTabs();
+  renderItinerary();
+  renderContent();
+}
+
+// ═══════════════ DAY TABS ═══════════════
+function renderDayTabs() {
+  const tabs = document.getElementById('dayTabs');
+  const days = data.days || data.ports.map(p => p.name.split('(')[0].trim());
+  tabs.innerHTML = days.map((d, i) =>
+    `<button class="day-tab${i === activeDay ? ' active' : ''}" onclick="selectDay(${i})">${d}</button>`
+  ).join('');
+}
+function selectDay(i) {
+  activeDay = i;
+  renderDayTabs();
+  renderItinerary();
+  if (mode === 'cruise') renderContent(); // refresh catalog to show port-filtered items
+}
+
+// ═══════════════ ITINERARY ═══════════════
+function renderItinerary() {
+  const body = document.getElementById('itineraryBody');
+  const dayPlan = plan[activeDay] || [];
+  if (dayPlan.length === 0) {
+    const portInfo = data.ports ? data.ports[activeDay] : null;
+    body.innerHTML = `
+      ${portInfo ? `<div class="port-indicator"><div class="port-dot"></div><div class="port-name">${portInfo.name}</div><div class="port-time">In: ${portInfo.arrival} · Out: ${portInfo.departure}</div></div>` : ''}
+      <div style="text-align:center;padding:30px 16px;color:var(--muted)">
+        <div style="font-size:28px;margin-bottom:8px">✦</div>
+        <div style="font-family:'Playfair Display',serif;font-size:14px;margin-bottom:5px;color:var(--text)">Your day is open</div>
+        <div style="font-size:11px;line-height:1.5">Browse experiences and tap "Add" to build your perfect day.</div>
+      </div>`;
+    updateCostBar();
+    return;
+  }
+
+  const portInfo = data.ports ? data.ports[activeDay] : null;
+  let html = portInfo ? `<div class="port-indicator"><div class="port-dot"></div><div class="port-name">${portInfo.name}</div><div class="port-time">In: ${portInfo.arrival} · Out: ${portInfo.departure}</div></div>` : '';
+  const dayLabel = data.days ? data.days[activeDay] : (data.ports[activeDay].date);
+  html += `<div class="itin-day-label">${dayLabel}</div>`;
+
+  dayPlan.forEach((item, idx) => {
+    const act = [...HOTEL_DATA.activities, ...CRUISE_DATA.activities].find(a => a.id === item.id);
+    if (!act) return;
+    const isLast = idx === dayPlan.length - 1;
+    const capPct = act.booked / act.maxCap;
+    const capCls = capPct >= 1 ? 'cap-full' : capPct >= 0.8 ? 'cap-low' : 'cap-ok';
+    const capLabel = capPct >= 1 ? 'Full' : `${act.maxCap - act.booked} spots left`;
+    html += `
+      <div class="stop-row">
+        <div class="stop-marker filled">${idx + 1}</div>
+        <div class="stop-card">
+          <span class="capacity-badge ${capCls}">${capLabel}</span>
+          <div class="stop-time">${item.time}</div>
+          <div class="stop-title">${act.title}</div>
+          <div class="stop-desc">${act.duration} · ${act.location || act.port || ''}</div>
+          <div class="stop-price">${data.currency}${act.price.toLocaleString()} pp</div>
+          <div class="stop-actions">
+            <a class="stop-btn" href="https://maps.google.com/?q=${encodeURIComponent(act.mapsQ)}" target="_blank">Maps ↗</a>
+            <button class="stop-btn" onclick="changeTime(${activeDay},${idx})">⏰ Time</button>
+            <button class="stop-btn danger" onclick="removeFromPlan(${activeDay},${idx})">Remove</button>
           </div>
-          {[{t:"9:00 AM",l:"Caffè Poliziano",c:"#E8A88A"},{t:"11:00 AM",l:"Montepulciano stroll",c:"#8BB4D9"},{t:"1:00 PM",l:"L'Altro Cantuccio",c:"#E8A88A"},{t:"3:30 PM",l:"Pienza & pecorino",c:"#8BB4D9"}].map((x,i)=>
-            <div key={i} style={{display:"flex",gap:8,marginBottom:4,alignItems:"center"}}>
-              <span style={{fontSize:9,color:"#8A8279",width:46,textAlign:"right",flexShrink:0}}>{x.t}</span>
-              <span style={{width:5,height:5,borderRadius:"50%",background:x.c}}/>
-              <span style={{fontSize:12,color:"#E8D5A3"}}>{x.l}</span>
-            </div>)}
         </div>
-        <div style={{display:"flex",gap:4}}>
-          {["📍 Maps","📞 Book","↻ Swap"].map((t,i)=><span key={i} style={{fontSize:9,padding:"4px 8px",background:"#2A2520",borderRadius:6,color:C.gL,border:"1px solid #3D3832"}}>{t}</span>)}
+      </div>`;
+  });
+  body.innerHTML = html;
+  updateCostBar();
+}
+
+function updateCostBar() {
+  let total = 0;
+  Object.values(plan).forEach(dayItems => dayItems.forEach(item => {
+    const act = [...HOTEL_DATA.activities, ...CRUISE_DATA.activities].find(a => a.id === item.id);
+    if (act) total += act.price;
+  }));
+  document.getElementById('costTotal').textContent = `${data.currency}${total.toLocaleString()}`;
+}
+
+function removeFromPlan(dayIdx, stopIdx) {
+  plan[dayIdx].splice(stopIdx, 1);
+  if (plan[dayIdx].length === 0) delete plan[dayIdx];
+  renderItinerary();
+  renderContent();
+}
+
+function changeTime(dayIdx, stopIdx) {
+  const times = ['7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM'];
+  const current = plan[dayIdx][stopIdx].time;
+  const idx = times.indexOf(current);
+  plan[dayIdx][stopIdx].time = times[(idx + 1) % times.length];
+  renderItinerary();
+}
+
+function addToPlan(actId) {
+  const act = data.activities.find(a => a.id === actId);
+  if (!act) return;
+  if (!plan[activeDay]) plan[activeDay] = [];
+  const alreadyIn = plan[activeDay].find(i => i.id === actId);
+  if (alreadyIn) { showToast('Already in your day plan'); return; }
+  const defaultTimes = ['9:00 AM','11:00 AM','2:00 PM','4:00 PM'];
+  const t = defaultTimes[plan[activeDay].length] || '10:00 AM';
+  plan[activeDay].push({ id: actId, time: t });
+  renderItinerary();
+  renderContent();
+  showToast(`${act.title} added to ${data.days ? data.days[activeDay] : data.ports[activeDay].name}`);
+}
+
+// ═══════════════ CATALOG ═══════════════
+function renderContent() {
+  if (activeView === 'catalog') renderCatalog();
+  else renderStaff();
+}
+
+function renderCatalog() {
+  const acts = data.activities.filter(a =>
+    activeCatFilter === 'All' || (a.filter && a.filter.includes(activeCatFilter))
+  );
+  const portFilter = mode === 'cruise' ? data.ports[activeDay].name : null;
+  const filtered = portFilter ? acts.filter(a => a.port === portFilter) : acts;
+
+  const dayPlan = plan[activeDay] || [];
+  const inPlan = new Set(dayPlan.map(i => i.id));
+
+  let html = `<div class="catalog-wrap">
+    <div class="catalog-hero">
+      <div class="catalog-eyebrow">${data.catalogEyebrow}${portFilter ? ' — ' + portFilter : ''}</div>
+      <div class="catalog-title">${data.catalogTitle}</div>
+      <div class="catalog-sub">${data.catalogSub}</div>
+    </div>
+    <div class="cat-filters">`;
+  data.filters.forEach(f => {
+    html += `<button class="cat-filter${activeCatFilter === f ? ' on' : ''}" onclick="setCatFilter('${f}')">${f}</button>`;
+  });
+  html += `</div><div class="activity-grid">`;
+
+  filtered.forEach(act => {
+    const added = inPlan.has(act.id);
+    const capPct = act.booked / act.maxCap;
+    const capCls = capPct >= 1 ? 'cap-full-bar' : capPct >= 0.8 ? 'cap-low-bar' : 'cap-ok-bar';
+    const capPx = Math.round(capPct * 100);
+    const spotsLeft = act.maxCap - act.booked;
+    const capTxt = capPct >= 1 ? 'Fully booked' : `${spotsLeft} of ${act.maxCap} spots available`;
+    const badgeCls = act.badge === 'hotel' ? 'badge-hotel' : act.badge === 'local' ? 'badge-local' : act.badge === 'cruise' ? 'badge-cruise' : 'badge-shore';
+
+    html += `
+      <div class="activity-card${added ? ' in-plan' : ''}">
+        <div class="act-img-placeholder">${act.emoji}</div>
+        <span class="act-badge ${badgeCls}">${act.badgeLabel}</span>
+        <div class="act-body">
+          <div class="act-category">${act.category}</div>
+          <div class="act-title">${act.title}</div>
+          <div class="act-desc">${act.desc}</div>
+          <div class="act-meta">
+            <span class="act-duration">⏱ ${act.duration}</span>
+            <span class="act-price">${data.currency}${act.price.toLocaleString()}</span>
+          </div>
         </div>
-        <div style={{fontSize:13,fontWeight:600,color:C.grn,textAlign:"center",marginTop:12}}>✓ They planned their whole trip already</div>
+        <div class="cap-indicator">
+          <div class="cap-bar-wrap"><div class="cap-bar ${capCls}" style="width:${capPx}%"></div></div>
+          <div class="cap-text">${capTxt}</div>
+        </div>
+        <div class="act-footer">
+          <button class="btn-add${added ? ' added' : ''}" onclick="${added ? '' : `addToPlan('${act.id}')`}">
+            ${added ? '✓ In your plan' : '+ Add to day'}
+          </button>
+          ${!added ? `<button class="btn-add-time" onclick="addToPlan('${act.id}')">🗺</button>` : ''}
+        </div>
+      </div>`;
+  });
+
+  html += `</div></div>`;
+  document.getElementById('panelContent').innerHTML = html;
+}
+
+function setCatFilter(f) {
+  activeCatFilter = f;
+  renderCatalog();
+}
+
+// ═══════════════ STAFF DASHBOARD ═══════════════
+function renderStaff() {
+  if (mode === 'hotel') renderHotelStaff();
+  else renderCruiseStaff();
+}
+
+function renderHotelStaff() {
+  const bookings = [
+    {guest:'Mr. & Mrs. Sharma',ref:'AV-0322-001',room:'Suite 14',items:['Private Gondola at Dawn','Chef\'s Table — Arva'],total:'€670',date:'Mar 22',status:'pending'},
+    {guest:'Dr. Hoffmann',ref:'AV-0322-002',room:'Suite 7',items:['After-Hours Doge\'s Palace','Rooftop Yoga'],total:'€575',date:'Mar 22',status:'confirmed'},
+    {guest:'The Nakamura Family',ref:'AV-0323-001',room:'Villa',items:['Murano Glass Studio','Cicchetti Bar Crawl'],total:'€520',date:'Mar 23',status:'pending'},
+    {guest:'Ms. Chen',ref:'AV-0323-002',room:'Suite 3',items:['Aman Spa Journey'],total:'€420',date:'Mar 23',status:'confirmed'},
+    {guest:'Lord & Lady Ashworth',ref:'AV-0324-001',room:'Piano Nobile',items:['La Fenice Opera — Private Box','Private Accademia'],total:'€1,250',date:'Mar 24',status:'pending'},
+  ];
+
+  let html = `<div class="staff-wrap">
+    <div class="staff-header">
+      <div>
+        <div class="staff-title">Concierge Dashboard</div>
+        <div class="staff-date">Aman Venice · Week of March 22, 2026</div>
       </div>
-    </div></F>
-  </div>
-</section>;}
-
-function Stats(){return<section style={{padding:"36px 28px",background:C.bgS,borderTop:"1px solid "+C.bdr,borderBottom:"1px solid "+C.bdr}}>
-  <div style={{maxWidth:800,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24,textAlign:"center"}}>
-    {[{n:80,s:"%",l:"fewer guest messages"},{n:5,s:" min",l:"setup time"},{n:47,s:"",l:"questions per stay — pre-answered"}].map((x,i)=><F key={i} d={i*.08}><div>
-      <div style={{fontFamily:"'Newsreader',serif",fontSize:44,fontWeight:300}}><Ct end={x.n} suffix={x.s}/></div>
-      <div style={{fontSize:12,color:C.sub,marginTop:4}}>{x.l}</div>
-    </div></F>)}
-  </div>
-</section>;}
-
-function How(){return<section id="howitworks" style={{padding:"80px 28px"}}>
-  <div style={{maxWidth:900,margin:"0 auto"}}>
-    <F><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",textAlign:"center",marginBottom:8}}>How It Works</p>
-    <h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(28px, 4vw, 38px)",textAlign:"center",fontWeight:400,marginBottom:48}}>Five minutes of setup.<br/><em style={{fontStyle:"italic",color:C.sub}}>Weeks of silence.</em></h2></F>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:40}}>
-      {[
-        {n:"01",t:"Drop in your knowledge",d:"Paste your guidebook, upload a PDF, or type your favorite spots. We organize everything into a trip planner."},
-        {n:"02",t:"Personalize per guest",d:"Add their name and dates. Tweak the itinerary based on what they've told you. Clone from past guests in one click."},
-        {n:"03",t:"Send before they arrive",d:"Guests get a beautiful, editable trip planner with your recommendations, Maps links, and booking buttons. Pre-arrival, not post-panic."},
-      ].map((x,i)=><F key={i} d={i*.1}><div>
-        <div style={{fontFamily:"'Newsreader',serif",fontSize:64,fontWeight:300,color:C.bdr,lineHeight:1,marginBottom:12}}>{x.n}</div>
-        <h3 style={{fontFamily:"'Newsreader',serif",fontSize:20,fontWeight:500,marginBottom:8}}>{x.t}</h3>
-        <p style={{fontSize:14,color:C.sub,lineHeight:1.6,fontWeight:300}}>{x.d}</p>
-      </div></F>)}
     </div>
-  </div>
-</section>;}
-
-function Core(){return<section style={{padding:"72px 28px",background:C.dark,color:"#F5F0E8"}}>
-  <div style={{maxWidth:900,margin:"0 auto"}}>
-    <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(26px, 4vw, 36px)",fontWeight:400,textAlign:"center",lineHeight:1.3,marginBottom:48}}>Not a guidebook. Not a chatbot.<br/><em style={{fontStyle:"italic",color:C.gL}}>A pre-arrival experience.</em></h2></F>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-      {[
-        {i:"📅",t:"Trip planner, not a PDF",d:"Guests drag, drop, and customize a real itinerary — not skim a static doc they'll forget."},
-        {i:"🧠",t:"Your knowledge, not generic tips",d:"Every recommendation is yours. Your restaurants, your shortcuts, your insider spots."},
-        {i:"📋",t:"Booking requests, not text threads",d:"Guests tap to request a restaurant or tour. You confirm from a dashboard."},
-        {i:"🔄",t:"Reusable, not one-time",d:"Clone your best itineraries. Tweak per guest in one click. Your knowledge compounds."},
-        {i:"📍",t:"One-tap everything",d:"Maps links, driving routes, and call buttons baked into every recommendation."},
-        {i:"✏️",t:"Guest-editable, not read-only",d:"They swap activities, reorder days, delete what doesn't fit. Their trip, your expertise."},
-      ].map((x,i)=><F key={i} d={(i%2)*.06}><div style={{background:"#1A1816",borderRadius:12,padding:20,border:"1px solid #2A2622"}}>
-        <div style={{fontSize:20,marginBottom:8}}>{x.i}</div>
-        <h3 style={{fontFamily:"'Newsreader',serif",fontSize:17,fontWeight:500,marginBottom:4}}>{x.t}</h3>
-        <p style={{fontSize:13,color:"#9E9689",lineHeight:1.55,fontWeight:300}}>{x.d}</p>
-      </div></F>)}
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val">12</div><div class="stat-label">Active requests</div><div class="stat-delta">↑ 3 today</div></div>
+      <div class="stat-card"><div class="stat-val">€8,420</div><div class="stat-label">Week revenue</div><div class="stat-delta">↑ 18% vs last week</div></div>
+      <div class="stat-card"><div class="stat-val">94%</div><div class="stat-label">Fulfilment rate</div><div class="stat-delta">↑ 2pts</div></div>
+      <div class="stat-card"><div class="stat-val">4.9</div><div class="stat-label">Guest rating</div><div class="stat-delta">Based on 47 reviews</div></div>
     </div>
-  </div>
-</section>;}
+    <div class="bookings-table">
+      <div class="table-header table-5col">
+        <div>Guest</div><div>Experiences</div><div>Date</div><div>Total</div><div>Action</div>
+      </div>`;
 
-function Quote(){return<section style={{padding:"64px 28px",background:C.bgS}}>
-  <div style={{maxWidth:560,margin:"0 auto",textAlign:"center"}}>
-    <F><blockquote style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(20px, 3vw, 28px)",lineHeight:1.45,fontStyle:"italic",marginBottom:20}}>"Our guests arrive with a full plan. We get maybe one message the whole trip — to say thank you."</blockquote>
-    <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
-      <div style={{width:36,height:36,borderRadius:"50%",background:C.dark,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:600,color:"#fff"}}>K</div>
-      <div style={{textAlign:"left"}}><div style={{fontSize:13,fontWeight:500}}>Kyle & Charles</div><div style={{fontSize:11,color:C.dim}}>Molino Nobile · Montepulciano, IT</div></div>
-    </div></F>
-  </div>
-</section>;}
+  bookings.forEach((b, i) => {
+    const initials = b.guest.split(' ').filter(w => w.match(/^[A-Z]/)).slice(0,2).map(w => w[0]).join('');
+    html += `
+      <div class="booking-row table-5col">
+        <div class="guest-cell">
+          <div class="mini-avatar">${initials||b.guest[0]}</div>
+          <div><div class="booking-name">${b.guest}</div><div class="booking-ref">${b.ref} · ${b.room}</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">${b.items.join(', ')}</div>
+        <div style="font-size:12px">${b.date}</div>
+        <div style="font-size:13px;font-weight:500">${b.total}</div>
+        <div>
+          ${b.status === 'pending'
+            ? `<button class="confirm-btn" id="cb${i}" onclick="confirmStaff(${i},'cb${i}')">Confirm</button>`
+            : `<span class="status-pill s-confirmed">Confirmed</span>`}
+        </div>
+      </div>`;
+  });
+  html += `</div></div>`;
+  document.getElementById('panelContent').innerHTML = html;
+}
 
-function Compare(){return<section style={{padding:"64px 28px"}}>
-  <div style={{maxWidth:680,margin:"0 auto"}}>
-    <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:28,fontWeight:400,textAlign:"center",marginBottom:32}}>The difference one link makes.</h2></F>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
-      <F><div style={{borderRadius:14,padding:24,background:"#FFF8F6",border:"1px solid #F0D8D0"}}>
-        <div style={{fontSize:12,fontWeight:600,color:C.red,marginBottom:16,letterSpacing:.5}}>WITHOUT ARRIVO</div>
-        {["47 messages per booking","Same questions every guest","Typing at 10pm on vacation","Guests arrive unprepared","'Where should we eat?' ×12","Lost reservations & missed spots","Reviews mention lack of info"].map((t,i)=>
-          <div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"5px 0",fontSize:13,color:C.sub,fontWeight:300}}><span style={{color:C.red,fontSize:12,flexShrink:0}}>✗</span>{t}</div>)}
-      </div></F>
-      <F d={.08}><div style={{borderRadius:14,padding:24,background:"#F6FBF8",border:"1px solid #D0E8DA"}}>
-        <div style={{fontSize:12,fontWeight:600,color:C.grn,marginBottom:16,letterSpacing:.5}}>WITH ARRIVO</div>
-        {["3-5 messages per booking","Questions answered pre-arrival","Your phone stays quiet","Guests arrive with a plan","They booked their own dinners","Every spot has Maps + booking","Reviews praise your hospitality"].map((t,i)=>
-          <div key={i} style={{display:"flex",gap:8,alignItems:"center",padding:"5px 0",fontSize:13,color:C.sub,fontWeight:300}}><span style={{color:C.grn,fontSize:12,flexShrink:0}}>✓</span>{t}</div>)}
-      </div></F>
+function renderCruiseStaff() {
+  const bookings = [
+    {guest:'Anderson, Robert & Diane',ref:'SS-703-R24',cabin:'Suite 703',items:['Vatican & Sistine Chapel','Colosseum Private'],port:'Rome',total:'$705',status:'pending'},
+    {guest:'Bergmann, Klaus',ref:'SS-412-R24',cabin:'Veranda 412',items:['Vatican & Sistine Chapel'],port:'Rome',total:'$285',status:'confirmed'},
+    {guest:'Okonkwo, Adaeze',ref:'SS-201-N25',cabin:'Suite 201',items:['Vesuvius & Pompeii','Amalfi Coast'],port:'Naples',total:'$440',status:'confirmed'},
+    {guest:'Patel, Ananya',ref:'SS-318-N25',cabin:'Veranda 318',items:['Amalfi Coast'],port:'Naples',total:'$245',status:'pending'},
+    {guest:'Walsh, Séan & Orla',ref:'SS-605-D29',cabin:'Suite 605',items:['Elafiti Islands Charter','Dubrovnik Walls'],port:'Dubrovnik',total:'$1,030',status:'pending'},
+  ];
+
+  const inventory = [
+    {name:'Vatican & Sistine Chapel',port:'Rome',cap:16,booked:14},
+    {name:'Colosseum Private',port:'Rome',cap:8,booked:3},
+    {name:'Vesuvius & Pompeii',port:'Naples',cap:20,booked:18},
+    {name:'Amalfi Coast',port:'Naples',cap:12,booked:6},
+    {name:'Dubrovnik City Walls',port:'Dubrovnik',cap:16,booked:11},
+    {name:'Elafiti Islands Charter',port:'Dubrovnik',cap:8,booked:0},
+  ];
+
+  let html = `<div class="staff-wrap">
+    <div class="staff-header">
+      <div>
+        <div class="staff-title">Shore Excursions Dashboard</div>
+        <div class="staff-date">Silver Muse · 12-Night Mediterranean, March 2026</div>
+      </div>
     </div>
-  </div>
-</section>;}
-
-function Pricing(){return<section id="pricing" style={{padding:"72px 28px",background:C.bgS,borderTop:"1px solid "+C.bdr}}>
-  <div style={{maxWidth:900,margin:"0 auto"}}>
-    <F><p style={{fontSize:12,color:C.gold,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",textAlign:"center",marginBottom:8}}>Pricing</p>
-    <h2 style={{fontFamily:"'Newsreader',serif",fontSize:32,textAlign:"center",fontWeight:400,marginBottom:40}}>Start free. Scale when ready.</h2></F>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {[
-        {n:"Starter",p:"Free",pr:"forever",f:["1 property","Pre-built itineraries","Maps & booking links","House essentials hub","Guest-facing guide"],c:"Get Started",hi:false},
-        {n:"Professional",p:"$29",pr:"/mo",f:["Up to 5 properties","Per-guest personalization","Booking request dashboard","Clone past itineraries","Custom branding","PMS auto-send"],c:"Start Free Trial",hi:true},
-        {n:"Portfolio",p:"$79",pr:"/mo",f:["Unlimited properties","Everything in Pro","White-label","Team accounts","API access","Priority support"],c:"Contact Sales",hi:false},
-      ].map((x,i)=><F key={i} d={i*.06}><div style={{background:x.hi?C.dark:"#fff",color:x.hi?"#F5F0E8":C.text,borderRadius:14,padding:28,border:x.hi?"none":"1px solid "+C.bdr,position:"relative",display:"flex",flexDirection:"column",height:"100%",boxShadow:x.hi?"0 16px 48px rgba(0,0,0,.1)":"none"}}>
-        {x.hi&&<div style={{position:"absolute",top:-10,left:"50%",transform:"translateX(-50%)",background:C.gold,color:C.dark,fontSize:10,fontWeight:700,padding:"3px 12px",borderRadius:10}}>MOST POPULAR</div>}
-        <div style={{fontSize:12,fontWeight:600,color:x.hi?C.gL:C.sub,marginBottom:8}}>{x.n}</div>
-        <div style={{display:"flex",alignItems:"baseline",gap:2,marginBottom:20}}><span style={{fontFamily:"'Newsreader',serif",fontSize:40,fontWeight:300}}>{x.p}</span><span style={{fontSize:13,color:x.hi?"#8A8279":C.dim}}>{x.pr}</span></div>
-        <div style={{flex:1}}>{x.f.map((f,j)=><div key={j} style={{display:"flex",gap:7,alignItems:"center",padding:"4px 0",fontSize:13,color:x.hi?"#D4D0C8":C.sub,fontWeight:300}}><span style={{color:x.hi?C.gL:C.grn,fontSize:12}}>✓</span>{f}</div>)}</div>
-        <a href="#cta" style={{display:"block",textAlign:"center",marginTop:20,padding:"11px 0",background:x.hi?C.gold:"transparent",color:x.hi?C.dark:C.text,border:x.hi?"none":"1px solid "+C.bdr,borderRadius:9,fontSize:13,fontWeight:500,textDecoration:"none"}}>{x.c}</a>
-      </div></F>)}
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val">847</div><div class="stat-label">Guests aboard</div><div class="stat-delta">98% occupancy</div></div>
+      <div class="stat-card"><div class="stat-val">$124K</div><div class="stat-label">Excursion revenue</div><div class="stat-delta">↑ 22% vs voyage avg</div></div>
+      <div class="stat-card"><div class="stat-val">312</div><div class="stat-label">Bookings confirmed</div><div class="stat-delta">Next port: Rome</div></div>
+      <div class="stat-card"><div class="stat-val">3</div><div class="stat-label">Near-full tours</div><div class="stat-delta">Action needed ↓</div></div>
     </div>
-  </div>
-</section>;}
 
-function CTA(){const[e,sE]=useState("");const[d,sD]=useState(false);
-return<section id="cta" style={{padding:"80px 28px",background:C.dark}}>
-  <div style={{maxWidth:480,margin:"0 auto",textAlign:"center"}}>
-    <F><h2 style={{fontFamily:"'Newsreader',serif",fontSize:"clamp(28px, 4vw, 38px)",fontWeight:400,color:"#F5F0E8",lineHeight:1.2,marginBottom:12}}>Your guests deserve<br/>more than a PDF.</h2>
-    <p style={{fontSize:15,color:"#9E9689",fontWeight:300,marginBottom:28}}>First 100 hosts get Pro free for 6 months.</p>
-    {!d?<div style={{display:"flex",gap:8,maxWidth:400,margin:"0 auto"}}><input value={e} onChange={v=>sE(v.target.value)} placeholder="you@email.com" style={{flex:1,padding:"12px 16px",background:"#1A1816",border:"1px solid #2A2622",borderRadius:9,color:"#F5F0E8",fontSize:13,outline:"none",fontFamily:"'Outfit',sans-serif"}} onFocus={v=>v.target.style.borderColor=C.gold} onBlur={v=>v.target.style.borderColor="#2A2622"}/><button onClick={()=>e&&sD(true)} style={{padding:"12px 20px",background:C.gold,color:C.dark,border:"none",borderRadius:9,fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>Get Access</button></div>
-      :<div style={{padding:"14px",background:"#1A2418",borderRadius:11,border:"1px solid #2A3A22"}}><span style={{fontSize:13,color:"#A8D5BA"}}>✓ You're on the list!</span></div>}
-    <p style={{fontSize:11,color:"#6E6860",marginTop:14}}>Born in a flour mill in Tuscany.</p></F>
-  </div>
-</section>;}
+    <div style="font-family:'Playfair Display',serif;font-size:16px;margin-bottom:12px;color:var(--text)">Pending bookings</div>
+    <div class="bookings-table">
+      <div class="table-header table-6col">
+        <div>Guest</div><div>Excursions</div><div>Port</div><div>Cabin</div><div>Total</div><div>Action</div>
+      </div>`;
 
-function Footer(){return<footer style={{padding:"24px 28px",background:C.dark,borderTop:"1px solid #2A2622"}}>
-  <div style={{maxWidth:900,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-    <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:20,borderRadius:5,background:C.gold,display:"flex",alignItems:"center",justifyContent:"center",color:C.dark,fontSize:10,fontWeight:700,fontFamily:"'Newsreader',serif"}}>A</div><span style={{fontFamily:"'Newsreader',serif",fontSize:14,color:"#6E6860"}}>Arrivo</span></div>
-    <p style={{fontSize:11,color:"#6E6860"}}>© 2025 Arrivo</p>
-  </div>
-</footer>;}
+  bookings.forEach((b, i) => {
+    const initials = b.guest.split(',')[0].slice(-2).toUpperCase();
+    html += `
+      <div class="booking-row table-6col">
+        <div class="guest-cell">
+          <div class="mini-avatar">${initials}</div>
+          <div><div class="booking-name">${b.guest}</div><div class="booking-ref">${b.ref}</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">${b.items.join(', ')}</div>
+        <div style="font-size:12px">${b.port}</div>
+        <div style="font-size:12px">${b.cabin}</div>
+        <div style="font-size:13px;font-weight:500">${b.total}</div>
+        <div>
+          ${b.status === 'pending'
+            ? `<button class="confirm-btn" id="cc${i}" onclick="confirmStaff(${i},'cc${i}')">Confirm</button>`
+            : `<span class="status-pill s-confirmed">Confirmed</span>`}
+        </div>
+      </div>`;
+  });
 
-function App(){return<div style={{background:C.bg,minHeight:"100vh"}}><Nav/><Hero/><Stats/><How/><Core/><Quote/><Compare/><Pricing/><CTA/><Footer/></div>;}
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  html += `</div>
+    <div style="font-family:'Playfair Display',serif;font-size:16px;margin:24px 0 12px;color:var(--text)">Inventory & capacity</div>
+    <div class="inventory-grid">`;
+
+  inventory.forEach(inv => {
+    const pct = Math.round((inv.booked / inv.cap) * 100);
+    const barCls = pct >= 90 ? 'cap-full-bar' : pct >= 70 ? 'cap-low-bar' : 'cap-ok-bar';
+    html += `
+      <div class="inv-card">
+        <div class="inv-name">${inv.name}</div>
+        <div class="inv-port">📍 ${inv.port}</div>
+        <div class="inv-bar-wrap"><div class="inv-bar ${barCls}" style="width:${pct}%"></div></div>
+        <div class="inv-numbers">
+          <span class="inv-booked">${inv.booked} booked</span>
+          <span>${inv.cap - inv.booked} remaining / ${inv.cap} cap</span>
+        </div>
+      </div>`;
+  });
+
+  html += `</div></div>`;
+  document.getElementById('panelContent').innerHTML = html;
+}
+
+function confirmStaff(i, btnId) {
+  const btn = document.getElementById(btnId);
+  if (btn) { btn.className = 'confirm-btn done'; btn.textContent = '✓ Confirmed'; }
+  showToast('Booking confirmed & guest notified');
+}
+
+// ═══════════════ VIEW TABS ═══════════════
+function showView(v) {
+  activeView = v;
+  document.querySelectorAll('.view-tab').forEach((t, i) => {
+    t.classList.toggle('active', (v === 'catalog' && i === 0) || (v === 'staff' && i === 1));
+  });
+  renderContent();
+}
+
+// ═══════════════ CONFIRM MODAL ═══════════════
+function openConfirmModal() {
+  const allItems = Object.entries(plan).flatMap(([dayIdx, items]) =>
+    items.map(item => ({ ...item, dayIdx: parseInt(dayIdx) }))
+  );
+  if (allItems.length === 0) { showToast('Add at least one experience first'); return; }
+
+  let total = 0;
+  let bodyHtml = '';
+  allItems.forEach(item => {
+    const act = [...HOTEL_DATA.activities, ...CRUISE_DATA.activities].find(a => a.id === item.id);
+    if (!act) return;
+    total += act.price;
+    const dayLabel = data.days ? data.days[item.dayIdx] : data.ports[item.dayIdx]?.name || '';
+    bodyHtml += `
+      <div class="confirm-stop">
+        <div>
+          <div class="confirm-stop-name">${act.title}</div>
+          <div class="confirm-stop-time">${dayLabel} · ${item.time}</div>
+        </div>
+        <div class="confirm-stop-price">${data.currency}${act.price.toLocaleString()}</div>
+      </div>`;
+  });
+  bodyHtml += `
+    <div class="confirm-total">
+      <div class="confirm-total-label">Estimated total</div>
+      <div class="confirm-total-val">${data.currency}${total.toLocaleString()}</div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5">
+      ${mode === 'hotel'
+        ? 'Your concierge will review and confirm availability within 30 minutes. You\'ll receive a message at the front desk.'
+        : 'Your shore excursions coordinator will confirm availability and add your tickets to your stateroom folio.'}
+    </div>`;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  document.getElementById('modalTitle').textContent = 'Review your ' + (mode === 'hotel' ? 'itinerary' : 'excursions');
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function confirmBooking() {
+  const ref = mode === 'hotel' ? 'AV-0322-' + Math.floor(Math.random()*900+100) : 'SS-703-' + Math.floor(Math.random()*900+100);
+  document.getElementById('modalInner').innerHTML = `
+    <div class="success-state">
+      <div class="success-icon">${mode === 'hotel' ? '✉️' : '⚓'}</div>
+      <div class="success-title">${mode === 'hotel' ? 'Sent to your concierge' : 'Excursions requested'}</div>
+      <div class="success-msg">${mode === 'hotel'
+        ? 'Your itinerary has been sent to the front desk. Your concierge will confirm each experience and leave a note in your suite within the hour.'
+        : 'Your shore excursion requests have been sent to the excursions desk. Tickets will be added to your stateroom folio once confirmed.'}</div>
+      <div class="success-ref">Ref: ${ref}</div>
+    </div>`;
+  setTimeout(() => {
+    document.querySelector('.modal-footer') && (document.querySelector('.modal-footer').innerHTML = `<button class="btn-confirm" onclick="closeModalDirect()">Done</button>`);
+  }, 50);
+}
+
+function closeModal(e) { if (e.target === document.getElementById('confirmModal')) closeModalDirect(); }
+function closeModalDirect() {
+  document.getElementById('confirmModal').classList.remove('open');
+  setTimeout(() => {
+    document.getElementById('modalInner').innerHTML = `
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Review your itinerary</div>
+        <button class="modal-close" onclick="closeModalDirect()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="btn-cancel-modal" onclick="closeModalDirect()">Edit</button>
+        <button class="btn-confirm" onclick="confirmBooking()">Send to concierge →</button>
+      </div>`;
+  }, 300);
+}
+
+// ═══════════════ TOAST ═══════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════ INIT ═══════════════
+renderDayTabs();
+renderItinerary();
+renderContent();
 </script>
 </body>
 </html>

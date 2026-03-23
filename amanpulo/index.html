@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arrivo — The Pre-Arrival Concierge for Ultra-Luxury Hotels</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1C1814; --bone: #F5F0E8; --bone-dark: #EDE7DB; --sand: #E0D5C4;
+  --muted: #7A7168; --gold: #9B7D45; --gold-light: #C4A96B;
+  --teal: #2A5C4A; --line: rgba(28,24,20,0.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; font-weight: 300; background: var(--bone); color: var(--ink); overflow-x: hidden; }
+
+/* NAV */
+nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(245,240,232,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 6px; text-transform: uppercase; color: var(--ink); }
+.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-link { font-size: 12px; letter-spacing: 0.5px; color: var(--muted); text-decoration: none; transition: color .2s; }
+.nav-link:hover { color: var(--ink); }
+.nav-cta { background: var(--ink); color: var(--bone); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 22px; border: none; cursor: pointer; text-decoration: none; }
+
+/* HERO */
+.hero { height: 100vh; position: relative; display: flex; align-items: center; overflow: hidden; }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(28,24,20,0.75) 0%, rgba(28,24,20,0.3) 60%, rgba(28,24,20,0.1) 100%); }
+.hero-content { position: relative; z-index: 1; padding: 0 80px; max-width: 700px; }
+.hero-eyebrow { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.hero-eyebrow::before { content: ''; width: 40px; height: 1px; background: var(--gold-light); }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px, 5vw, 64px); font-weight: 300; color: var(--bone); line-height: 1.1; margin-bottom: 20px; }
+.hero-subtitle { font-size: 15px; color: rgba(245,240,232,0.65); line-height: 1.65; margin-bottom: 36px; max-width: 480px; font-weight: 300; }
+.hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn-primary { background: var(--bone); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 28px; border: none; cursor: pointer; text-decoration: none; transition: all .2s; }
+.btn-primary:hover { background: var(--bone-dark); }
+.btn-outline { background: transparent; color: var(--bone); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 28px; border: 1px solid rgba(245,240,232,0.4); cursor: pointer; text-decoration: none; transition: all .2s; }
+.btn-outline:hover { border-color: var(--bone); }
+.hero-stat-row { position: absolute; bottom: 48px; left: 80px; right: 80px; display: flex; gap: 40px; z-index: 1; }
+.hero-stat { }
+.hero-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--bone); }
+.hero-stat-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: rgba(245,240,232,0.4); margin-top: 2px; }
+
+/* PROBLEM SECTION */
+.problem-section { background: var(--ink); padding: 100px 80px; }
+.ps-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.ps-eyebrow { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 16px; }
+.ps-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 44px); font-weight: 300; color: var(--bone); line-height: 1.2; margin-bottom: 20px; }
+.ps-desc { font-size: 14px; color: rgba(245,240,232,0.55); line-height: 1.7; margin-bottom: 28px; }
+.email-mock { background: rgba(245,240,232,0.05); border: 1px solid rgba(245,240,232,0.1); padding: 24px; }
+.em-header { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: rgba(245,240,232,0.3); margin-bottom: 12px; border-bottom: 1px solid rgba(245,240,232,0.08); padding-bottom: 10px; }
+.em-salutation { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--bone); margin-bottom: 10px; }
+.em-body { font-size: 12px; color: rgba(245,240,232,0.4); line-height: 1.7; }
+.em-link { color: var(--gold-light); text-decoration: underline; }
+.em-pain { margin-top: 14px; padding: 10px 12px; background: rgba(155,125,69,0.08); border-left: 2px solid var(--gold); font-size: 11px; color: var(--gold-light); }
+
+/* SOLUTION SECTION */
+.solution-section { padding: 100px 80px; max-width: 1300px; margin: 0 auto; }
+.sol-header { text-align: center; margin-bottom: 60px; }
+.sol-eyebrow { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+.sol-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 44px); font-weight: 300; color: var(--ink); }
+.sol-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.sol-card { background: var(--bone-dark); padding: 36px 32px; }
+.sol-num { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--sand); line-height: 1; margin-bottom: 16px; }
+.sol-card-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--ink); margin-bottom: 10px; }
+.sol-card-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+/* DEMO SECTION */
+.demo-section { background: var(--ink-dark, #0F0D0A); padding: 100px 80px; }
+.demo-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+.demo-eyebrow { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 12px; }
+.demo-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 3.5vw, 44px); font-weight: 300; color: var(--bone); margin-bottom: 12px; }
+.demo-sub { font-size: 14px; color: rgba(245,240,232,0.45); margin-bottom: 48px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.demo-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-bottom: 48px; text-align: left; }
+.demo-card { background: rgba(245,240,232,0.04); border: 1px solid rgba(245,240,232,0.08); padding: 24px; }
+.demo-card-icon { font-size: 20px; margin-bottom: 12px; }
+.demo-card-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--bone); margin-bottom: 6px; }
+.demo-card-desc { font-size: 12px; color: rgba(245,240,232,0.4); line-height: 1.6; margin-bottom: 14px; }
+.demo-card-link { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-light); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: gap .2s; }
+.demo-card-link:hover { gap: 10px; }
+.demo-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* TESTIMONIAL */
+.testimonial { padding: 80px; background: var(--bone-dark); text-align: center; }
+.quote { font-family: 'Cormorant Garamond', serif; font-size: clamp(20px, 2.5vw, 30px); font-weight: 300; font-style: italic; color: var(--ink); max-width: 720px; margin: 0 auto 20px; line-height: 1.5; }
+.quote-attr { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+/* PRICING */
+.pricing-section { padding: 100px 80px; max-width: 1100px; margin: 0 auto; }
+.pricing-header { text-align: center; margin-bottom: 48px; }
+.pricing-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--ink); margin-bottom: 8px; }
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
+.price-card { border: 1px solid var(--line); padding: 36px 32px; background: #fff; position: relative; }
+.price-card.featured { border-color: var(--gold); }
+.price-featured-badge { position: absolute; top: -1px; right: 24px; background: var(--gold); color: #fff; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 4px 12px; }
+.price-tier { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.price-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--ink); margin-bottom: 6px; }
+.price-amount { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--ink); }
+.price-per { font-size: 11px; color: var(--muted); }
+.price-features { margin: 20px 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.price-features li { font-size: 12px; color: var(--ink-soft, #3A3430); display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
+.price-features li::before { content: '—'; color: var(--gold); flex-shrink: 0; }
+.price-cta { width: 100%; padding: 13px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: all .2s; }
+.price-cta:hover, .price-card.featured .price-cta { background: var(--ink); color: var(--bone); }
+
+/* FOOTER */
+footer { background: var(--ink); padding: 48px 80px; display: flex; justify-content: space-between; align-items: center; }
+.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 6px; text-transform: uppercase; color: var(--bone); }
+.footer-copy { font-size: 11px; color: rgba(245,240,232,0.3); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Arrivo</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#">How it works</a>
+    <a class="nav-link" href="#">For hotels</a>
+    <a class="nav-link" href="#">Pricing</a>
+    <a class="nav-cta" href="amanpulo-guest.html">See live demo →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="hero-img" src="https://www.aman.com/sites/default/files/styles/full_size_extra_large/public/2021-03/Aman_Amanpulo_Experiences_1.jpg" alt="Amanpulo" onerror="this.style.background='#1C1814'">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">The pre-arrival concierge platform</div>
+    <h1 class="hero-title">Your guests arrive ready to experience everything.</h1>
+    <p class="hero-subtitle">Arrivo replaces the generic pre-arrival email with a beautiful, personalised experience planner — complete with packages, add-ons, and a live folio your team manages from one dashboard.</p>
+    <div class="hero-buttons">
+      <a class="btn-primary" href="amanpulo-guest.html">See the guest view</a>
+      <a class="btn-outline" href="amanpulo-staff.html">See the staff dashboard</a>
+    </div>
+  </div>
+  <div class="hero-stat-row">
+    <div class="hero-stat"><div class="hero-stat-val">3.4×</div><div class="hero-stat-label">More pre-arrival bookings</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">$840</div><div class="hero-stat-label">Added revenue per stay</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">94%</div><div class="hero-stat-label">Guest satisfaction with planning</div></div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<div class="problem-section">
+  <div class="ps-inner">
+    <div>
+      <div class="ps-eyebrow">The problem</div>
+      <h2 class="ps-title">$1,500 a night. A PDF brochure and a generic email.</h2>
+      <p class="ps-desc">Ultra-luxury hotels charge extraordinary rates — and then send guests a wall of text, a link to a PDF, and hope they figure out what to book. The experiences team is left fielding WhatsApp messages at midnight. Most guests don't pre-book anything. Revenue is left on the table.</p>
+      <p class="ps-desc">The first impression should match the product. It doesn't.</p>
+    </div>
+    <div>
+      <div class="email-mock">
+        <div class="em-header">Current pre-arrival email — Amanpulo</div>
+        <div class="em-salutation">Dear Mr. Long,</div>
+        <div class="em-body">
+          Mabuhay and greetings from Amanpulo! On behalf of Amanpulo's experiences team, we wish you well and look forward to creating memorable experiences for your upcoming stay...<br><br>
+          We invite you to discover the many activities that await in the Guest Service Directory, please click <span class="em-link">here</span>. We encourage pre-booking their activities, so their time on the island can be dedicated to simply savouring every moment...
+        </div>
+        <div class="em-pain">↑ A link to a 68-page PDF. Zero personalisation. No package recognition. No way to book directly.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOLUTION -->
+<div class="solution-section">
+  <div class="sol-header">
+    <div class="sol-eyebrow">The solution</div>
+    <h2 class="sol-title">A digital concierge that knows who your guest is before they arrive.</h2>
+  </div>
+  <div class="sol-grid">
+    <div class="sol-card">
+      <div class="sol-num">01</div>
+      <div class="sol-card-title">Package-aware itinerary builder</div>
+      <div class="sol-card-desc">Guests see their included package experiences pre-loaded and marked. Add-ons are displayed with real-time pricing and availability. A live folio updates with their estimated charges at check-out.</div>
+    </div>
+    <div class="sol-card">
+      <div class="sol-num">02</div>
+      <div class="sol-card-title">One-click staff confirmation</div>
+      <div class="sol-card-desc">The experiences team sees all incoming requests in a single dashboard — guest name, package, requested experiences, notes, and a confirm button that notifies the guest instantly.</div>
+    </div>
+    <div class="sol-card">
+      <div class="sol-num">03</div>
+      <div class="sol-card-title">White-labelled, instantly beautiful</div>
+      <div class="sol-card-desc">Delivered as a personalised link in the pre-arrival email. Branded to your property. Every guest gets a version that reflects their stay — accommodation, package, special occasions, dietary notes.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO -->
+<div class="demo-section">
+  <div class="demo-inner">
+    <div class="demo-eyebrow">Live demo — Amanpulo, Palawan</div>
+    <h2 class="demo-title">Three guests. Three packages. Fully working.</h2>
+    <p class="demo-sub">The demo below is a functioning prototype built for Amanpulo — real experiences, real package logic, real folio totals.</p>
+    <div class="demo-cards">
+      <div class="demo-card">
+        <div class="demo-card-icon">🏡</div>
+        <div class="demo-card-title">Guest experience</div>
+        <div class="demo-card-desc">Mr. & Mrs. Long — Romance Package. Browse the demo exactly as a guest would. Package inclusions pre-loaded, add-ons bookable, folio live.</div>
+        <a class="demo-card-link" href="amanpulo-guest.html">Open guest app →</a>
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-icon">◈</div>
+        <div class="demo-card-title">Staff dashboard</div>
+        <div class="demo-card-desc">Three incoming requests from this week's arrivals. Expandable detail panels, confirm buttons, notes field, inventory capacity view.</div>
+        <a class="demo-card-link" href="amanpulo-staff.html">Open dashboard →</a>
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-icon">⊙</div>
+        <div class="demo-card-title">Package library</div>
+        <div class="demo-card-desc">Romance at Amanpulo · Family Adventure · Ocean & Wellness. Three pre-built packages, each with their own included experiences and package hero.</div>
+        <a class="demo-card-link" href="amanpulo-guest.html">Explore packages →</a>
+      </div>
+    </div>
+    <div class="demo-cta">
+      <a class="btn-primary" href="amanpulo-guest.html">Open guest demo</a>
+      <a class="btn-outline" href="amanpulo-staff.html" style="color:var(--bone)">Open staff dashboard</a>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIAL -->
+<div class="testimonial">
+  <div class="quote">"The first thing a $2,000-a-night guest sees after booking shouldn't be a wall of text and a PDF. Arrivo solves the most glaring gap in luxury hospitality."</div>
+  <div class="quote-attr">— Kyle Long · Founder, Arrivo · Former guest at Amanpulo</div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-section">
+  <div class="pricing-header">
+    <h2 class="pricing-title">Simple, property-based pricing</h2>
+    <p style="font-size:13px;color:var(--muted)">All plans include white-labelling, package management, staff dashboard, and unlimited guests.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">Boutique</div>
+      <div class="price-name">Single Property</div>
+      <div><span class="price-amount">$490</span><span class="price-per"> / month</span></div>
+      <ul class="price-features">
+        <li>1 property, unlimited guests</li>
+        <li>Up to 5 packages</li>
+        <li>Full experience catalog management</li>
+        <li>Staff dashboard with confirm flow</li>
+        <li>Email notification on submission</li>
+      </ul>
+      <button class="price-cta">Book a demo</button>
+    </div>
+    <div class="price-card featured">
+      <div class="price-featured-badge">Most popular</div>
+      <div class="price-tier">Collection</div>
+      <div class="price-name">3–10 Properties</div>
+      <div><span class="price-amount">$290</span><span class="price-per"> / property / month</span></div>
+      <ul class="price-features">
+        <li>Per-property branding & packages</li>
+        <li>Unlimited packages per property</li>
+        <li>Cross-property reporting</li>
+        <li>API integration with PMS</li>
+        <li>Dedicated onboarding & support</li>
+        <li>Custom domain (your-resort.com/stay)</li>
+      </ul>
+      <button class="price-cta">Book a demo</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Enterprise</div>
+      <div class="price-name">Global Portfolio</div>
+      <div><span class="price-amount">Custom</span></div>
+      <ul class="price-features">
+        <li>10+ properties</li>
+        <li>Full PMS & CRM integration</li>
+        <li>Revenue share option</li>
+        <li>White-glove setup for each property</li>
+        <li>SLA guarantee</li>
+        <li>Named account manager</li>
+      </ul>
+      <button class="price-cta">Contact us</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Arrivo</div>
+  <div class="footer-copy">Built for the world's most discerning guests. · © 2026 Arrivo</div>
+</footer>
+
+</body>
+</html>

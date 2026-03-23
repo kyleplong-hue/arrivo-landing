@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PONANT — Your Voyage Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1A2E;
+  --navy-light: #122A44;
+  --navy-card: #15304E;
+  --white: #F4F7FB;
+  --white-soft: rgba(244,247,251,0.85);
+  --muted: #6B8FAF;
+  --blue: #009FE3;
+  --blue-light: #4DC4F0;
+  --blue-glow: rgba(0,159,227,0.15);
+  --gold: #C8A96E;
+  --line: rgba(244,247,251,0.1);
+  --line-soft: rgba(244,247,251,0.05);
+  --included: #06D6A0;
+  --included-bg: rgba(6,214,160,0.1);
+  --danger: #FF6B6B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  background: var(--navy);
+  color: var(--white);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── WELCOME ── */
+#welcome-screen {
+  position: fixed; inset: 0; z-index: 500;
+  background: linear-gradient(160deg, #061220, #0B1A2E 40%, #122A44);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px; transition: opacity .6s ease;
+}
+#welcome-screen.exit { opacity: 0; pointer-events: none; }
+.welcome-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px; letter-spacing: 10px; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 48px; font-weight: 400;
+}
+.welcome-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 5vw, 46px); font-weight: 300;
+  color: var(--white); text-align: center; line-height: 1.2;
+  margin-bottom: 10px;
+}
+.welcome-sub {
+  font-size: 14px; color: var(--muted); text-align: center;
+  margin-bottom: 48px;
+}
+.welcome-guest-cards {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  max-width: 750px;
+}
+.guest-card-select {
+  background: rgba(244,247,251,0.03);
+  border: 1px solid rgba(244,247,251,0.1);
+  border-radius: 3px; padding: 18px 22px;
+  cursor: pointer; transition: all .25s;
+  text-align: left; min-width: 160px; flex: 1;
+}
+.guest-card-select:hover {
+  background: rgba(0,159,227,0.08);
+  border-color: rgba(0,159,227,0.4);
+}
+.gc-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.gc-name { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--white); margin-bottom: 4px; }
+.gc-detail { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.gc-package { font-size: 11px; color: var(--blue-light); }
+
+/* ── NAV ── */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(11,26,46,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--blue); font-weight: 400;
+}
+.nav-guest { display: flex; align-items: center; gap: 14px; }
+.nav-name { font-size: 13px; font-weight: 500; }
+.nav-detail { font-size: 11px; color: var(--muted); }
+.nav-folio-badge {
+  font-size: 11px; font-weight: 500; letter-spacing: 1px;
+  padding: 7px 16px; background: var(--blue); color: white;
+  border-radius: 3px; cursor: pointer; transition: all .2s;
+}
+.nav-folio-badge:hover { background: var(--blue-light); }
+
+/* ── PACKAGE HERO ── */
+.package-hero {
+  padding: 36px 24px 28px;
+  background: linear-gradient(135deg, var(--blue-glow), rgba(200,169,110,0.04));
+  border-bottom: 1px solid var(--line);
+}
+.ph-inner { max-width: 800px; margin: 0 auto; }
+.ph-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--included); margin-bottom: 8px; }
+.ph-title { font-family: 'Playfair Display', serif; font-size: clamp(24px,3.5vw,34px); font-weight: 300; margin-bottom: 8px; }
+.ph-desc { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+.ph-includes { display: flex; flex-wrap: wrap; gap: 8px; }
+.ph-item {
+  font-size: 12px; padding: 5px 12px;
+  background: var(--included-bg); color: var(--included);
+  border: 1px solid rgba(6,214,160,0.2); border-radius: 3px;
+}
+.ph-item.scheduled { border-color: var(--gold); background: rgba(200,169,110,0.1); color: var(--gold); }
+
+/* ── MAIN ── */
+.main-content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+/* ── PORT TABS ── */
+.day-tabs-wrap {
+  display: flex; gap: 6px; overflow-x: auto; padding: 0 0 16px;
+  scrollbar-width: none;
+}
+.day-tabs-wrap::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0;
+  padding: 8px 16px; font-size: 12px; font-weight: 400;
+  background: transparent; border: 1px solid var(--line);
+  border-radius: 3px; cursor: pointer; transition: all .2s;
+  white-space: nowrap; color: var(--muted); font-family: inherit;
+}
+.day-tab:hover { border-color: var(--blue); color: var(--white); }
+.day-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+/* ── SECTION LABELS ── */
+.section-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin: 24px 0 12px;
+}
+.port-info {
+  font-size: 12px; color: var(--muted); margin-bottom: 16px;
+  padding: 10px 14px; background: rgba(244,247,251,0.03);
+  border: 1px solid var(--line); border-radius: 3px;
+}
+
+/* ── ITINERARY ── */
+.itinerary-empty {
+  padding: 40px 20px; text-align: center;
+  border: 1px dashed var(--line); border-radius: 3px;
+  color: var(--muted); font-size: 13px;
+}
+.itin-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; background: var(--navy-card);
+  border: 1px solid var(--line); border-radius: 3px;
+  margin-bottom: 8px; position: relative;
+  cursor: grab; transition: box-shadow .2s, border-color .2s;
+}
+.itin-item:active { cursor: grabbing; }
+.itin-item.dragging { opacity: 0.5; border-color: var(--blue); }
+.itin-item.drag-over { border-top: 2px solid var(--blue); }
+.itin-item.included { background: rgba(6,214,160,0.05); border-color: rgba(6,214,160,0.2); }
+.itin-item .itin-img {
+  width: 56px; height: 56px; border-radius: 3px;
+  object-fit: cover; flex-shrink: 0;
+}
+.itin-item .itin-info { flex: 1; min-width: 0; }
+.itin-item .itin-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.itin-item .itin-meta { font-size: 11px; color: var(--muted); }
+.itin-item .itin-badge {
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 3px; display: inline-block; margin-top: 4px;
+}
+.itin-item .itin-badge.inc { background: var(--included-bg); color: var(--included); }
+.itin-item .itin-badge.addon { background: var(--blue-glow); color: var(--blue-light); }
+.itin-item .itin-guests-ctrl {
+  display: flex; align-items: center; gap: 6px; margin-top: 4px;
+}
+.itin-item .itin-guests-ctrl span { font-size: 11px; color: var(--muted); }
+.itin-item .itin-guests-ctrl button {
+  width: 22px; height: 22px; border-radius: 3px;
+  border: 1px solid var(--line); background: var(--navy-light);
+  cursor: pointer; font-size: 13px; color: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.itin-item .itin-guests-ctrl button:hover { border-color: var(--blue); }
+.itin-item .itin-price {
+  font-size: 13px; font-weight: 500; white-space: nowrap;
+  margin-left: auto; padding-left: 10px; align-self: center;
+}
+.itin-item .itin-price.free { color: var(--included); }
+.itin-item .itin-remove {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 16px; color: var(--muted); cursor: pointer;
+  background: none; border: none; line-height: 1;
+  opacity: 0.5; transition: opacity .2s;
+}
+.itin-item .itin-remove:hover { opacity: 1; color: var(--danger); }
+
+/* ── CATALOG ── */
+.catalog-header { margin: 32px 0 16px; }
+.catalog-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px,3vw,28px); font-weight: 300; margin-bottom: 4px;
+}
+.catalog-sub { font-size: 13px; color: var(--muted); }
+
+.cat-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.cat-filter {
+  font-size: 11px; padding: 6px 14px;
+  border: 1px solid var(--line); border-radius: 3px;
+  background: transparent; cursor: pointer; transition: all .2s;
+  color: var(--muted); font-family: inherit;
+}
+.cat-filter:hover { border-color: var(--blue); color: var(--white); }
+.cat-filter.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+.activity-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.activity-card {
+  background: var(--navy-card); border: 1px solid var(--line);
+  border-radius: 3px; overflow: hidden; cursor: pointer;
+  transition: all .25s;
+}
+.activity-card:hover { border-color: var(--blue); box-shadow: 0 4px 20px rgba(0,159,227,0.1); }
+.ac-img-wrap {
+  position: relative; width: 100%; height: 180px;
+  overflow: hidden; background: var(--navy-light);
+}
+.ac-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .4s;
+}
+.activity-card:hover .ac-img-wrap img { transform: scale(1.04); }
+.ac-img-wrap .ac-badge-float {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 3px;
+  background: rgba(11,26,46,0.8); color: var(--white);
+  backdrop-filter: blur(4px);
+}
+.ac-img-wrap .ac-emoji {
+  position: absolute; bottom: 10px; right: 10px;
+  font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+.ac-body { padding: 14px 16px; }
+.ac-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.ac-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ac-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ac-meta { font-size: 11px; color: var(--muted); }
+.ac-price { font-size: 13px; font-weight: 500; color: var(--blue-light); }
+.ac-price.free { color: var(--included); }
+
+/* ── MODAL ── */
+.modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(6,12,20,0.7);
+  backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal-box {
+  background: var(--navy-light); border-radius: 4px;
+  max-width: 560px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  border: 1px solid var(--line);
+}
+.modal-img { width: 100%; height: 220px; object-fit: cover; }
+.modal-content { padding: 24px; }
+.modal-badge { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 300; margin-bottom: 6px;
+}
+.modal-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.modal-desc { font-size: 14px; line-height: 1.7; color: var(--white-soft); margin-bottom: 20px; }
+.modal-section-label {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.modal-date-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.modal-date-btn {
+  padding: 6px 14px; font-size: 12px;
+  border: 1px solid var(--line); border-radius: 3px;
+  background: var(--navy-card); cursor: pointer; transition: all .2s;
+  font-family: inherit; color: var(--white);
+}
+.modal-date-btn:hover { border-color: var(--blue); }
+.modal-date-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+.modal-time-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.time-opt {
+  padding: 6px 14px; font-size: 12px;
+  border: 1px solid var(--line); border-radius: 3px;
+  background: var(--navy-card); cursor: pointer; transition: all .2s;
+  font-family: inherit; color: var(--white);
+}
+.time-opt:hover { border-color: var(--blue); }
+.time-opt.active { background: var(--blue); color: white; border-color: var(--blue); }
+.modal-guests { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.guest-stepper {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--line); border-radius: 3px; overflow: hidden;
+}
+.guest-stepper button {
+  width: 34px; height: 34px; border: none;
+  background: var(--navy-card); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s; color: var(--white);
+}
+.guest-stepper button:hover { background: var(--navy); }
+.guest-stepper .guest-count {
+  width: 40px; text-align: center; font-size: 14px; font-weight: 500;
+  border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+  line-height: 34px;
+}
+.modal-price-line { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+.modal-price-line strong { color: var(--white); font-weight: 500; }
+.modal-actions { display: flex; gap: 10px; align-items: stretch; }
+.modal-actions button {
+  flex: 1; padding: 12px 20px; font-size: 13px;
+  font-family: inherit; border-radius: 3px;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 46px;
+}
+.btn-modal-close { background: var(--navy-card); border: 1px solid var(--line); color: var(--white); }
+.btn-modal-close:hover { border-color: var(--blue); }
+.btn-modal-add { background: var(--blue); border: 1px solid var(--blue); color: white; font-weight: 400; }
+.btn-modal-add:hover { background: var(--blue-light); }
+
+/* ── FOLIO ── */
+.folio-modal .modal-box { max-width: 620px; }
+.folio-header { padding: 24px 24px 16px; border-bottom: 1px solid var(--line); }
+.folio-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.folio-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 300; }
+.folio-body { padding: 0 24px 24px; }
+.folio-day-header {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px; font-weight: 400; color: var(--white);
+  padding: 20px 0 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+.folio-day-header:first-child { padding-top: 16px; }
+.folio-day-header .folio-day-date {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; color: var(--muted); font-weight: 300;
+  letter-spacing: 1px; text-transform: uppercase;
+  display: block; margin-top: 2px;
+}
+.folio-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--line-soft);
+}
+.folio-item:last-child { border-bottom: none; }
+.folio-item-img { width: 44px; height: 44px; border-radius: 3px; object-fit: cover; flex-shrink: 0; }
+.folio-item-info { flex: 1; }
+.folio-item-name { font-size: 13px; font-weight: 500; }
+.folio-item-detail { font-size: 11px; color: var(--muted); }
+.folio-item-price { font-size: 13px; font-weight: 500; white-space: nowrap; }
+.folio-item-price.free { color: var(--included); }
+.folio-totals { padding: 16px 0; margin-top: 8px; border-top: 2px solid var(--white); }
+.folio-total-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; color: var(--muted); }
+.folio-total-row.grand { font-size: 16px; font-weight: 500; color: var(--white); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.folio-footer { padding: 16px 24px 24px; display: flex; gap: 10px; }
+.folio-footer button {
+  flex: 1; padding: 13px 20px; font-size: 13px;
+  font-family: inherit; border-radius: 3px;
+  cursor: pointer; transition: all .2s;
+  min-height: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-folio-edit { background: var(--navy-card); border: 1px solid var(--line); color: var(--white); }
+.btn-folio-edit:hover { border-color: var(--blue); }
+.btn-folio-send { background: var(--blue); border: 1px solid var(--blue); color: white; font-weight: 400; }
+.btn-folio-send:hover { background: var(--blue-light); }
+
+.success-state { text-align: center; padding: 48px 24px; }
+.success-icon { font-size: 48px; margin-bottom: 16px; }
+.success-title { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 8px; }
+.success-msg { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.success-ref { font-size: 12px; color: var(--blue-light); letter-spacing: 1px; }
+
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--blue); color: white;
+  font-size: 13px; padding: 12px 24px;
+  border-radius: 3px; opacity: 0; transition: all .3s;
+  z-index: 400; pointer-events: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 600px) {
+  .activity-grid { grid-template-columns: 1fr; }
+  .welcome-guest-cards { flex-direction: column; }
+  .guest-card-select { min-width: unset; }
+  .top-nav { padding: 12px 16px; }
+  .main-content { padding: 16px; }
+  .modal-actions, .folio-footer { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div id="welcome-screen">
+  <div class="welcome-logo">P O N A N T</div>
+  <div class="welcome-title">Plan Your Voyage</div>
+  <div class="welcome-sub">Choose your shore excursions — we'll handle the rest.</div>
+  <div class="welcome-guest-cards" id="welcome-cards"></div>
+</div>
+
+<div id="app" style="display:none">
+  <nav class="top-nav">
+    <div class="nav-logo">P O N A N T</div>
+    <div class="nav-guest">
+      <div>
+        <div class="nav-name" id="nav-name"></div>
+        <div class="nav-detail" id="nav-detail"></div>
+      </div>
+      <div class="nav-folio-badge" onclick="openFolio()">View Folio →</div>
+    </div>
+  </nav>
+
+  <div class="package-hero" id="package-hero" style="display:none">
+    <div class="ph-inner">
+      <div class="ph-eyebrow">Package Included</div>
+      <div class="ph-title" id="ph-title"></div>
+      <div class="ph-desc" id="ph-desc"></div>
+      <div class="ph-includes" id="ph-includes"></div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="section-label">Your Itinerary</div>
+    <div class="day-tabs-wrap" id="dayTabs"></div>
+    <div id="portInfo"></div>
+    <div id="itineraryBody"></div>
+
+    <div class="catalog-header">
+      <div class="catalog-title">Shore Excursions</div>
+      <div class="catalog-sub">All excursions return to the ship at least 45 minutes before departure.</div>
+    </div>
+    <div class="cat-filters" id="catFilters"></div>
+    <div class="activity-grid" id="activityGrid"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="detail-modal" onclick="if(event.target===this)closeDetail()">
+  <div class="modal-box" id="detail-box"></div>
+</div>
+<div class="modal-bg folio-modal" id="folio-modal" onclick="if(event.target===this)closeFolio()">
+  <div class="modal-box" id="folio-box"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PX = 'https://images.pexels.com/photos/';
+
+const PORTS = [
+  { name: 'Dakar', date: 'Nov 8', arrival: '—', departure: '6:00 PM', dayLabel: 'Embarkation' },
+  { name: 'Mindelo, São Vicente', date: 'Nov 10', arrival: '8:00 AM', departure: '11:00 PM', dayLabel: 'Day at port' },
+  { name: 'Porto Novo, Santo Antão', date: 'Nov 11', arrival: '7:00 AM', departure: '5:00 PM', dayLabel: 'Day at port' },
+  { name: 'Tarrafal, São Nicolau', date: 'Nov 12', arrival: '8:00 AM', departure: '4:00 PM', dayLabel: 'Day at port' },
+  { name: 'Santa Maria, Sal', date: 'Nov 13', arrival: '7:00 AM', departure: '6:00 PM', dayLabel: 'Day at port' },
+  { name: 'Mindelo (return)', date: 'Nov 14', arrival: '8:00 AM', departure: '—', dayLabel: 'Disembarkation' },
+];
+
+const ACTIVITIES = [
+  // Dakar
+  { id: 'dk1', port: 'Dakar', cat: 'Cultural', emoji: '🏛️', title: 'Gorée Island Heritage Tour',
+    duration: '4 hrs', price: 145, perPerson: true,
+    desc: 'Visit the UNESCO-listed island — the House of Slaves, colonial architecture, and local art galleries.',
+    longDesc: 'A ferry to Gorée Island, followed by a guided walking tour through the historic slave trading post, the colonial houses, and vibrant ateliers. Includes entrance fees and a local guide.',
+    img: PX + '3581916/pexels-photo-3581916.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '3581916/pexels-photo-3581916.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '10:00 AM'] },
+  { id: 'dk2', port: 'Dakar', cat: 'Culinary', emoji: '🍲', title: 'Dakar Street Food Walk',
+    duration: '3 hrs', price: 95, perPerson: true,
+    desc: 'Taste thiéboudienne, pastels, and café Touba in the markets of Medina and Plateau.',
+    longDesc: 'Led by a local food journalist, sample 8+ dishes across Dakar\'s most vibrant neighborhoods. Includes all tastings and soft drinks.',
+    img: PX + '2474661/pexels-photo-2474661.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '2474661/pexels-photo-2474661.jpeg?auto=compress&w=600',
+    times: ['10:00 AM', '2:00 PM'] },
+  { id: 'dk3', port: 'Dakar', cat: 'Active', emoji: '🏄', title: 'Surf Lesson at N\'Gor Beach',
+    duration: '2.5 hrs', price: 110, perPerson: true,
+    desc: 'Beginner-friendly surf lesson on Dakar\'s most beautiful beach — boards and wetsuit included.',
+    longDesc: 'N\'Gor Right is one of West Africa\'s most consistent beginner waves. Certified instructors, all equipment, and a beach drink afterwards.',
+    img: PX + '1654498/pexels-photo-1654498.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '1654498/pexels-photo-1654498.jpeg?auto=compress&w=600',
+    times: ['8:00 AM', '2:00 PM'] },
+
+  // Mindelo
+  { id: 'mv1', port: 'Mindelo, São Vicente', cat: 'Cultural', emoji: '🎶', title: 'Morna Music & Cesária Évora Trail',
+    duration: '3 hrs', price: 85, perPerson: true,
+    desc: 'Walk through the life and music of Cape Verde\'s most famous singer — from her house to live morna performances.',
+    longDesc: 'Visit the Cesária Évora museum, her favourite bars, and the cultural heart of Mindelo. Ends with a live morna session at a local venue. Includes all entrance fees.',
+    img: PX + '164821/pexels-photo-164821.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '164821/pexels-photo-164821.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '2:00 PM', '4:00 PM'] },
+  { id: 'mv2', port: 'Mindelo, São Vicente', cat: 'Culinary', emoji: '🐟', title: 'Mindelo Fish Market & Cooking Class',
+    duration: '4 hrs', price: 120, perPerson: true,
+    desc: 'Shop at the vibrant fish market, then cook traditional cachupa and grilled fish with a local chef.',
+    longDesc: 'Start at the Mercado Municipal to select the day\'s catch. Walk to a private kitchen where a local chef teaches you cachupa rica, grilled wahoo, and banana flambe.',
+    img: PX + '3296392/pexels-photo-3296392.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '3296392/pexels-photo-3296392.jpeg?auto=compress&w=600',
+    times: ['9:30 AM'] },
+  { id: 'mv3', port: 'Mindelo, São Vicente', cat: 'Panoramic', emoji: '🏔️', title: 'Monte Verde Summit Drive',
+    duration: '2.5 hrs', price: 75, perPerson: true,
+    desc: 'Drive to the highest point on São Vicente for panoramic views of the harbour, Mindelo, and Santo Antão.',
+    longDesc: 'A scenic 4x4 drive to the 774m summit of Monte Verde. Short walks at viewpoints along the way. On a clear day, four islands are visible. Refreshments included.',
+    img: PX + '2387873/pexels-photo-2387873.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '2387873/pexels-photo-2387873.jpeg?auto=compress&w=600',
+    times: ['8:00 AM', '2:00 PM'] },
+
+  // Santo Antão
+  { id: 'sa1', port: 'Porto Novo, Santo Antão', cat: 'Active', emoji: '🥾', title: 'Paul Valley Hike',
+    duration: '5 hrs', price: 130, perPerson: true,
+    desc: 'Hike through the lush Paul Valley — sugarcane terraces, waterfalls, and dramatic volcanic ridgelines.',
+    longDesc: 'A guided hike from Cova de Paúl crater down through the valley. Pass through farming villages, tropical plantations, and basalt cliffs. Moderate difficulty. Lunch at a local home included.',
+    img: PX + '2387418/pexels-photo-2387418.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '2387418/pexels-photo-2387418.jpeg?auto=compress&w=600',
+    times: ['8:00 AM'] },
+  { id: 'sa2', port: 'Porto Novo, Santo Antão', cat: 'Culinary', emoji: '🥃', title: 'Grogue Distillery & Village Visit',
+    duration: '3 hrs', price: 65, perPerson: true,
+    desc: 'Visit a family-run sugarcane rum distillery and taste grogue — Cape Verde\'s national spirit.',
+    longDesc: 'Watch the traditional trapiche (ox-powered press) in action. Sample three varieties of grogue and pontche (fruit-infused liqueur). Visit the surrounding village and its vibrant market.',
+    img: PX + '1283219/pexels-photo-1283219.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '1283219/pexels-photo-1283219.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '1:00 PM'] },
+
+  // São Nicolau
+  { id: 'sn1', port: 'Tarrafal, São Nicolau', cat: 'Cultural', emoji: '📚', title: 'Ribeira Brava Literary Walk',
+    duration: '3 hrs', price: 70, perPerson: true,
+    desc: 'Visit the birthplace of Cape Verdean literature — historic Ribeira Brava and its colonial seminary.',
+    longDesc: 'São Nicolau is the intellectual heart of Cape Verde. Visit the old seminary where the country\'s first newspaper was printed, the library museum, and the town\'s colourful cobbled streets.',
+    img: PX + '2901209/pexels-photo-2901209.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '2901209/pexels-photo-2901209.jpeg?auto=compress&w=600',
+    times: ['9:00 AM'] },
+  { id: 'sn2', port: 'Tarrafal, São Nicolau', cat: 'Active', emoji: '🏊', title: 'Tarrafal Beach & Snorkelling',
+    duration: '3 hrs', price: 55, perPerson: true,
+    desc: 'Swim and snorkel in the clear waters of Tarrafal bay — one of Cape Verde\'s most beautiful beaches.',
+    longDesc: 'A half-day at Tarrafal\'s black-sand beach. Snorkelling gear provided. Spot sea turtles and tropical fish in the bay\'s protected waters. Light lunch on the beach.',
+    img: PX + '3601425/pexels-photo-3601425.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '3601425/pexels-photo-3601425.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '10:00 AM'] },
+
+  // Sal
+  { id: 'sl1', port: 'Santa Maria, Sal', cat: 'Active', emoji: '🪁', title: 'Kitesurfing at Kite Beach',
+    duration: '3 hrs', price: 140, perPerson: true,
+    desc: 'Sal is one of the world\'s best kitesurfing destinations — lesson for beginners or rental for experienced.',
+    longDesc: 'Kite Beach offers consistent trade winds and flat water. IKO-certified instruction, all equipment included. Experienced kiters can rent gear independently.',
+    img: PX + '1604869/pexels-photo-1604869.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '1604869/pexels-photo-1604869.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '1:00 PM'] },
+  { id: 'sl2', port: 'Santa Maria, Sal', cat: 'Panoramic', emoji: '🏜️', title: 'Pedra de Lume Salt Crater',
+    duration: '2.5 hrs', price: 65, perPerson: true,
+    desc: 'Float in the salt flats inside a volcanic crater — like the Dead Sea, but on a Cape Verdean island.',
+    longDesc: 'Visit the abandoned salt mines of Pedra de Lume inside a dormant volcano. Float effortlessly in the super-saline water. A surreal landscape of salt pans and volcanic rock.',
+    img: PX + '2387871/pexels-photo-2387871.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '2387871/pexels-photo-2387871.jpeg?auto=compress&w=600',
+    times: ['9:00 AM', '2:00 PM'] },
+  { id: 'sl3', port: 'Santa Maria, Sal', cat: 'Culinary', emoji: '🐙', title: 'Santa Maria Seafood & Market Tour',
+    duration: '3 hrs', price: 90, perPerson: true,
+    desc: 'Tour the Santa Maria fish pier, sample grilled lobster, and explore the colourful town market.',
+    longDesc: 'Watch the fishermen bring in the day\'s catch, then walk to a beachfront restaurant for a tasting menu of local seafood. Visit the town\'s craft market and take home grogue.',
+    img: PX + '3296392/pexels-photo-3296392.jpeg?auto=compress&w=600',
+    fallbackImg: PX + '3296392/pexels-photo-3296392.jpeg?auto=compress&w=600',
+    times: ['10:00 AM', '12:00 PM'] },
+];
+
+const CATEGORIES = ['All', 'Cultural', 'Active', 'Culinary', 'Panoramic'];
+
+const GUESTS = [
+  {
+    id: 0, name: 'Mr. & Mrs. Laurent', detail: 'Prestige Suite 402 · 7-Night Cape Verde',
+    pkg: {
+      name: 'Grand Voyage', value: 1800,
+      desc: 'All shore excursions included in your fare.',
+      includes: [
+        { actId: 'dk1', name: 'Gorée Island Heritage Tour', portIdx: 0 },
+        { actId: 'mv1', name: 'Morna Music Trail', portIdx: 1 },
+        { actId: 'sa1', name: 'Paul Valley Hike', portIdx: 2 },
+        { actId: 'sn1', name: 'Ribeira Brava Literary Walk', portIdx: 3 },
+        { actId: 'sl2', name: 'Pedra de Lume Salt Crater', portIdx: 4 },
+      ]
+    }
+  },
+  {
+    id: 1, name: 'The Anderson Family', detail: 'Deluxe Stateroom 218 · 7-Night Cape Verde',
+    pkg: {
+      name: 'Active Explorer', value: 900,
+      desc: 'Hiking and watersports excursions included.',
+      includes: [
+        { actId: 'dk3', name: 'Surf Lesson at N\'Gor Beach', portIdx: 0 },
+        { actId: 'sa1', name: 'Paul Valley Hike', portIdx: 2 },
+        { actId: 'sl1', name: 'Kitesurfing at Kite Beach', portIdx: 4 },
+      ]
+    }
+  },
+  {
+    id: 2, name: 'Ms. Dubois', detail: 'Privilege Suite 506 · 7-Night Cape Verde',
+    pkg: null
+  },
+];
+
+// STATE
+let currentGuest = null;
+let activeDay = 0;
+let activeCatFilter = 'All';
+let plan = {};
+
+// HELPERS
+function getActivity(id) { return ACTIVITIES.find(a => a.id === id); }
+function calcItemPrice(item) {
+  if (item.isIncluded) return 0;
+  const act = getActivity(item.actId);
+  if (!act) return 0;
+  return act.perPerson ? act.price * (item.guests || 1) : act.price;
+}
+function calcTotals() {
+  let addonTotal = 0;
+  for (const items of Object.values(plan)) {
+    for (const item of items) addonTotal += calcItemPrice(item);
+  }
+  return { addonTotal, packageValue: currentGuest.pkg ? currentGuest.pkg.value : 0 };
+}
+function imgError(el) {
+  const fb = el.getAttribute('data-fallback');
+  if (fb && el.src !== fb) el.src = fb;
+  else { el.style.display = 'none'; const s = el.nextElementSibling; if (s && s.classList.contains('img-fallback')) s.style.display = 'flex'; }
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// WELCOME
+function initWelcome() {
+  document.getElementById('welcome-cards').innerHTML = GUESTS.map((g, i) => `
+    <div class="guest-card-select" onclick="loadGuest(${i})">
+      <div class="gc-label">${g.pkg ? 'Booking' : 'Booking — No Package'}</div>
+      <div class="gc-name">${g.name}</div>
+      <div class="gc-detail">${g.detail}</div>
+      <div class="gc-package" style="${g.pkg ? '' : 'opacity:0.3'}">${g.pkg ? '⚓ ' + g.pkg.name : 'Cruise only'}</div>
+    </div>
+  `).join('');
+}
+
+function loadGuest(idx) {
+  currentGuest = GUESTS[idx];
+  plan = {};
+  // Pre-arrange package
+  if (currentGuest.pkg) {
+    currentGuest.pkg.includes.forEach(inc => {
+      const pIdx = inc.portIdx;
+      if (!plan[pIdx]) plan[pIdx] = [];
+      const act = getActivity(inc.actId);
+      plan[pIdx].push({
+        actId: inc.actId,
+        time: act ? act.times[0] : '',
+        guests: 2,
+        isIncluded: true,
+      });
+    });
+  }
+  document.getElementById('welcome-screen').classList.add('exit');
+  setTimeout(() => {
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderApp();
+  }, 500);
+}
+
+function renderApp() {
+  document.getElementById('nav-name').textContent = currentGuest.name;
+  document.getElementById('nav-detail').textContent = currentGuest.detail;
+  if (currentGuest.pkg) {
+    document.getElementById('package-hero').style.display = '';
+    document.getElementById('ph-title').textContent = currentGuest.pkg.name;
+    document.getElementById('ph-desc').textContent = currentGuest.pkg.desc;
+    document.getElementById('ph-includes').innerHTML = currentGuest.pkg.includes.map(inc => {
+      let scheduled = false;
+      for (const items of Object.values(plan)) { if (items.some(it => it.actId === inc.actId && it.isIncluded)) { scheduled = true; break; } }
+      return `<div class="ph-item ${scheduled ? 'scheduled' : ''}">${inc.name}${scheduled ? ' ✓' : ''}</div>`;
+    }).join('');
+  } else {
+    document.getElementById('package-hero').style.display = 'none';
+  }
+  renderDayTabs();
+  renderPortInfo();
+  renderItinerary();
+  renderFilters();
+  renderCatalog();
+}
+
+function renderDayTabs() {
+  document.getElementById('dayTabs').innerHTML = PORTS.map((p, i) => {
+    const count = (plan[i] || []).length;
+    return `<button class="day-tab${i === activeDay ? ' active' : ''}" onclick="selectDay(${i})">${p.name.split(',')[0]}${count ? ' · ' + count : ''}</button>`;
+  }).join('');
+}
+function selectDay(i) { activeDay = i; renderDayTabs(); renderPortInfo(); renderItinerary(); renderCatalog(); }
+
+function renderPortInfo() {
+  const p = PORTS[activeDay];
+  document.getElementById('portInfo').innerHTML = `
+    <div class="port-info">
+      <strong>${p.name}</strong> · ${p.date} · ${p.dayLabel}<br>
+      Arrival: ${p.arrival} · Departure: ${p.departure}
+    </div>`;
+}
+
+function renderItinerary() {
+  const body = document.getElementById('itineraryBody');
+  const items = plan[activeDay] || [];
+  if (items.length === 0) {
+    body.innerHTML = `<div class="itinerary-empty">No excursions for this port yet.<br>Browse below and add shore excursions.</div>`;
+    return;
+  }
+  body.innerHTML = items.map((item, idx) => {
+    const act = getActivity(item.actId);
+    if (!act) return '';
+    const price = calcItemPrice(item);
+    const priceLabel = item.isIncluded ? 'Included' : (price === 0 ? 'Free' : '€' + price.toLocaleString());
+    return `
+      <div class="itin-item ${item.isIncluded ? 'included' : ''}"
+           draggable="true"
+           ondragstart="dragStart(event,${activeDay},${idx})"
+           ondragover="dragOver(event)"
+           ondragenter="dragEnter(event)"
+           ondragleave="dragLeave(event)"
+           ondrop="dropItem(event,${activeDay},${idx})"
+           ondragend="dragEnd(event)">
+        <img class="itin-img" src="${act.img}" data-fallback="${act.fallbackImg}" onerror="imgError(this)">
+        <div class="itin-info">
+          <div class="itin-title">${act.title}</div>
+          <div class="itin-meta">${act.duration} · ${item.time || 'TBD'}</div>
+          <span class="itin-badge ${item.isIncluded ? 'inc' : 'addon'}">${item.isIncluded ? '⚓ Package included' : 'Add-on'}</span>
+          <div class="itin-guests-ctrl">
+            <span>Guests:</span>
+            <button onclick="changeGuests(${activeDay},${idx},-1)">−</button>
+            <span style="font-weight:500;min-width:16px;text-align:center">${item.guests || 1}</span>
+            <button onclick="changeGuests(${activeDay},${idx},1)">+</button>
+            ${act.perPerson && !item.isIncluded ? `<span style="margin-left:4px;color:var(--blue-light)">(€${act.price}/pp)</span>` : ''}
+          </div>
+        </div>
+        <div class="itin-price ${price === 0 ? 'free' : ''}">${priceLabel}</div>
+        <button class="itin-remove" onclick="removeItem(${activeDay},${idx})">✕</button>
+      </div>`;
+  }).join('');
+}
+
+function changeGuests(day, idx, delta) {
+  const items = plan[day];
+  if (!items || !items[idx]) return;
+  items[idx].guests = Math.max(1, Math.min(20, (items[idx].guests || 1) + delta));
+  renderItinerary();
+}
+function removeItem(day, idx) {
+  if (!plan[day]) return;
+  plan[day].splice(idx, 1);
+  if (plan[day].length === 0) delete plan[day];
+  renderItinerary(); renderDayTabs();
+  if (currentGuest.pkg) renderApp();
+}
+
+let dragData = null;
+function dragStart(e, day, idx) { dragData = { day, idx }; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+function dragEnter(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function dragEnd(e) { e.currentTarget.classList.remove('dragging'); document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); }
+function dropItem(e, day, targetIdx) {
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  if (!dragData || dragData.day !== day) return;
+  const items = plan[day];
+  if (!items) return;
+  const [moved] = items.splice(dragData.idx, 1);
+  items.splice(targetIdx, 0, moved);
+  dragData = null;
+  renderItinerary();
+}
+
+function renderFilters() {
+  document.getElementById('catFilters').innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-filter${c === activeCatFilter ? ' active' : ''}" onclick="filterCat('${c}')">${c}</button>`
+  ).join('');
+}
+function filterCat(c) { activeCatFilter = c; renderFilters(); renderCatalog(); }
+
+function renderCatalog() {
+  const grid = document.getElementById('activityGrid');
+  const currentPort = PORTS[activeDay].name;
+  let acts = ACTIVITIES.filter(a => a.port === currentPort);
+  if (activeCatFilter !== 'All') acts = acts.filter(a => a.cat === activeCatFilter);
+  if (acts.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--muted)">No ${activeCatFilter === 'All' ? '' : activeCatFilter + ' '}excursions at this port.</div>`;
+    return;
+  }
+  grid.innerHTML = acts.map(a => `
+    <div class="activity-card" onclick="openDetail('${a.id}')">
+      <div class="ac-img-wrap">
+        <img src="${a.img}" data-fallback="${a.fallbackImg}" onerror="imgError(this)" loading="lazy">
+        <div class="img-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:48px;background:var(--navy)">${a.emoji}</div>
+        <div class="ac-badge-float">${a.cat}</div>
+        <div class="ac-emoji">${a.emoji}</div>
+      </div>
+      <div class="ac-body">
+        <div class="ac-title">${a.title}</div>
+        <div class="ac-desc">${a.desc}</div>
+        <div class="ac-footer">
+          <div class="ac-meta">${a.duration}</div>
+          <div class="ac-price">${a.perPerson ? 'From €' + a.price + '/pp' : '€' + a.price}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// DETAIL MODAL
+let modalState = { actId: null, selectedDay: null, selectedTime: null, guests: 2 };
+
+function openDetail(actId) {
+  const act = getActivity(actId);
+  if (!act) return;
+  // Find which port index matches this activity
+  const portIdx = PORTS.findIndex(p => p.name === act.port);
+  modalState = { actId, selectedDay: portIdx >= 0 ? portIdx : activeDay, selectedTime: act.times[0], guests: 2 };
+  const priceDisplay = act.perPerson ? `€${act.price} × ${modalState.guests} = <strong>€${act.price * modalState.guests}</strong>` : `<strong>€${act.price}</strong>`;
+
+  document.getElementById('detail-box').innerHTML = `
+    <img class="modal-img" src="${act.img}" data-fallback="${act.fallbackImg}" onerror="imgError(this)">
+    <div class="modal-content">
+      <div class="modal-badge">${act.cat} · ${act.duration} · ${act.port}</div>
+      <div class="modal-title">${act.title}</div>
+      <div class="modal-desc">${act.longDesc}</div>
+
+      <div class="modal-section-label">Choose a port day</div>
+      <div class="modal-date-picker">
+        ${PORTS.map((p, i) => `<button class="modal-date-btn${i === modalState.selectedDay ? ' active' : ''}" onclick="modalSelectDay(${i})">${p.name.split(',')[0]} · ${p.date}</button>`).join('')}
+      </div>
+
+      <div class="modal-section-label">Departure time</div>
+      <div class="modal-time-picker">
+        ${act.times.map(t => `<button class="time-opt${t === modalState.selectedTime ? ' active' : ''}" onclick="modalSelectTime('${t}')">${t}</button>`).join('')}
+      </div>
+
+      <div class="modal-section-label">Number of guests</div>
+      <div class="modal-guests">
+        <div class="guest-stepper">
+          <button onclick="modalChangeGuests(-1)">−</button>
+          <div class="guest-count" id="modal-guest-count">${modalState.guests}</div>
+          <button onclick="modalChangeGuests(1)">+</button>
+        </div>
+      </div>
+      <div class="modal-price-line" id="modal-price-line">${priceDisplay}</div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-close" onclick="closeDetail()">Close</button>
+        <button class="btn-modal-add" onclick="addFromModal()">Add to ${PORTS[modalState.selectedDay].name.split(',')[0]}</button>
+      </div>
+    </div>`;
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function modalSelectDay(i) {
+  modalState.selectedDay = i;
+  document.querySelectorAll('.modal-date-btn').forEach((b, idx) => b.classList.toggle('active', idx === i));
+  document.querySelector('.btn-modal-add').textContent = `Add to ${PORTS[i].name.split(',')[0]}`;
+}
+function modalSelectTime(t) {
+  modalState.selectedTime = t;
+  document.querySelectorAll('.time-opt').forEach(b => b.classList.toggle('active', b.textContent === t));
+}
+function modalChangeGuests(delta) {
+  modalState.guests = Math.max(1, Math.min(20, modalState.guests + delta));
+  document.getElementById('modal-guest-count').textContent = modalState.guests;
+  const act = getActivity(modalState.actId);
+  if (!act) return;
+  const el = document.getElementById('modal-price-line');
+  el.innerHTML = act.perPerson ? `€${act.price} × ${modalState.guests} = <strong>€${act.price * modalState.guests}</strong>` : `<strong>€${act.price}</strong>`;
+}
+function addFromModal() {
+  const day = modalState.selectedDay;
+  if (!plan[day]) plan[day] = [];
+  plan[day].push({ actId: modalState.actId, time: modalState.selectedTime, guests: modalState.guests, isIncluded: false });
+  closeDetail();
+  activeDay = day;
+  renderDayTabs(); renderPortInfo(); renderItinerary(); renderCatalog();
+  showToast(`Added to ${PORTS[day].name.split(',')[0]}`);
+}
+function closeDetail() { document.getElementById('detail-modal').classList.remove('open'); }
+
+// FOLIO
+function openFolio() {
+  const { addonTotal, packageValue } = calcTotals();
+  let bodyHTML = '';
+  const allDays = Object.keys(plan).map(Number).sort((a, b) => a - b);
+  if (allDays.length === 0) {
+    bodyHTML = '<div style="padding:32px 0;text-align:center;color:var(--muted)">No excursions scheduled yet.</div>';
+  } else {
+    for (const di of allDays) {
+      const p = PORTS[di];
+      bodyHTML += `<div class="folio-day-header">${p.name}<span class="folio-day-date">${p.date} · ${p.dayLabel}</span></div>`;
+      for (const item of plan[di]) {
+        const act = getActivity(item.actId);
+        if (!act) continue;
+        const price = calcItemPrice(item);
+        const priceLabel = item.isIncluded ? 'Included' : (price === 0 ? 'Free' : '€' + price.toLocaleString());
+        bodyHTML += `
+          <div class="folio-item">
+            <img class="folio-item-img" src="${act.img}" data-fallback="${act.fallbackImg}" onerror="imgError(this)">
+            <div class="folio-item-info">
+              <div class="folio-item-name">${act.title}</div>
+              <div class="folio-item-detail">${item.time || 'TBD'} · ${item.guests || 1} guest${(item.guests || 1) > 1 ? 's' : ''}</div>
+            </div>
+            <div class="folio-item-price ${price === 0 ? 'free' : ''}">${priceLabel}</div>
+          </div>`;
+      }
+    }
+  }
+  let totalsHTML = '';
+  if (currentGuest.pkg) {
+    totalsHTML += `<div class="folio-total-row"><span>${currentGuest.pkg.name}</span><span>Included (value €${packageValue.toLocaleString()})</span></div>`;
+  }
+  totalsHTML += `<div class="folio-total-row"><span>Additional excursions</span><span>€${addonTotal.toLocaleString()}</span></div>`;
+  totalsHTML += `<div class="folio-total-row grand"><span>Estimated charges</span><span>€${addonTotal.toLocaleString()}</span></div>`;
+
+  document.getElementById('folio-box').innerHTML = `
+    <div class="folio-header">
+      <div class="folio-eyebrow">Voyage Folio</div>
+      <div class="folio-title">${currentGuest.name}</div>
+    </div>
+    <div class="folio-body">${bodyHTML}</div>
+    <div class="folio-body"><div class="folio-totals">${totalsHTML}</div></div>
+    <div class="folio-footer">
+      <button class="btn-folio-edit" onclick="closeFolio()">Edit</button>
+      <button class="btn-folio-send" onclick="sendToTeam()">Send to Excursions Desk</button>
+    </div>`;
+  document.getElementById('folio-modal').classList.add('open');
+}
+function closeFolio() { document.getElementById('folio-modal').classList.remove('open'); }
+function sendToTeam() {
+  const ref = 'PNT-' + Date.now().toString(36).toUpperCase();
+  document.getElementById('folio-box').innerHTML = `
+    <div class="success-state">
+      <div class="success-icon">⚓</div>
+      <div class="success-title">Excursions requested</div>
+      <div class="success-msg">Your shore excursion requests have been sent to the excursions desk.<br>Tickets will be added to your stateroom folio once confirmed.</div>
+      <div class="success-ref">Ref: ${ref}</div>
+      <div style="margin-top:24px">
+        <button class="btn-folio-edit" onclick="closeFolio()" style="padding:10px 28px">Done</button>
+      </div>
+    </div>`;
+}
+
+initWelcome();
+</script>
+</body>
+</html>

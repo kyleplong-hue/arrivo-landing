@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amanpulo — Experiences Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1C1814; --ink-soft: #3A3430; --bone: #F5F0E8; --bone-dark: #EDE7DB;
+  --muted: #8A8178; --gold: #9B7D45; --gold-light: #C4A96B;
+  --included: #2A5C4A; --line: rgba(28,24,20,0.1); --line-soft: rgba(28,24,20,0.06);
+  --pending: #B45309; --confirmed: #2E5E3E; --cancelled: #991B1B;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; font-weight: 300; background: var(--bone); color: var(--ink); min-height: 100vh; }
+.top-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid var(--line); background: var(--ink); }
+.nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 6px; text-transform: uppercase; color: var(--bone); }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-user { font-size: 11px; color: rgba(245,240,232,0.5); }
+.nav-badge { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold-light); border: 1px solid rgba(196,169,107,0.35); padding: 4px 12px; }
+.layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 49px); }
+.sidebar { background: var(--ink-soft); border-right: 1px solid rgba(255,255,255,0.06); padding: 24px 0; }
+.sidebar-section { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,232,0.3); padding: 0 20px 8px; }
+.sidebar-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(245,240,232,0.6); font-size: 12px; cursor: pointer; transition: all .18s; border-left: 2px solid transparent; }
+.sidebar-item:hover { color: rgba(245,240,232,0.9); background: rgba(255,255,255,0.04); }
+.sidebar-item.active { color: var(--gold-light); border-left-color: var(--gold-light); background: rgba(196,169,107,0.06); }
+.sidebar-icon { font-size: 14px; }
+.sidebar-badge { margin-left: auto; background: var(--pending); color: #fff; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+.main { padding: 28px 32px; overflow-y: auto; }
+.page-header { margin-bottom: 24px; }
+.page-eyebrow { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.page-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--ink); }
+.page-date { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+.stat { background: #fff; border: 1px solid var(--line); padding: 18px 20px; }
+.stat-val { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--ink); line-height: 1; margin-bottom: 5px; }
+.stat-label { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
+.stat-delta { font-size: 11px; color: var(--confirmed); margin-top: 4px; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; color: var(--ink); margin-bottom: 14px; }
+.table-wrap { background: #fff; border: 1px solid var(--line); margin-bottom: 28px; }
+.table-header { display: grid; padding: 10px 18px; background: var(--bone-dark); border-bottom: 1px solid var(--line); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.t5 { grid-template-columns: 2.5fr 2fr 1.2fr 1fr 140px; }
+.t6 { grid-template-columns: 2fr 2fr 1.2fr 0.8fr 1fr 120px; }
+.table-row { display: grid; padding: 14px 18px; border-bottom: 1px solid var(--line-soft); align-items: center; transition: background .15s; }
+.table-row:hover { background: var(--bone); }
+.table-row:last-child { border-bottom: none; }
+.guest-cell { display: flex; align-items: center; gap: 10px; }
+.guest-initials { width: 32px; height: 32px; border-radius: 50%; background: rgba(155,125,69,0.12); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+.guest-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.guest-ref { font-size: 10px; color: var(--muted); }
+.pill { font-size: 9px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 1px; }
+.pill-pending { background: rgba(180,83,9,0.1); color: var(--pending); }
+.pill-confirmed { background: rgba(46,94,62,0.1); color: var(--confirmed); }
+.pill-package { background: rgba(155,125,69,0.1); color: var(--gold); }
+.cell-text { font-size: 12px; color: var(--ink); }
+.cell-muted { font-size: 11px; color: var(--muted); }
+.cell-amount { font-size: 14px; font-weight: 400; color: var(--ink); }
+.btn-confirm { font-size: 10px; letter-spacing: 0.5px; padding: 6px 14px; border: 1px solid var(--confirmed); color: var(--confirmed); background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .18s; }
+.btn-confirm:hover { background: var(--confirmed); color: #fff; }
+.btn-confirm.done { background: var(--confirmed); color: #fff; cursor: default; }
+.btn-view { font-size: 10px; padding: 6px 10px; border: 1px solid var(--line); color: var(--muted); background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.btn-view:hover { border-color: var(--ink); color: var(--ink); }
+.action-btns { display: flex; gap: 6px; }
+.inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.inv-card { background: #fff; border: 1px solid var(--line); padding: 14px 16px; }
+.inv-name { font-size: 13px; font-weight: 400; color: var(--ink); margin-bottom: 3px; }
+.inv-cat { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.inv-bar { height: 3px; background: var(--line); margin-bottom: 5px; border-radius: 1px; overflow: hidden; }
+.inv-fill { height: 100%; border-radius: 1px; }
+.inv-fill-ok { background: var(--confirmed); }
+.inv-fill-warn { background: var(--pending); }
+.inv-fill-full { background: var(--cancelled); }
+.inv-numbers { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); }
+.inv-booked { font-weight: 500; color: var(--ink); }
+.notes-area { width: 100%; border: 1px solid var(--line); padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink); background: transparent; resize: vertical; min-height: 60px; }
+.notes-area:focus { outline: none; border-color: var(--gold); }
+.expandable-row { cursor: pointer; }
+.detail-panel { grid-column: 1/-1; background: var(--bone); border-top: 1px solid var(--line-soft); padding: 14px 18px; display: none; }
+.detail-panel.open { display: block; }
+.detail-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.detail-item-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.detail-item-val { font-size: 12px; color: var(--ink); }
+.detail-exps { margin-top: 12px; }
+.detail-exp-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; }
+.detail-exp-row:last-child { border-bottom: none; }
+.detail-exp-note { font-size: 10px; color: var(--muted); }
+.special-badge { background: rgba(155,125,69,0.08); border-left: 2px solid var(--gold); padding: 6px 10px; font-size: 11px; color: var(--gold); margin-top: 8px; display: inline-block; }
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <div class="nav-logo">Ā M A N P U L O</div>
+  <div class="nav-right">
+    <span class="nav-user">Experiences Team · Pamalican Island</span>
+    <span class="nav-badge">Staff Portal</span>
+  </div>
+</nav>
+
+<div class="layout">
+  <div class="sidebar">
+    <div style="padding:0 20px 20px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(245,240,232,0.8)">Dashboard</div>
+      <div style="font-size:10px;color:rgba(245,240,232,0.3);margin-top:2px">Week of Apr 12, 2026</div>
+    </div>
+    <div class="sidebar-section">Navigation</div>
+    <div class="sidebar-item active"><span class="sidebar-icon">◈</span> Requests <span class="sidebar-badge">3</span></div>
+    <div class="sidebar-item"><span class="sidebar-icon">◉</span> All bookings</div>
+    <div class="sidebar-item"><span class="sidebar-icon">◇</span> Inventory</div>
+    <div class="sidebar-item"><span class="sidebar-icon">△</span> Revenue</div>
+    <div class="sidebar-item"><span class="sidebar-icon">○</span> Guest profiles</div>
+    <div style="height:1px;background:rgba(255,255,255,0.06);margin:16px 0"></div>
+    <div class="sidebar-section">Quick links</div>
+    <div class="sidebar-item"><span class="sidebar-icon">✉</span> Guest portal link</div>
+    <div class="sidebar-item"><span class="sidebar-icon">⊕</span> New package</div>
+    <div class="sidebar-item"><span class="sidebar-icon">⊙</span> Settings</div>
+  </div>
+
+  <div class="main">
+    <div class="page-header">
+      <div class="page-eyebrow">Amanpulo · Experiences</div>
+      <div class="page-title">Upcoming stay requests</div>
+      <div class="page-date">Thursday, 9 April 2026 · 3 pending requests requiring action</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-val">11</div><div class="stat-label">Active guests</div><div class="stat-delta">↑ 4 arrivals today</div></div>
+      <div class="stat"><div class="stat-val">$18,240</div><div class="stat-label">Week revenue</div><div class="stat-delta">↑ 31% vs last week</div></div>
+      <div class="stat"><div class="stat-val">94%</div><div class="stat-label">Confirmation rate</div><div class="stat-delta">Target: 90%</div></div>
+      <div class="stat"><div class="stat-val">4.97</div><div class="stat-label">Exp. rating</div><div class="stat-delta">Based on 38 reviews</div></div>
+    </div>
+
+    <!-- Pending requests -->
+    <div class="section-title">Pending requests</div>
+    <div class="table-wrap">
+      <div class="table-header t6">
+        <div>Guest</div><div>Experiences requested</div><div>Check-in</div><div>Package</div><div>Add-on total</div><div>Action</div>
+      </div>
+
+      <!-- Row 1 — Long (Romance) -->
+      <div style="display:grid" id="row1-wrap">
+        <div class="table-row t6 expandable-row" onclick="toggleDetail('d1')">
+          <div class="guest-cell">
+            <div class="guest-initials">KL</div>
+            <div><div class="guest-name">Mr. & Mrs. Long</div><div class="guest-ref">AMP-7821 · Beach Casita · 5 nights</div></div>
+          </div>
+          <div>
+            <div class="cell-text">Sunset Cruise, Beach Dinner, Couples Massage</div>
+            <div class="cell-muted">+ Advanced Scuba, Cooking Class, Stargazing</div>
+          </div>
+          <div class="cell-text">Apr 12</div>
+          <div><span class="pill pill-package">Romance</span></div>
+          <div class="cell-amount">$720</div>
+          <div class="action-btns">
+            <button class="btn-confirm" id="cb1" onclick="confirmRow('cb1',event)">Confirm all</button>
+            <button class="btn-view" onclick="toggleDetail('d1',event)">▾</button>
+          </div>
+        </div>
+        <div class="detail-panel" id="d1">
+          <div class="detail-grid">
+            <div><div class="detail-item-label">Accommodation</div><div class="detail-item-val">Beach Casita #4</div></div>
+            <div><div class="detail-item-label">Stay</div><div class="detail-item-val">Apr 12–17 · 5 nights</div></div>
+            <div><div class="detail-item-label">Notes</div><div class="detail-item-val">10th anniversary</div></div>
+          </div>
+          <div class="detail-exps">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--included);margin-bottom:6px;margin-top:12px">✦ Package inclusions (Romance)</div>
+            <div class="detail-exp-row"><div><div>Private Sunset Cruise</div><div class="detail-exp-note">Apr 12 · 5:30 PM · With live music & champagne</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Beach Fireside Dinner</div><div class="detail-exp-note">Apr 13 · 7:00 PM · Private beachfront table</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Couples Signature Massage</div><div class="detail-exp-note">Apr 14 · 11:00 AM · 90 min</div></div><div style="color:var(--included)">Included</div></div>
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;margin-top:12px">Add-ons requested</div>
+            <div class="detail-exp-row"><div><div>Advanced Scuba Diving</div><div class="detail-exp-note">Apr 13 · 9:00 AM · Check instructor availability</div></div><div>$280</div></div>
+            <div class="detail-exp-row"><div><div>Filipino Cooking Class</div><div class="detail-exp-note">Apr 15 · 10:00 AM · 2 guests</div></div><div>Complim.</div></div>
+            <div class="detail-exp-row"><div><div>Stargazing & Astronomy</div><div class="detail-exp-note">Apr 15 · 8:30 PM</div></div><div>$280</div></div>
+          </div>
+          <div class="special-badge">🥂 10th Anniversary — prepare welcome amenity & personalised turndown note</div>
+          <textarea class="notes-area" placeholder="Add internal notes for the team..." style="margin-top:10px;width:100%">Confirm scuba instructor Rodrigo is available Apr 13. Champagne upgrade for sunset cruise — coordinate with F&B. Personalised menu for beach dinner.</textarea>
+        </div>
+      </div>
+
+      <!-- Row 2 — Tanaka (Family) -->
+      <div style="display:grid" id="row2-wrap">
+        <div class="table-row t6 expandable-row" onclick="toggleDetail('d2')">
+          <div class="guest-cell">
+            <div class="guest-initials">TF</div>
+            <div><div class="guest-name">The Tanaka Family</div><div class="guest-ref">AMP-7830 · Hillside Casita · 6 nights</div></div>
+          </div>
+          <div>
+            <div class="cell-text">Reef Snorkelling, Cooking Class, Nature Walk, Kayak</div>
+            <div class="cell-muted">+ Kitesurfing, Farm Tour, Gin Tasting</div>
+          </div>
+          <div class="cell-text">Apr 14</div>
+          <div><span class="pill pill-package">Family</span></div>
+          <div class="cell-amount">$520</div>
+          <div class="action-btns">
+            <button class="btn-confirm" id="cb2" onclick="confirmRow('cb2',event)">Confirm all</button>
+            <button class="btn-view" onclick="toggleDetail('d2',event)">▾</button>
+          </div>
+        </div>
+        <div class="detail-panel" id="d2">
+          <div class="detail-grid">
+            <div><div class="detail-item-label">Accommodation</div><div class="detail-item-val">Hillside Casita #12</div></div>
+            <div><div class="detail-item-label">Stay</div><div class="detail-item-val">Apr 14–20 · 6 nights</div></div>
+            <div><div class="detail-item-label">Party</div><div class="detail-item-val">2 adults, 2 children (8, 11)</div></div>
+          </div>
+          <div class="detail-exps">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--included);margin-bottom:6px;margin-top:12px">✦ Package inclusions (Family Adventure)</div>
+            <div class="detail-exp-row"><div><div>Family Reef Snorkelling</div><div class="detail-exp-note">Apr 14 · 8:00 AM · All equipment for children included</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Filipino Cooking Class</div><div class="detail-exp-note">Apr 15 · 10:00 AM · Child-friendly</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Island Nature Walk</div><div class="detail-exp-note">Apr 16 · 7:00 AM · Naturalist guide</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Kayak Tour</div><div class="detail-exp-note">Apr 17 · 7:30 AM · Half day</div></div><div style="color:var(--included)">Included</div></div>
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;margin-top:12px">Add-ons requested</div>
+            <div class="detail-exp-row"><div><div>Kitesurfing Lessons</div><div class="detail-exp-note">Apr 18 · 2:00 PM · Adults only</div></div><div>$320</div></div>
+            <div class="detail-exp-row"><div><div>Amanpulo Farm Tour</div><div class="detail-exp-note">Apr 19 · 8:00 AM</div></div><div>$190</div></div>
+            <div class="detail-exp-row"><div><div>Farm Gin Tasting</div><div class="detail-exp-note">Apr 19 · 6:00 PM · Adults only</div></div><div>$170</div></div>
+          </div>
+          <textarea class="notes-area" placeholder="Add internal notes..." style="margin-top:10px;width:100%">Confirm children's snorkel equipment sizes. Kitesurfing — adults only, children to be supervised separately. Arrange kids' activity during gin tasting.</textarea>
+        </div>
+      </div>
+
+      <!-- Row 3 — Okonkwo (Ocean) -->
+      <div style="display:grid" id="row3-wrap">
+        <div class="table-row t6 expandable-row" onclick="toggleDetail('d3')">
+          <div class="guest-cell">
+            <div class="guest-initials">CO</div>
+            <div><div class="guest-name">Mr. Okonkwo</div><div class="guest-ref">AMP-7845 · Beach Pool Villa · 5 nights</div></div>
+          </div>
+          <div>
+            <div class="cell-text">Scuba Intro, Sunrise Yoga, Spa Journey, Fishing</div>
+            <div class="cell-muted">+ Adv. Scuba, Private Pilates, Kawayan Brunch</div>
+          </div>
+          <div class="cell-text">Apr 16</div>
+          <div><span class="pill pill-package">Ocean</span></div>
+          <div class="cell-amount">$620</div>
+          <div class="action-btns">
+            <button class="btn-confirm" id="cb3" onclick="confirmRow('cb3',event)">Confirm all</button>
+            <button class="btn-view" onclick="toggleDetail('d3',event)">▾</button>
+          </div>
+        </div>
+        <div class="detail-panel" id="d3">
+          <div class="detail-grid">
+            <div><div class="detail-item-label">Accommodation</div><div class="detail-item-val">Beach Pool Villa #2</div></div>
+            <div><div class="detail-item-label">Stay</div><div class="detail-item-val">Apr 16–21 · 5 nights</div></div>
+            <div><div class="detail-item-label">Notes</div><div class="detail-item-val">Diving certification held</div></div>
+          </div>
+          <div class="detail-exps">
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--included);margin-bottom:6px;margin-top:12px">✦ Package inclusions (Ocean & Wellness)</div>
+            <div class="detail-exp-row"><div><div>Introductory Scuba Dive</div><div class="detail-exp-note">Apr 16 · 8:00 AM · ⚠ Guest has certification — upgrade to advanced?</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Daily Sunrise Yoga</div><div class="detail-exp-note">Apr 16–20 · 6:00 AM · Daily</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Aman Holistic Spa Journey</div><div class="detail-exp-note">Apr 17 · 9:00 AM · 3 hours</div></div><div style="color:var(--included)">Included</div></div>
+            <div class="detail-exp-row"><div><div>Deep-Sea Fishing Expedition</div><div class="detail-exp-note">Apr 18 · 6:00 AM</div></div><div style="color:var(--included)">Included</div></div>
+            <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;margin-top:12px">Add-ons requested</div>
+            <div class="detail-exp-row"><div><div>Advanced Scuba Diving</div><div class="detail-exp-note">Apr 19 · 9:00 AM</div></div><div>$280</div></div>
+            <div class="detail-exp-row"><div><div>Private Pilates Session</div><div class="detail-exp-note">Apr 20 · 7:00 AM</div></div><div>$160</div></div>
+            <div class="detail-exp-row"><div><div>Floating Kawayan Hut Brunch</div><div class="detail-exp-note">Apr 20 · 10:00 AM</div></div><div>$180</div></div>
+          </div>
+          <div class="special-badge">⚠ Guest has PADI Open Water cert — consider upgrading included scuba from intro to standard dive at no charge</div>
+          <textarea class="notes-area" placeholder="Add internal notes..." style="margin-top:10px;width:100%">Confirm with dive team re: certification upgrade. Coordinate yoga teacher schedule for daily sessions. F&B to prep Kawayan paddle provisions.</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory -->
+    <div class="section-title">Experience inventory — this week</div>
+    <div class="inv-grid">
+      <div class="inv-card"><div class="inv-name">Advanced Scuba</div><div class="inv-cat">Sea & Water</div><div class="inv-bar"><div class="inv-fill inv-fill-warn" style="width:75%"></div></div><div class="inv-numbers"><span class="inv-booked">6 booked</span><span>2 remaining / 8 cap</span></div></div>
+      <div class="inv-card"><div class="inv-name">Sunset Cruise (Private)</div><div class="inv-cat">Sea & Water</div><div class="inv-bar"><div class="inv-fill inv-fill-ok" style="width:40%"></div></div><div class="inv-numbers"><span class="inv-booked">2 booked</span><span>3 remaining / 5 cap</span></div></div>
+      <div class="inv-card"><div class="inv-name">Couples Spa Massage</div><div class="inv-cat">Spa & Wellness</div><div class="inv-bar"><div class="inv-fill inv-fill-warn" style="width:70%"></div></div><div class="inv-numbers"><span class="inv-booked">7 booked</span><span>3 remaining / 10 cap</span></div></div>
+      <div class="inv-card"><div class="inv-name">Filipino Cooking Class</div><div class="inv-cat">Dining</div><div class="inv-bar"><div class="inv-fill inv-fill-full" style="width:90%"></div></div><div class="inv-numbers"><span class="inv-booked">7 booked</span><span>1 remaining / 8 cap</span></div></div>
+      <div class="inv-card"><div class="inv-name">Stargazing Evening</div><div class="inv-cat">Land & Nature</div><div class="inv-bar"><div class="inv-fill inv-fill-ok" style="width:50%"></div></div><div class="inv-numbers"><span class="inv-booked">2 booked</span><span>2 remaining / 4 cap</span></div></div>
+      <div class="inv-card"><div class="inv-name">Private Pilates</div><div class="inv-cat">Spa & Wellness</div><div class="inv-bar"><div class="inv-fill inv-fill-ok" style="width:33%"></div></div><div class="inv-numbers"><span class="inv-booked">2 booked</span><span>4 remaining / 6 cap</span></div></div>
+      <div class="inv-card"><div class="inv-name">Kawayan Hut Brunch</div><div class="inv-cat">Dining</div><div class="inv-bar"><div class="inv-fill inv-fill-ok" style="width:25%"></div></div><div class="inv-numbers"><span class="inv-booked">1 booked</span><span>3 remaining / 4 cap</span></div></div>
+      <div class="inv-card"><div class="inv-name">Kitesurfing (Dec–May)</div><div class="inv-cat">Sea & Water</div><div class="inv-bar"><div class="inv-fill inv-fill-ok" style="width:30%"></div></div><div class="inv-numbers"><span class="inv-booked">3 booked</span><span>7 remaining / 10 cap</span></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleDetail(id, e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById(id);
+  panel.classList.toggle('open');
+}
+function confirmRow(btnId, e) {
+  e.stopPropagation();
+  const btn = document.getElementById(btnId);
+  btn.className = 'btn-confirm done';
+  btn.textContent = '✓ Confirmed';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Southern Ocean Lodge — Plan Your Stay</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bone: #EFEBE3;
+  --bone-dark: #E5DDD1;
+  --sand: #D8D0C2;
+  --ink: #1C1510;
+  --ink-soft: #382E26;
+  --muted: #8C7D6E;
+  --gold: #9B7D45;
+  --gold-light: #C0A06B;
+  --ocean: #0B4A5C;
+  --included: #1D5940;
+  --included-bg: rgba(29,89,64,0.08);
+  --line: rgba(28,21,16,0.1);
+  --line-soft: rgba(28,21,16,0.06);
+  --danger: #8B3A3A;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  background: var(--bone); color: var(--ink);
+  min-height: 100vh; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── WELCOME SCREEN ── */
+#welcome-screen {
+  position: fixed; inset: 0; z-index: 500;
+  background: #0F1E18;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px;
+  transition: opacity .6s ease, transform .6s ease;
+}
+#welcome-screen::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(11,74,92,0.25) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 60%, rgba(155,125,69,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+#welcome-screen.exit { opacity: 0; pointer-events: none; }
+.welcome-eyebrow {
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(239,235,227,0.3); margin-bottom: 10px;
+  position: relative; z-index: 1;
+}
+.welcome-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; letter-spacing: 7px; text-transform: uppercase;
+  color: rgba(239,235,227,0.65); margin-bottom: 40px;
+  position: relative; z-index: 1;
+}
+.welcome-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 4.5vw, 44px); font-weight: 300;
+  color: var(--bone); text-align: center; line-height: 1.25;
+  margin-bottom: 10px; position: relative; z-index: 1;
+}
+.welcome-sub {
+  font-size: 13px; color: rgba(239,235,227,0.4); text-align: center;
+  margin-bottom: 48px; font-weight: 300; position: relative; z-index: 1;
+}
+.welcome-guest-cards {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  max-width: 820px; position: relative; z-index: 1;
+}
+.guest-card-select {
+  background: rgba(239,235,227,0.04);
+  border: 1px solid rgba(239,235,227,0.1);
+  padding: 20px 24px; cursor: pointer; transition: all .25s;
+  text-align: left; min-width: 220px; flex: 1; max-width: 280px;
+}
+.guest-card-select:hover {
+  background: rgba(239,235,227,0.09);
+  border-color: rgba(192,160,107,0.45);
+  transform: translateY(-2px);
+}
+.gc-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(239,235,227,0.3); margin-bottom: 8px; }
+.gc-name { font-family: 'Cormorant Garamond', serif; font-size: 21px; color: var(--bone); margin-bottom: 4px; }
+.gc-detail { font-size: 12px; color: rgba(239,235,227,0.45); margin-bottom: 6px; }
+.gc-package { font-size: 11px; color: var(--gold-light); }
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(239,235,227,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--ink); font-weight: 400;
+}
+.nav-guest { display: flex; align-items: center; gap: 14px; }
+.nav-name { font-size: 13px; font-weight: 500; }
+.nav-detail { font-size: 11px; color: var(--muted); }
+.nav-folio-badge {
+  font-size: 11px; font-weight: 500; letter-spacing: 1px;
+  padding: 7px 16px; background: var(--ink); color: var(--bone);
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.nav-folio-badge:hover { background: var(--ink-soft); }
+.nav-folio-badge.has-items { background: var(--ocean); }
+
+/* ── PACKAGE HERO ── */
+.package-hero {
+  padding: 36px 24px 28px;
+  background: linear-gradient(135deg, rgba(11,74,92,0.07), rgba(29,89,64,0.05));
+  border-bottom: 1px solid var(--line);
+}
+.ph-inner { max-width: 800px; margin: 0 auto; }
+.ph-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--included); margin-bottom: 8px; }
+.ph-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(24px,3.5vw,36px); font-weight: 300; margin-bottom: 6px; }
+.ph-desc { font-size: 13px; color: var(--muted); margin-bottom: 18px; max-width: 560px; }
+.ph-includes { display: flex; flex-wrap: wrap; gap: 8px; }
+.ph-item {
+  font-size: 12px; padding: 5px 14px;
+  background: var(--included-bg); color: var(--included);
+  border: 1px solid rgba(29,89,64,0.15);
+}
+.ph-item.highlight { border-color: var(--gold); background: rgba(155,125,69,0.08); color: var(--gold); }
+
+/* ── MAIN LAYOUT ── */
+.main-content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+/* ── DAY TABS ── */
+.day-tabs-wrap {
+  display: flex; gap: 6px; overflow-x: auto; padding: 0 0 16px;
+  scrollbar-width: none;
+}
+.day-tabs-wrap::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0; padding: 8px 18px; font-size: 12px; font-weight: 400;
+  background: transparent; border: 1px solid var(--line);
+  cursor: pointer; transition: all .2s; white-space: nowrap; color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+}
+.day-tab:hover { border-color: var(--ink); color: var(--ink); }
+.day-tab.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+/* ── ITINERARY ── */
+.section-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin: 24px 0 12px;
+}
+.itinerary-empty {
+  padding: 40px 20px; text-align: center;
+  border: 1px dashed var(--line); color: var(--muted); font-size: 13px;
+}
+.itin-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; background: white;
+  border: 1px solid var(--line); margin-bottom: 8px;
+  position: relative; cursor: grab; transition: box-shadow .2s, border-color .2s;
+}
+.itin-item:active { cursor: grabbing; }
+.itin-item.dragging { opacity: 0.5; border-color: var(--gold); }
+.itin-item.drag-over { border-top: 2px solid var(--gold); }
+.itin-item.included { background: var(--included-bg); border-color: rgba(29,89,64,0.2); }
+.itin-item .itin-img { width: 56px; height: 56px; object-fit: cover; flex-shrink: 0; }
+.itin-item .itin-info { flex: 1; min-width: 0; }
+.itin-item .itin-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.itin-item .itin-meta { font-size: 11px; color: var(--muted); }
+.itin-item .itin-badge {
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 8px; display: inline-block; margin-top: 4px;
+}
+.itin-item .itin-badge.inc { background: var(--included-bg); color: var(--included); }
+.itin-item .itin-badge.addon { background: rgba(155,125,69,0.08); color: var(--gold); }
+.itin-item .itin-time-btn {
+  font-size: 11px; color: var(--gold); cursor: pointer;
+  text-decoration: underline; background: none; border: none;
+  padding: 0; font-family: inherit;
+}
+.itin-item .itin-remove {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 16px; color: var(--muted); cursor: pointer;
+  background: none; border: none; line-height: 1;
+  opacity: 0.5; transition: opacity .2s;
+}
+.itin-item .itin-remove:hover { opacity: 1; color: var(--danger); }
+.itin-item .itin-guests-ctrl {
+  display: flex; align-items: center; gap: 6px; margin-top: 4px;
+}
+.itin-item .itin-guests-ctrl span { font-size: 11px; color: var(--muted); }
+.itin-item .itin-guests-ctrl button {
+  width: 22px; height: 22px; border: 1px solid var(--line);
+  background: white; cursor: pointer; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); transition: all .15s; font-family: inherit;
+}
+.itin-item .itin-guests-ctrl button:hover { border-color: var(--gold); }
+.itin-item .itin-price {
+  font-size: 13px; font-weight: 500; white-space: nowrap;
+  margin-left: auto; padding-left: 10px; align-self: center;
+}
+.itin-item .itin-price.free { color: var(--included); }
+
+/* ── CATALOG ── */
+.catalog-header { margin: 36px 0 16px; }
+.catalog-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px,3vw,30px); font-weight: 300; margin-bottom: 4px; }
+.catalog-sub { font-size: 13px; color: var(--muted); }
+
+.cat-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.cat-filter {
+  font-size: 11px; padding: 6px 14px; border: 1px solid var(--line);
+  background: transparent; cursor: pointer; transition: all .2s; color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+}
+.cat-filter:hover { border-color: var(--ink); color: var(--ink); }
+.cat-filter.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+.activity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.activity-card {
+  background: white; border: 1px solid var(--line); overflow: hidden;
+  cursor: pointer; transition: all .25s;
+}
+.activity-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+.activity-card.signature-included { border-color: rgba(29,89,64,0.3); background: var(--included-bg); }
+.ac-img-wrap { position: relative; width: 100%; height: 180px; overflow: hidden; background: var(--sand); }
+.ac-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.activity-card:hover .ac-img-wrap img { transform: scale(1.04); }
+.ac-img-wrap .ac-badge-float {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 10px; background: rgba(28,21,16,0.7); color: var(--bone);
+  backdrop-filter: blur(4px);
+}
+.ac-img-wrap .ac-badge-float.inc { background: rgba(29,89,64,0.85); }
+.ac-img-wrap .ac-emoji {
+  position: absolute; bottom: 10px; right: 10px;
+  font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.ac-body { padding: 14px 16px; }
+.ac-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.ac-desc {
+  font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ac-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ac-meta { font-size: 11px; color: var(--muted); }
+.ac-price { font-size: 13px; font-weight: 500; color: var(--gold); }
+.ac-price.free { color: var(--included); }
+
+/* ── MODAL ── */
+.modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(28,21,16,0.5); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal-box {
+  background: var(--bone); max-width: 560px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.modal-img { width: 100%; height: 240px; object-fit: cover; }
+.modal-content { padding: 24px; }
+.modal-badge { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.modal-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; margin-bottom: 6px; }
+.modal-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.modal-desc { font-size: 14px; line-height: 1.7; color: var(--ink-soft); margin-bottom: 20px; }
+.modal-section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.modal-date-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.modal-date-btn {
+  padding: 6px 14px; font-size: 12px; border: 1px solid var(--line);
+  background: white; cursor: pointer; transition: all .2s; font-family: inherit; color: var(--ink);
+}
+.modal-date-btn:hover { border-color: var(--gold); }
+.modal-date-btn.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+.modal-time-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.time-opt {
+  padding: 6px 14px; font-size: 12px; border: 1px solid var(--line);
+  background: white; cursor: pointer; transition: all .2s; font-family: inherit; color: var(--ink);
+}
+.time-opt:hover { border-color: var(--gold); }
+.time-opt.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+.modal-guests { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.modal-guests label { font-size: 13px; color: var(--ink); }
+.guest-stepper { display: flex; align-items: center; gap: 0; border: 1px solid var(--line); overflow: hidden; }
+.guest-stepper button {
+  width: 34px; height: 34px; border: none; background: white;
+  cursor: pointer; font-size: 16px; transition: background .15s; font-family: inherit;
+}
+.guest-stepper button:hover { background: var(--bone-dark); }
+.guest-stepper span { padding: 0 14px; font-size: 14px; font-weight: 500; }
+.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-add-itin {
+  flex: 1; padding: 13px 20px; background: var(--ink); color: var(--bone);
+  border: 1px solid var(--ink); font-family: inherit; font-size: 13px;
+  cursor: pointer; transition: all .2s; min-height: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-add-itin:hover { background: var(--ink-soft); }
+.btn-add-itin.included-act { background: var(--included); border-color: var(--included); }
+.btn-close-modal {
+  padding: 13px 20px; background: white; color: var(--ink);
+  border: 1px solid var(--line); font-family: inherit; font-size: 13px;
+  cursor: pointer; transition: all .2s; min-height: 46px;
+}
+.btn-close-modal:hover { border-color: var(--ink); }
+
+/* ── FOLIO MODAL ── */
+.folio-modal .modal-box { max-width: 480px; }
+.folio-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.folio-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; }
+.folio-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted); padding: 0 4px; }
+.folio-body { padding: 16px 24px; max-height: 55vh; overflow-y: auto; }
+.folio-day-header {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 400; color: var(--ink);
+  padding: 16px 0 8px; border-bottom: 1px solid var(--line); margin-bottom: 10px;
+}
+.folio-day-header:first-child { padding-top: 8px; }
+.folio-day-header .folio-day-date {
+  font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--muted);
+  font-weight: 300; letter-spacing: 1px; text-transform: uppercase; display: block; margin-top: 2px;
+}
+.folio-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.folio-item:last-child { border-bottom: none; }
+.folio-item-img { width: 44px; height: 44px; object-fit: cover; flex-shrink: 0; }
+.folio-item-info { flex: 1; }
+.folio-item-name { font-size: 13px; font-weight: 500; }
+.folio-item-detail { font-size: 11px; color: var(--muted); }
+.folio-item-price { font-size: 13px; font-weight: 500; white-space: nowrap; }
+.folio-item-price.free { color: var(--included); }
+.folio-totals { padding: 16px 0; margin-top: 8px; border-top: 2px solid var(--ink); }
+.folio-total-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; color: var(--muted); }
+.folio-total-row.grand { font-size: 16px; font-weight: 500; color: var(--ink); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.folio-footer { padding: 16px 24px 24px; display: flex; gap: 10px; }
+.folio-footer button {
+  flex: 1; padding: 13px 20px; font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: all .2s; min-height: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-folio-edit { background: white; border: 1px solid var(--line); color: var(--ink); }
+.btn-folio-edit:hover { border-color: var(--ink); }
+.btn-folio-send { background: var(--ink); border: 1px solid var(--ink); color: var(--bone); font-weight: 400; letter-spacing: 0.5px; }
+.btn-folio-send:hover { background: var(--ink-soft); }
+
+/* ── SUCCESS ── */
+.success-state { text-align: center; padding: 48px 24px; }
+.success-icon { font-size: 48px; margin-bottom: 16px; }
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 8px; }
+.success-msg { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.success-ref { font-size: 12px; color: var(--gold); letter-spacing: 1px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--bone); font-size: 13px; padding: 12px 24px;
+  opacity: 0; transition: all .3s; z-index: 400; pointer-events: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .activity-grid { grid-template-columns: 1fr; }
+  .welcome-guest-cards { flex-direction: column; }
+  .guest-card-select { min-width: unset; max-width: 100%; }
+  .top-nav { padding: 12px 16px; }
+  .main-content { padding: 16px; }
+  .modal-box { max-height: 95vh; }
+  .modal-actions, .folio-footer { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ WELCOME ═══ -->
+<div id="welcome-screen">
+  <div class="welcome-eyebrow">Kangaroo Island · South Australia</div>
+  <div class="welcome-logo">Southern Ocean Lodge</div>
+  <div class="welcome-title">Plan Your Stay</div>
+  <div class="welcome-sub">Browse experiences, personalise your days, and send to our team — we'll arrange everything.</div>
+  <div class="welcome-guest-cards" id="welcome-cards"></div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div id="app" style="display:none">
+  <nav class="top-nav">
+    <div class="nav-logo">Southern Ocean Lodge</div>
+    <div class="nav-guest">
+      <div>
+        <div class="nav-name" id="nav-name"></div>
+        <div class="nav-detail" id="nav-detail"></div>
+      </div>
+      <div class="nav-folio-badge" id="folio-btn" onclick="openFolio()">View Folio →</div>
+    </div>
+  </nav>
+
+  <div class="package-hero" id="package-hero" style="display:none">
+    <div class="ph-inner">
+      <div class="ph-eyebrow">Included in Your Package</div>
+      <div class="ph-title" id="ph-title"></div>
+      <div class="ph-desc" id="ph-desc"></div>
+      <div class="ph-includes" id="ph-includes"></div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="section-label">Your Itinerary</div>
+    <div class="day-tabs-wrap" id="dayTabs"></div>
+    <div id="itineraryBody"></div>
+
+    <div class="catalog-header">
+      <div class="catalog-title">Experiences &amp; Excursions</div>
+      <div class="catalog-sub">Tap any experience to learn more and add it to your day.</div>
+    </div>
+    <div class="cat-filters" id="catFilters"></div>
+    <div class="activity-grid" id="activityGrid"></div>
+  </div>
+</div>
+
+<!-- ═══ DETAIL MODAL ═══ -->
+<div class="modal-bg" id="detail-modal" onclick="if(event.target===this)closeDetail()">
+  <div class="modal-box" id="detail-box"></div>
+</div>
+
+<!-- ═══ FOLIO MODAL ═══ -->
+<div class="modal-bg folio-modal" id="folio-modal" onclick="if(event.target===this)closeFolio()">
+  <div class="modal-box" id="folio-box"></div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// SOUTHERN OCEAN LODGE — DATA
+// ═══════════════════════════════════════════════
+
+const P = 'https://images.pexels.com/photos/';
+const px = (id, w) => `${P}${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w||600}`;
+
+const GUESTS = [
+  {
+    id: 0,
+    name: 'Mr. & Mrs. Thompson',
+    detail: 'Flinders Suite · 3 nights · Thu 9 Apr',
+    arrival: '2026-04-09',
+    nights: 3,
+    pkg: {
+      id: 'ki-classic',
+      name: 'Two Night Beckons Escape',
+      value: 1800,
+      desc: 'All dining, premium beverages, in-suite bar, three signature guided excursions, and return Kangaroo Island Airport transfers. A personalised itinerary is created for each guest on arrival.',
+      includes: [
+        { actId: 'kelly-caves',  name: 'Kelly Hill Caves',              note: '1.5 hrs · afternoon',              suggestedDay: 0 },
+        { actId: 'wonders-ki',   name: 'Wonders of Kangaroo Island',    note: '4 hrs · Remarkable Rocks + picnic', suggestedDay: 1 },
+        { actId: 'koalas-kangas',name: 'Koalas & Kangas',               note: '2.5 hrs · late afternoon',          suggestedDay: 1 },
+        { actId: 'seal-bay',     name: 'Seal Bay',                      note: '2.5 hrs · morning',                 suggestedDay: 2 },
+      ]
+    }
+  },
+  {
+    id: 1,
+    name: 'The Williams Family',
+    detail: 'Two Suites · 4 nights · Wed 8 Apr',
+    arrival: '2026-04-08',
+    nights: 4,
+    pkg: {
+      id: 'extended-explorer',
+      name: 'Extended Explorer',
+      value: 2800,
+      desc: 'Four nights with all six signature guided experiences — the complete Kangaroo Island wildlife and wilderness immersion. All dining, premium beverages, and return airport transfers included.',
+      includes: [
+        { actId: 'clifftop-walk', name: 'Coastal Clifftop Walk',        note: '1.5 hrs · afternoon',               suggestedDay: 0 },
+        { actId: 'wonders-ki',    name: 'Wonders of Kangaroo Island',   note: '4 hrs · Remarkable Rocks + picnic',  suggestedDay: 1 },
+        { actId: 'koalas-kangas', name: 'Koalas & Kangas',              note: '2.5 hrs · late afternoon',           suggestedDay: 1 },
+        { actId: 'seal-bay',      name: 'Seal Bay',                     note: '2.5 hrs · morning',                  suggestedDay: 2 },
+        { actId: 'kelly-caves',   name: 'Kelly Hill Caves',             note: '1.5 hrs · afternoon',                suggestedDay: 2 },
+        { actId: 'taste-sa',      name: 'A Taste of South Australia',   note: '45 min · pre-dinner',                suggestedDay: 3 },
+      ]
+    }
+  },
+  {
+    id: 2,
+    name: 'Ms. Alexandra Reeves',
+    detail: 'Baillie Pavilion · 3 nights · Fri 10 Apr',
+    arrival: '2026-04-10',
+    nights: 3,
+    pkg: {
+      id: 'baillie-pavilion',
+      name: 'Baillie Pavilion',
+      value: 3800,
+      desc: 'The apex of Southern Ocean Lodge — the Pavilion Suite crowning the limestone cliffs, all signature experiences, a private dining evening in the wine cellar, and an alkeme spa treatment. All dining, premium beverages, and return transfers included.',
+      includes: [
+        { actId: 'clifftop-walk',   name: 'Coastal Clifftop Walk',      note: '1.5 hrs · welcome afternoon',       suggestedDay: 0, highlight: true },
+        { actId: 'wonders-ki',      name: 'Wonders of Kangaroo Island', note: '4 hrs · Remarkable Rocks + picnic', suggestedDay: 1 },
+        { actId: 'koalas-kangas',   name: 'Koalas & Kangas',            note: '2.5 hrs · dawn',                    suggestedDay: 1 },
+        { actId: 'seal-bay',        name: 'Seal Bay',                   note: '2.5 hrs · morning',                 suggestedDay: 2 },
+        { actId: 'private-dining',  name: 'Private Dining — Wine Cellar',note: 'Included for 2 · evening',         suggestedDay: 2, highlight: true },
+        { actId: 'spa-touch-sol',   name: 'A Touch of SOL Spa',         note: '2 hrs · at your leisure',           suggestedDay: 1, highlight: true },
+      ]
+    }
+  }
+];
+
+const ACTIVITIES = [
+  // ── SIGNATURE EXPERIENCES (all included in one or more packages) ──
+  {
+    id: 'seal-bay', cat: 'Wildlife', emoji: '🦭', signature: true,
+    title: 'Seal Bay',
+    duration: '2.5 hrs', price: 0, perPerson: false,
+    desc: 'Walk among Australian sea lions on a remote southern beach — pups nursing in the sand, old bulls bearing the scars of territorial disputes.',
+    longDesc: 'Accessed exclusively with a Southern Ocean Lodge guide, Seal Bay Conservation Park is one of the few places on earth where you can walk at eye level with wild Australian sea lions. Watch pups play in the surf, observe nursing mothers, and hear the remarkable story of this isolated and protected colony. Limited to six guests per excursion.',
+    img: px('3861467'), fallbackImg: px('1918291'),
+    times: ['8:00 am', '10:30 am'], best: 'Morning'
+  },
+  {
+    id: 'wonders-ki', cat: 'Wilderness', emoji: '🪨', signature: true,
+    title: 'Wonders of Kangaroo Island',
+    duration: '4 hrs', price: 0, perPerson: false,
+    desc: 'Remarkable Rocks balanced on a granite dome above the Southern Ocean, then Admirals Arch and its colony of long-nosed fur seals.',
+    longDesc: 'The signature full-morning excursion into Flinders Chase National Park. Stand beside the Remarkable Rocks — a cluster of 500-million-year-old granite boulders sculpted by wind and wave into extraordinary shapes, perched on a dome plunging straight into the ocean. Continue to Admirals Arch, a vast coastal grotto where a thriving colony of long-nosed fur seals haul out on the rocks below. Includes a gourmet clifftop picnic lunch.',
+    img: px('2422915'), fallbackImg: px('1640771'),
+    times: ['8:00 am', '8:30 am'], best: 'Morning'
+  },
+  {
+    id: 'koalas-kangas', cat: 'Wildlife', emoji: '🐨', signature: true,
+    title: 'Koalas & Kangas',
+    duration: '2.5 hrs', price: 0, perPerson: false,
+    desc: 'Hand-feed wallabies at dawn, spot koalas sleeping in blue gums, and watch cape barren geese on the headland.',
+    longDesc: 'A gentle dawn excursion through the island\'s interior, where wildlife roams entirely without fear. Kangaroo Island\'s geographic isolation means its animals have never been hunted — wallabies will eat from your hand. Your guide locates wild koalas resting in the blue gum forest, and the walk ends on the headland where cape barren geese and glossy black cockatoos are often spotted against the morning sky.',
+    img: px('1319515'), fallbackImg: px('631317'),
+    times: ['7:00 am', '7:30 am'], best: 'Dawn'
+  },
+  {
+    id: 'kelly-caves', cat: 'Wilderness', emoji: '🕳️', signature: true,
+    title: 'Kelly Hill Caves',
+    duration: '1.5 hrs', price: 0, perPerson: false,
+    desc: 'Ancient limestone caverns lit by lantern — stalactites, stalagmites, and crystal formations built over 300 million years.',
+    longDesc: 'Deep inside Kangaroo Island\'s sandstone country lies a network of limestone caves formed over 300 million years. Your private guide leads the way through cathedral chambers decorated with stalactites, stalagmites, and delicate crystal helictite formations. The caves maintain a cool, constant 17°C year-round — a welcome contrast to the Australian sun above.',
+    img: px('2356045'), fallbackImg: px('1670723'),
+    times: ['10:00 am', '2:00 pm'], best: 'Anytime'
+  },
+  {
+    id: 'clifftop-walk', cat: 'Wilderness', emoji: '🚶', signature: true,
+    title: 'Coastal Clifftop Walk',
+    duration: '1.5 hrs', price: 0, perPerson: false,
+    desc: 'Walk the limestone headland as the Southern Ocean crashes forty metres below — sea eagles, dolphins, and New Zealand fur seals.',
+    longDesc: 'The lodge sits atop one of Kangaroo Island\'s most dramatic limestone headlands. This guided walk traces the clifftop path as Southern Ocean swells roll in from Antarctica. Your guide identifies seabirds overhead — white-bellied sea eagles, osprey, and Pacific gulls — and watches for dolphins and fur seals in the water below. The walk ends with a glass of South Australian Riesling at the lodge terrace.',
+    img: px('1591373'), fallbackImg: px('2253821'),
+    times: ['8:00 am', '4:00 pm', '4:30 pm'], best: 'Late afternoon'
+  },
+  {
+    id: 'taste-sa', cat: 'Dining & Culture', emoji: '🍷', signature: true,
+    title: 'A Taste of South Australia',
+    duration: '45 min', price: 0, perPerson: false,
+    desc: 'A hosted tasting of Kangaroo Island\'s finest — artisan cheeses, Ligurian honey, pure olive oil, and South Australian wines.',
+    longDesc: 'An intimate hosted tasting celebrating the extraordinary larder of Kangaroo Island and South Australia. KI\'s own artisan cheeses, wild-harvested sea salt, Ligurian honey (from the world\'s last pure Ligurian bee colony), cold-pressed olive oil from the island\'s ancient groves, and a curated flight of South Australia\'s finest wines — from Coonawarra, Clare Valley, and the Barossa. Held in the lodge lounge or on the outdoor terrace overlooking the ocean.',
+    img: px('1407846'), fallbackImg: px('1407846'),
+    times: ['5:00 pm', '5:30 pm', '6:00 pm'], best: 'Pre-dinner'
+  },
+
+  // ── BESPOKE EXPERIENCES ──
+  {
+    id: 'nocturnal-explorer', cat: 'Wildlife', emoji: '🦉',
+    title: 'Nocturnal Explorer',
+    duration: '1.5 hrs', price: 90, perPerson: true,
+    desc: 'After dark, join a nocturnal tour of Hanson Bay Sanctuary — koalas at their most active, kangaroos, possums, and the Southern Cross overhead.',
+    longDesc: 'After dark, the bush transforms. Join a guided nocturnal tour of Hanson Bay Sanctuary and discover a world that comes alive while you are usually asleep. Spot koalas at their most active and encounter kangaroos, wallabies, and possums up close. Learn about their nocturnal behaviours while searching for owls, bats, and echidnas. Wander under the southern night sky, free of light pollution, and look for constellations including the Southern Cross and the Seven Sisters. Torch provided in your suite. Warm clothing recommended.',
+    img: px('1319515'), fallbackImg: px('631317'),
+    times: ['8:30 pm', '9:00 pm'], best: 'After dark'
+  },
+  {
+    id: 'raptor-domain', cat: 'Wildlife', emoji: '🦅',
+    title: 'Raptor Domain',
+    duration: 'Half day', price: 1500, perPerson: false,
+    desc: 'South Australia\'s only free-flight Birds of Prey presentation — barn owls, wedge-tailed eagles, kites, and the famous laughing kookaburras Banjo and Paterson.',
+    longDesc: 'Raptor Domain is home to the only free-flight Birds of Prey presentation in South Australia. Admire the fantastic, feathered raptors during an interpretive display including the laughing kookaburra duo Banjo and Paterson, majestic barn owls, soaring wedge-tailed eagles, aerobatic black kites, and chatty cockatoos. Located near Southern Ocean Lodge, this is a rare opportunity to get close to Australia\'s most extraordinary birds. Tariff: A$1,500 for up to 4 guests, A$145 per additional guest. Maximum 6 guests.',
+    img: px('2679400'), fallbackImg: px('1319515'),
+    times: ['9:00 am', '10:00 am', '2:00 pm'], best: 'Morning or afternoon'
+  },
+  {
+    id: 'hanson-bay-beach', cat: 'Wilderness', emoji: '🏖️',
+    title: 'Hanson Bay Beach Walk',
+    duration: '1.5 hrs', price: 0, perPerson: false,
+    desc: 'Wander the lodge\'s raised boardwalk onto the windswept shore of Hanson Bay — sea caves, fossilised tree trunks, and a pristine private cove.',
+    longDesc: 'Step from the lodge directly onto a raised boardwalk leading down to the wild shore of Hanson Bay. Walk along the beach as sea birds scuttle along the sand, pass sea caves sprouting fossilised tree trunks from an ancient submerged forest, and discover the pristine cove of Hanson Bay Beach. A cool dip is optional. Self-guided or accompanied by a guide — simply request from the concierge.',
+    img: px('1295138'), fallbackImg: px('1591373'),
+    times: ['8:00 am', '10:00 am', '4:00 pm'], best: 'Morning or afternoon'
+  },
+
+  // ── PRIVATE DINING ──
+  {
+    id: 'private-dining', cat: 'Dining & Culture', emoji: '🕯️',
+    title: 'Private Dining — The Wine Cellar',
+    duration: 'At leisure', price: 175, perPerson: true,
+    desc: 'Tucked within the atmospheric wine cellar, an exclusive four-course dinner for two to six guests — premium vintages paired by the lodge sommelier.',
+    longDesc: 'Surrounded by an impressive collection of fine wines, enjoy an exclusive four-course dinner in a beautifully secluded setting within the lodge\'s wine cellar. Each course is paired with premium vintages thoughtfully selected by the lodge sommelier, celebrating the character of South Australia\'s renowned wine regions. Warm timber, soft candlelight, and exceptional cuisine combine for an evening of indulgence. Ideal for a romantic interlude, intimate family gathering, or a memorable evening with friends. Minimum 2 guests, maximum 6 guests. Dining bookings must be arranged in advance and are subject to availability.',
+    img: px('1407846'), fallbackImg: px('1268558'),
+    times: ['6:00 pm', '6:30 pm', '7:00 pm'], best: 'Evening'
+  },
+
+  // ── SOUTHERN SPA ──
+  {
+    id: 'spa-alkeme-dreaming', cat: 'Spa', emoji: '✨',
+    title: 'alkeme Dreaming',
+    duration: '3 hrs', price: 650, perPerson: true,
+    desc: 'The ultimate spa journey — using traditional alkeme techniques, this deeply immersive treatment begins with a Vibrassy body soak, followed by a Florido massage and alkeme facial.',
+    longDesc: 'This is the ultimate spa journey at Southern Ocean Lodge. Using traditional alkeme techniques, this deeply immersive treatment begins with a Vibrassy body soak and full body exfoliation. A nourishing Florido massage follows, using indulgent hand-blended alkeme oil. The treatment is completed with an alkeme face treatment, designed to rebalance and completely revive — leaving you feeling completely nourished and rejuvenated. Signature Ceremony · 3 hours. Book in advance — the spa is reserved exclusively for in-house guests.',
+    img: px('3757942'), fallbackImg: px('3757952'),
+    times: ['9:00 am', '10:00 am', '2:00 pm'], best: 'Morning or afternoon'
+  },
+  {
+    id: 'spa-ocean-song', cat: 'Spa', emoji: '🌊',
+    title: 'Ocean Song',
+    duration: '2 hrs', price: 450, perPerson: true,
+    desc: 'A full body and face treatment drawing on the mineral-rich bounty of the Southern Ocean — deeply nourishing and restorative.',
+    longDesc: 'Ocean Song draws on the mineral-rich bounty of the Southern Ocean. This two-hour signature ceremony begins with a full body exfoliation using sea minerals to soften and brighten the skin, before a deeply nourishing body treatment using alkeme coastal extracts. A reviving face treatment completes the experience — restoring tone, firmness, and a luminous glow. Signature Ceremony · 2 hours.',
+    img: px('3822864'), fallbackImg: px('3757942'),
+    times: ['9:00 am', '10:00 am', '2:00 pm', '3:00 pm'], best: 'Anytime'
+  },
+  {
+    id: 'spa-touch-sol', cat: 'Spa', emoji: '🌿',
+    title: 'A Touch of SOL',
+    duration: '2 hrs', price: 430, perPerson: true,
+    desc: 'The lodge\'s signature treatment — a bespoke full body massage followed by an alkeme facial, curated to reflect the natural beauty of Kangaroo Island.',
+    longDesc: 'A Touch of SOL is the lodge\'s defining spa experience — curated to reflect the natural beauty of Kangaroo Island and the restorative power of the Southern Ocean. A bespoke full body massage using alkeme\'s signature oil blend is followed by a deeply nourishing alkeme facial. Treatment is personalised to your skin type and preference during a consultation with your therapist. Signature Ceremony · 2 hours.',
+    img: px('3757952'), fallbackImg: px('3822864'),
+    times: ['9:00 am', '10:30 am', '2:00 pm', '3:30 pm'], best: 'Anytime'
+  },
+  {
+    id: 'spa-southern-sojourn', cat: 'Spa', emoji: '💆',
+    title: 'Southern Sojourn',
+    duration: '2 hrs', price: 390, perPerson: true,
+    desc: 'A complete renewal — full body exfoliation, nourishing body wrap, and a deeply restorative massage using alkeme\'s premium botanical blends.',
+    longDesc: 'Begin with a full body exfoliation, removing dead skin and preparing for deep nourishment. A warm body wrap follows, using alkeme\'s proprietary blend of local botanical extracts and sea minerals. The treatment concludes with a deeply restorative 60-minute massage. Skin feels renewed, hydrated, and luminous. Body Ritual · 120 minutes.',
+    img: px('3757942'), fallbackImg: px('3757952'),
+    times: ['9:00 am', '10:00 am', '2:00 pm'], best: 'Morning'
+  },
+  {
+    id: 'spa-remarkable-rocks', cat: 'Spa', emoji: '🪨',
+    title: 'Remarkable Hot Rocks',
+    duration: '90 min', price: 320, perPerson: true,
+    desc: 'Smooth basalt stones, warmed and worked into muscles — a deeply grounding treatment inspired by the ancient geology of Kangaroo Island.',
+    longDesc: 'Smooth basalt stones — echoing the ancient geology of Kangaroo Island\'s dramatic landscape — are warmed and applied to key points on the body, then worked into the muscles by the therapist. The heat penetrates deeply, releasing tension and restoring energy flow. Combined with a customised oil blend selected for your needs. Body Elements · 90 minutes.',
+    img: px('3757952'), fallbackImg: px('3822864'),
+    times: ['9:00 am', '10:30 am', '2:00 pm', '3:30 pm'], best: 'Anytime'
+  },
+  {
+    id: 'spa-island-essence', cat: 'Spa', emoji: '🌺',
+    title: 'Island Essence Massage',
+    duration: '75 min', price: 260, perPerson: true,
+    desc: 'A restorative full body massage using locally inspired alkeme oils — the perfect antidote to a day of exploration.',
+    longDesc: 'Drawing on alkeme\'s range of Kangaroo Island–inspired botanical oils, this full body massage targets tired muscles with a combination of long, sweeping strokes and targeted pressure work. The oil blend is selected based on your needs — energising, calming, or deeply restorative. The ideal complement to a full day on the island. Body Elements · 75 minutes.',
+    img: px('3822864'), fallbackImg: px('3757942'),
+    times: ['9:00 am', '10:30 am', '2:00 pm', '3:30 pm', '4:00 pm'], best: 'After exploring'
+  },
+  {
+    id: 'spa-awakening-facial', cat: 'Spa', emoji: '✨',
+    title: 'Awakening Active Facial',
+    duration: '90 min', price: 280, perPerson: true,
+    desc: 'An intensive treatment using alkeme\'s high-performance blend — reducing inflammation, supporting skin renewal, and leaving the skin clarified and visibly radiant.',
+    longDesc: 'Using the bioactive properties of Kangaroo Island\'s native banksia flower, kakadu plum, and native frangipani, this potent treatment supports the skin with an age-defying serum. Targeting visible signs of aging, an intensive brightening mask is applied to reduce inflammation and stimulate cellular renewal — leaving the skin toned and visibly refreshed. Facial Therapy · 90 minutes.',
+    img: px('3757942'), fallbackImg: px('3757952'),
+    times: ['9:00 am', '10:00 am', '2:00 pm', '3:00 pm'], best: 'Morning'
+  },
+];
+
+const CATEGORIES = ['All', 'Wildlife', 'Wilderness', 'Dining & Culture', 'Spa', 'Private'];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentGuest = null;
+let activeDay = 0;
+let activeCatFilter = 'All';
+let plan = {}; // { dayIndex: [ { actId, time, guests, isIncluded } ] }
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function getDayLabels() {
+  if (!currentGuest) return [];
+  const labels = [];
+  const d = new Date(currentGuest.arrival + 'T00:00:00');
+  for (let i = 0; i < currentGuest.nights; i++) {
+    const dd = new Date(d); dd.setDate(d.getDate() + i);
+    const mon = dd.toLocaleDateString('en-AU', { month: 'short' });
+    const day = dd.getDate();
+    labels.push({ short: `Day ${i + 1}`, full: `Day ${i + 1} — ${mon} ${day}`, date: dd });
+  }
+  return labels;
+}
+
+function getActivity(actId) {
+  return ACTIVITIES.find(a => a.id === actId);
+}
+
+function calcItemPrice(item) {
+  if (item.isIncluded) return 0;
+  const act = getActivity(item.actId);
+  if (!act) return 0;
+  return act.perPerson ? act.price * (item.guests || 1) : act.price;
+}
+
+function calcTotals() {
+  let addonTotal = 0;
+  for (const dayItems of Object.values(plan)) {
+    for (const item of dayItems) addonTotal += calcItemPrice(item);
+  }
+  return { addonTotal, packageValue: currentGuest.pkg ? currentGuest.pkg.value : 0 };
+}
+
+function countAddons() {
+  let n = 0;
+  for (const dayItems of Object.values(plan)) {
+    for (const item of dayItems) if (!item.isIncluded) n++;
+  }
+  return n;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function imgError(el) {
+  const fb = el.getAttribute('data-fallback');
+  if (fb && el.src !== fb) { el.src = fb; }
+}
+
+function formatAUD(n) {
+  return 'A$' + n.toLocaleString('en-AU');
+}
+
+// ═══════════════════════════════════════════════
+// WELCOME SCREEN
+// ═══════════════════════════════════════════════
+function initWelcome() {
+  const wrap = document.getElementById('welcome-cards');
+  wrap.innerHTML = GUESTS.map((g, i) => `
+    <div class="guest-card-select" onclick="loadGuest(${i})">
+      <div class="gc-label">Reservation</div>
+      <div class="gc-name">${g.name}</div>
+      <div class="gc-detail">${g.detail}</div>
+      <div class="gc-package">${g.pkg ? '✦ ' + g.pkg.name : 'Room only'}</div>
+    </div>
+  `).join('');
+}
+
+function loadGuest(idx) {
+  currentGuest = GUESTS[idx];
+  plan = {};
+
+  // Pre-load included package items
+  if (currentGuest.pkg) {
+    currentGuest.pkg.includes.forEach(inc => {
+      const dayIdx = inc.suggestedDay;
+      if (!plan[dayIdx]) plan[dayIdx] = [];
+      plan[dayIdx].push({ actId: inc.actId, time: null, guests: 1, isIncluded: true, note: inc.note });
+    });
+  }
+
+  // Dismiss welcome
+  const ws = document.getElementById('welcome-screen');
+  ws.classList.add('exit');
+  setTimeout(() => { ws.style.display = 'none'; }, 650);
+
+  // Show app
+  document.getElementById('app').style.display = 'block';
+
+  // Fill nav
+  document.getElementById('nav-name').textContent = currentGuest.name;
+  document.getElementById('nav-detail').textContent = currentGuest.detail;
+
+  // Package hero
+  if (currentGuest.pkg) {
+    const ph = document.getElementById('package-hero');
+    ph.style.display = 'block';
+    document.getElementById('ph-title').textContent = currentGuest.pkg.name;
+    document.getElementById('ph-desc').textContent = currentGuest.pkg.desc;
+    const incHtml = currentGuest.pkg.includes.map(inc => {
+      const isHighlight = inc.highlight;
+      return `<span class="ph-item${isHighlight ? ' highlight' : ''}">${inc.name}</span>`;
+    }).join('');
+    document.getElementById('ph-includes').innerHTML =
+      `<span class="ph-item highlight">All dining & premium beverages</span>
+       <span class="ph-item highlight">Return airport transfers</span>
+       ${incHtml}`;
+  }
+
+  activeDay = 0;
+  renderDayTabs();
+  renderItinerary();
+  renderCatalog();
+}
+
+// ═══════════════════════════════════════════════
+// DAY TABS
+// ═══════════════════════════════════════════════
+function renderDayTabs() {
+  const labels = getDayLabels();
+  document.getElementById('dayTabs').innerHTML = labels.map((l, i) => `
+    <button class="day-tab${i === activeDay ? ' active' : ''}" onclick="switchDay(${i})">${l.full}</button>
+  `).join('');
+}
+
+function switchDay(i) {
+  activeDay = i;
+  renderDayTabs();
+  renderItinerary();
+}
+
+// ═══════════════════════════════════════════════
+// ITINERARY
+// ═══════════════════════════════════════════════
+function renderItinerary() {
+  const items = plan[activeDay] || [];
+  const container = document.getElementById('itineraryBody');
+
+  if (items.length === 0) {
+    container.innerHTML = `<div class="itinerary-empty">No experiences added yet — browse below to build your day.</div>`;
+    return;
+  }
+
+  container.innerHTML = items.map((item, i) => {
+    const act = getActivity(item.actId);
+    if (!act) return '';
+    const price = calcItemPrice(item);
+    const priceStr = item.isIncluded ? '<span class="itin-price free">Included</span>' : `<span class="itin-price">${formatAUD(price)}</span>`;
+    const badge = item.isIncluded
+      ? `<span class="itin-badge inc">Included in ${currentGuest.pkg ? currentGuest.pkg.name : 'package'}</span>`
+      : `<span class="itin-badge addon">Add-on</span>`;
+    const timeBtn = item.time
+      ? `<button class="itin-time-btn" onclick="changeTime(${activeDay},${i})">${item.time}</button>`
+      : `<button class="itin-time-btn" onclick="changeTime(${activeDay},${i})">Set a time</button>`;
+    const noteStr = item.note ? ` · ${item.note}` : '';
+    const guestCtrl = (!item.isIncluded && act.perPerson) ? `
+      <div class="itin-guests-ctrl">
+        <button onclick="adjustGuests(${activeDay},${i},-1)">−</button>
+        <span>${item.guests || 1} guest${(item.guests||1)>1?'s':''}</span>
+        <button onclick="adjustGuests(${activeDay},${i},1)">+</button>
+      </div>` : '';
+    const removeBtn = item.isIncluded ? '' : `<button class="itin-remove" onclick="removeItem(${activeDay},${i})" title="Remove">×</button>`;
+
+    return `
+      <div class="itin-item${item.isIncluded ? ' included' : ''}" data-day="${activeDay}" data-idx="${i}"
+           draggable="true" ondragstart="dragStart(event,${i})" ondragover="dragOver(event,${i})" ondrop="dragDrop(event,${i})" ondragleave="dragLeave(event)">
+        <img class="itin-img" src="${act.img}" data-fallback="${act.fallbackImg || act.img}" onerror="imgError(this)" alt="${act.title}">
+        <div class="itin-info">
+          <div class="itin-title">${act.title}</div>
+          <div class="itin-meta">${act.duration}${noteStr} · ${timeBtn}</div>
+          ${badge}
+          ${guestCtrl}
+        </div>
+        ${priceStr}
+        ${removeBtn}
+      </div>`;
+  }).join('');
+
+  updateFolioBtn();
+}
+
+function removeItem(dayIdx, itemIdx) {
+  plan[dayIdx].splice(itemIdx, 1);
+  renderItinerary();
+  showToast('Experience removed');
+}
+
+function adjustGuests(dayIdx, itemIdx, delta) {
+  const item = plan[dayIdx][itemIdx];
+  item.guests = Math.max(1, (item.guests || 1) + delta);
+  renderItinerary();
+}
+
+function changeTime(dayIdx, itemIdx) {
+  const item = plan[dayIdx][itemIdx];
+  const act = getActivity(item.actId);
+  if (!act || !act.times) return;
+  openDetail(act.id, dayIdx, itemIdx);
+}
+
+function updateFolioBtn() {
+  const btn = document.getElementById('folio-btn');
+  if (!btn) return;
+  const n = countAddons();
+  const { addonTotal } = calcTotals();
+  if (n > 0) {
+    btn.textContent = `View Folio · ${formatAUD(addonTotal)} →`;
+    btn.classList.add('has-items');
+  } else {
+    btn.textContent = 'View Folio →';
+    btn.classList.remove('has-items');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// DRAG AND DROP
+// ═══════════════════════════════════════════════
+let dragSrcIdx = null;
+function dragStart(e, idx) { dragSrcIdx = idx; e.currentTarget.classList.add('dragging'); }
+function dragOver(e, idx) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function dragDrop(e, idx) {
+  e.currentTarget.classList.remove('drag-over');
+  e.currentTarget.classList.remove('dragging');
+  if (dragSrcIdx === null || dragSrcIdx === idx) { dragSrcIdx = null; return; }
+  const items = plan[activeDay] || [];
+  const moved = items.splice(dragSrcIdx, 1)[0];
+  items.splice(idx, 0, moved);
+  plan[activeDay] = items;
+  dragSrcIdx = null;
+  renderItinerary();
+}
+
+// ═══════════════════════════════════════════════
+// CATALOG
+// ═══════════════════════════════════════════════
+function renderCatalog() {
+  // Filters
+  document.getElementById('catFilters').innerHTML = CATEGORIES.map(c => `
+    <button class="cat-filter${activeCatFilter === c ? ' active' : ''}" onclick="setCatFilter('${c}')">${c}</button>
+  `).join('');
+
+  // Cards
+  const filtered = activeCatFilter === 'All' ? ACTIVITIES : ACTIVITIES.filter(a => a.cat === activeCatFilter);
+  document.getElementById('activityGrid').innerHTML = filtered.map(act => {
+    const isSig = act.signature;
+    const priceLabel = act.price === 0 ? '<span class="ac-price free">Signature · Included</span>' : `<span class="ac-price">${formatAUD(act.price)}${act.perPerson ? ' pp' : ''}</span>`;
+    return `
+      <div class="activity-card${isSig ? ' signature-included' : ''}" onclick="openDetail('${act.id}')">
+        <div class="ac-img-wrap">
+          <img src="${act.img}" data-fallback="${act.fallbackImg || act.img}" onerror="imgError(this)" alt="${act.title}" loading="lazy">
+          <div class="ac-badge-float${isSig ? ' inc' : ''}">${act.cat}</div>
+          <div class="ac-emoji">${act.emoji}</div>
+        </div>
+        <div class="ac-body">
+          <div class="ac-title">${act.title}</div>
+          <div class="ac-desc">${act.desc}</div>
+          <div class="ac-footer">
+            <span class="ac-meta">${act.duration} · ${act.best}</span>
+            ${priceLabel}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function setCatFilter(cat) {
+  activeCatFilter = cat;
+  renderCatalog();
+}
+
+// ═══════════════════════════════════════════════
+// DETAIL MODAL
+// ═══════════════════════════════════════════════
+let modalState = { selectedDay: null, selectedTime: null, guests: 1, editIdx: null };
+
+function openDetail(actId, editDayIdx, editItemIdx) {
+  const act = ACTIVITIES.find(a => a.id === actId);
+  if (!act) return;
+
+  modalState.selectedDay = activeDay;
+  modalState.selectedTime = null;
+  modalState.guests = 1;
+  modalState.editIdx = (editItemIdx !== undefined) ? editItemIdx : null;
+  modalState.actId = actId;
+
+  // If editing an existing item, pre-fill
+  if (modalState.editIdx !== null) {
+    const item = plan[editDayIdx][editItemIdx];
+    modalState.selectedDay = editDayIdx;
+    modalState.selectedTime = item.time;
+    modalState.guests = item.guests || 1;
+  }
+
+  const labels = getDayLabels();
+  const isPackageIncluded = currentGuest.pkg && currentGuest.pkg.includes.some(inc => inc.actId === actId);
+  const alreadyOnDay = (plan[activeDay] || []).some(item => item.actId === actId);
+  const isEditing = modalState.editIdx !== null;
+
+  const timeBtns = act.times.map(t => `
+    <button class="time-opt${modalState.selectedTime === t ? ' active' : ''}" onclick="selectTime('${t}')">${t}</button>
+  `).join('');
+
+  const dayBtns = labels.map((l, i) => `
+    <button class="modal-date-btn${modalState.selectedDay === i ? ' active' : ''}" onclick="selectDay(${i})">${l.full}</button>
+  `).join('');
+
+  const guestLine = act.perPerson ? `
+    <div class="modal-section-label">Number of guests</div>
+    <div class="modal-guests">
+      <label>Guests</label>
+      <div class="guest-stepper">
+        <button onclick="adjustModalGuests(-1)">−</button>
+        <span id="modal-guest-count">${modalState.guests}</span>
+        <button onclick="adjustModalGuests(1)">+</button>
+      </div>
+    </div>` : '';
+
+  const priceNote = act.price === 0
+    ? `<p style="font-size:13px;color:var(--included);margin-bottom:20px;">✓ Included in your ${currentGuest.pkg ? currentGuest.pkg.name : 'package'}</p>`
+    : `<p style="font-size:13px;color:var(--gold);font-weight:500;margin-bottom:20px;">${formatAUD(act.price)}${act.perPerson ? ' per person' : ' per booking'}</p>`;
+
+  let addBtnText = isEditing ? 'Update time' : (alreadyOnDay ? 'Already on this day' : `Add to Day ${activeDay + 1}`);
+  let addBtnDisabled = (!isEditing && alreadyOnDay) ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : '';
+
+  document.getElementById('detail-box').innerHTML = `
+    <img class="modal-img" src="${act.img}" data-fallback="${act.fallbackImg || act.img}" onerror="imgError(this)" alt="${act.title}">
+    <div class="modal-content">
+      <div class="modal-badge">${act.cat} · ${act.duration} · Best: ${act.best}</div>
+      <div class="modal-title">${act.title}</div>
+      <div class="modal-meta">${act.emoji} ${act.duration}</div>
+      <div class="modal-desc">${act.longDesc}</div>
+      ${priceNote}
+      <div class="modal-section-label">Choose a day</div>
+      <div class="modal-date-picker">${dayBtns}</div>
+      <div class="modal-section-label">Preferred time</div>
+      <div class="modal-time-picker">${timeBtns}</div>
+      ${guestLine}
+      <div class="modal-actions">
+        <button class="btn-add-itin${isPackageIncluded ? ' included-act' : ''}" onclick="addToItinerary('${actId}')" ${addBtnDisabled}>${addBtnText}</button>
+        <button class="btn-close-modal" onclick="closeDetail()">Close</button>
+      </div>
+    </div>`;
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function closeDetail() { document.getElementById('detail-modal').classList.remove('open'); }
+
+function selectTime(t) {
+  modalState.selectedTime = t;
+  document.querySelectorAll('.time-opt').forEach(el => {
+    el.classList.toggle('active', el.textContent === t);
+  });
+}
+
+function selectDay(i) {
+  modalState.selectedDay = i;
+  document.querySelectorAll('.modal-date-btn').forEach((el, idx) => {
+    el.classList.toggle('active', idx === i);
+  });
+  // Refresh add button state
+  const actId = modalState.actId;
+  const alreadyOnDay = (plan[i] || []).some(item => item.actId === actId);
+  const btn = document.querySelector('.btn-add-itin');
+  if (btn) {
+    if (alreadyOnDay && modalState.editIdx === null) {
+      btn.disabled = true; btn.style.opacity = '0.5'; btn.textContent = 'Already on this day';
+    } else {
+      btn.disabled = false; btn.style.opacity = '1'; btn.textContent = `Add to Day ${i + 1}`;
+    }
+  }
+}
+
+function adjustModalGuests(delta) {
+  modalState.guests = Math.max(1, modalState.guests + delta);
+  const el = document.getElementById('modal-guest-count');
+  if (el) el.textContent = modalState.guests;
+}
+
+function addToItinerary(actId) {
+  const act = ACTIVITIES.find(a => a.id === actId);
+  if (!act) return;
+  const day = modalState.selectedDay;
+  if (!plan[day]) plan[day] = [];
+
+  if (modalState.editIdx !== null) {
+    // Update existing item time
+    plan[day][modalState.editIdx].time = modalState.selectedTime;
+    plan[day][modalState.editIdx].guests = modalState.guests;
+    showToast('Updated ✓');
+  } else {
+    plan[day].push({ actId, time: modalState.selectedTime, guests: modalState.guests, isIncluded: false });
+    showToast(`${act.title} added to Day ${day + 1} ✓`);
+  }
+
+  closeDetail();
+  if (day === activeDay) {
+    renderItinerary();
+  }
+  updateFolioBtn();
+}
+
+// ═══════════════════════════════════════════════
+// FOLIO MODAL
+// ═══════════════════════════════════════════════
+function openFolio() {
+  const labels = getDayLabels();
+  const { addonTotal } = calcTotals();
+  const pkg = currentGuest.pkg;
+
+  let rows = '';
+  let hasContent = false;
+
+  labels.forEach((label, dayIdx) => {
+    const items = plan[dayIdx] || [];
+    if (items.length === 0) return;
+    hasContent = true;
+    rows += `<div class="folio-day-header">${label.short}<span class="folio-day-date">${label.date.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'long'})}</span></div>`;
+    items.forEach(item => {
+      const act = getActivity(item.actId);
+      if (!act) return;
+      const price = calcItemPrice(item);
+      const priceStr = item.isIncluded ? '<span class="folio-item-price free">Included</span>' : `<span class="folio-item-price">${formatAUD(price)}</span>`;
+      const detail = [item.time, item.guests > 1 ? `${item.guests} guests` : ''].filter(Boolean).join(' · ');
+      rows += `
+        <div class="folio-item">
+          <img class="folio-item-img" src="${act.img}" data-fallback="${act.fallbackImg||act.img}" onerror="imgError(this)" alt="${act.title}">
+          <div class="folio-item-info">
+            <div class="folio-item-name">${act.title}</div>
+            <div class="folio-item-detail">${detail || act.duration}</div>
+          </div>
+          ${priceStr}
+        </div>`;
+    });
+  });
+
+  if (!hasContent) {
+    rows = `<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;">Your itinerary is empty — add some experiences below.</div>`;
+  }
+
+  const pkgLine = pkg ? `<div class="folio-total-row"><span>${pkg.name} (dining, beverages, transfers & guided experiences)</span><span style="color:var(--included)">Included</span></div>` : '';
+
+  document.getElementById('folio-box').innerHTML = `
+    <div class="folio-header">
+      <div class="folio-title">Your Itinerary</div>
+      <button class="folio-close" onclick="closeFolio()">×</button>
+    </div>
+    <div class="folio-body">
+      ${rows}
+      <div class="folio-totals">
+        ${pkgLine}
+        ${addonTotal > 0 ? `<div class="folio-total-row"><span>Optional experiences</span><span>${formatAUD(addonTotal)}</span></div>` : ''}
+        <div class="folio-total-row grand"><span>Total additional charges</span><span>${addonTotal > 0 ? formatAUD(addonTotal) : 'Nil'}</span></div>
+      </div>
+    </div>
+    <div class="folio-footer">
+      <button class="btn-folio-edit" onclick="closeFolio()">Continue editing</button>
+      <button class="btn-folio-send" onclick="sendFolio()">Send to concierge →</button>
+    </div>`;
+
+  document.getElementById('folio-modal').classList.add('open');
+}
+
+function closeFolio() { document.getElementById('folio-modal').classList.remove('open'); }
+
+function sendFolio() {
+  const ref = 'SOL-' + Math.floor(1000 + Math.random() * 9000);
+  document.getElementById('folio-box').innerHTML = `
+    <div class="success-state">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Received</div>
+      <p class="success-msg">Your preferences have been sent to the Southern Ocean Lodge concierge team. We'll confirm all arrangements by email within 24 hours of your arrival date.</p>
+      <div class="success-ref">Reference: ${ref}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+initWelcome();
+</script>
+</body>
+</html>

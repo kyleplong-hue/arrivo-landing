@@ -31,6 +31,73 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── PIN GATE ── */
+#pin-gate {
+  position: fixed; inset: 0; z-index: 600;
+  background: #0F1E18;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px;
+  transition: opacity .5s ease;
+}
+#pin-gate::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(11,74,92,0.25) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 60%, rgba(155,125,69,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+#pin-gate.exit { opacity: 0; pointer-events: none; }
+.pin-eyebrow {
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(239,235,227,0.3); margin-bottom: 10px;
+  position: relative; z-index: 1;
+}
+.pin-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; letter-spacing: 7px; text-transform: uppercase;
+  color: rgba(239,235,227,0.65); margin-bottom: 48px;
+  position: relative; z-index: 1;
+}
+.pin-label {
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(239,235,227,0.4); margin-bottom: 24px;
+  position: relative; z-index: 1;
+}
+.pin-dots {
+  display: flex; gap: 16px; margin-bottom: 32px;
+  position: relative; z-index: 1;
+}
+.pin-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(239,235,227,0.25);
+  background: transparent;
+  transition: all .2s;
+}
+.pin-dot.filled {
+  background: #9B7D45;
+  border-color: #9B7D45;
+}
+.pin-keypad {
+  display: grid; grid-template-columns: repeat(3, 64px);
+  gap: 10px; position: relative; z-index: 1;
+}
+.pin-key {
+  height: 56px; background: rgba(239,235,227,0.04);
+  border: 1px solid rgba(239,235,227,0.1);
+  color: var(--bone, #EFEBE3); font-family: 'DM Sans', sans-serif;
+  font-size: 20px; font-weight: 300; cursor: pointer;
+  border-radius: 4px; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.pin-key:hover { background: rgba(239,235,227,0.09); border-color: rgba(239,235,227,0.25); }
+.pin-key:active { transform: scale(.94); }
+.pin-key.del { font-size: 16px; }
+.pin-error {
+  font-size: 12px; color: #C0706A; letter-spacing: 1px;
+  margin-top: 16px; position: relative; z-index: 1;
+  min-height: 18px; text-align: center;
+}
+
 /* ── WELCOME SCREEN ── */
 #welcome-screen {
   position: fixed; inset: 0; z-index: 500;
@@ -378,6 +445,34 @@ body {
 </head>
 <body>
 
+<!-- ═══ PIN GATE ═══ -->
+<div id="pin-gate">
+  <div class="pin-eyebrow">Kangaroo Island · South Australia</div>
+  <div class="pin-logo">Southern Ocean Lodge</div>
+  <div class="pin-label">Enter access code</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-keypad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key del" onclick="pinDel()">⌫</button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key" style="opacity:0;pointer-events:none"></button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+</div>
+
 <!-- ═══ WELCOME ═══ -->
 <div id="welcome-screen">
   <div class="welcome-eyebrow">Kangaroo Island · South Australia</div>
@@ -437,6 +532,56 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════
+// PIN GATE
+// ═══════════════════════════════════════════════
+(function(){
+  const CORRECT = '5678';
+  let entered = '';
+
+  function updateDots(){
+    for(let i=0;i<4;i++){
+      const d = document.getElementById('pd'+i);
+      d.classList.toggle('filled', i < entered.length);
+    }
+  }
+
+  window.pinKey = function(k){
+    if(entered.length >= 4) return;
+    entered += k;
+    updateDots();
+    document.getElementById('pin-error').textContent = '';
+    if(entered.length === 4){
+      if(entered === CORRECT){
+        const gate = document.getElementById('pin-gate');
+        gate.classList.add('exit');
+        setTimeout(()=>{ gate.style.display='none'; }, 520);
+      } else {
+        setTimeout(()=>{
+          entered = '';
+          updateDots();
+          document.getElementById('pin-error').textContent = 'Incorrect code';
+        }, 300);
+      }
+    }
+  };
+
+  window.pinDel = function(){
+    if(entered.length > 0){
+      entered = entered.slice(0,-1);
+      updateDots();
+      document.getElementById('pin-error').textContent = '';
+    }
+  };
+
+  // also handle physical keyboard
+  document.addEventListener('keydown', function(e){
+    if(document.getElementById('pin-gate').style.display === 'none') return;
+    if(e.key >= '0' && e.key <= '9') pinKey(e.key);
+    else if(e.key === 'Backspace') pinDel();
+  });
+})();
+
 // ═══════════════════════════════════════════════
 // SOUTHERN OCEAN LODGE — DATA
 // ═══════════════════════════════════════════════
@@ -991,7 +1136,7 @@ function openDetail(actId, editDayIdx, editItemIdx) {
   `).join('');
 
   const dayBtns = labels.map((l, i) => `
-    <button class="modal-date-btn${modalState.selectedDay === i ? ' active' : ''}" onclick="selectDay(${i})">${l.full}</button>
+    <button class="modal-date-btn${modalState.selectedDay === i ? ' active' : ''}" onclick="selectDay(${i})">${l.date.toLocaleDateString('en-AU',{month:'short'})} ${l.date.getDate()}</button>
   `).join('');
 
   const guestLine = act.perPerson ? `

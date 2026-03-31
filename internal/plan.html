@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Arrivable — Positioning & Rollout Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bone:#EFEBE3;--bone-dark:#E5DDD1;--ink:#1C1510;--ink-soft:#382E26;
+  --muted:#8C7D6E;--gold:#9B7D45;--gold-light:#C0A06B;--ocean:#0B4A5C;
+  --line:rgba(28,21,16,0.1);--green:#1D5940;--red:#8B3A3A;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;font-weight:300;background:var(--bone);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{background:var(--bone);border-bottom:1px solid var(--line);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;letter-spacing:1px}
+.nav-logo span{color:var(--gold)}
+.nav-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+
+/* LAYOUT */
+.page{max-width:820px;margin:0 auto;padding:60px 40px 100px}
+
+/* HEADER */
+.doc-header{margin-bottom:60px;padding-bottom:32px;border-bottom:1px solid var(--line)}
+.doc-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.doc-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,42px);font-weight:400;line-height:1.2;margin-bottom:16px}
+.doc-date{font-size:12px;color:var(--muted)}
+
+/* SECTIONS */
+h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;margin:52px 0 16px;padding-top:52px;border-top:1px solid var(--line);color:var(--ink)}
+h2:first-of-type{margin-top:0;padding-top:0;border-top:none}
+h3{font-size:14px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--gold);margin:32px 0 10px}
+h4{font-size:14px;font-weight:500;margin:24px 0 8px;color:var(--ink-soft)}
+p{margin-bottom:14px;font-size:15px;color:var(--ink-soft)}
+ul,ol{padding-left:22px;margin-bottom:14px}
+li{font-size:15px;color:var(--ink-soft);margin-bottom:5px}
+strong{font-weight:500;color:var(--ink)}
+
+/* CALLOUT */
+.callout{background:#F5F0E6;border-left:3px solid var(--gold);padding:16px 20px;border-radius:0 6px 6px 0;margin:20px 0}
+.callout p{margin:0;font-size:14px}
+
+/* PHASE BADGE */
+.phase{display:inline-block;background:var(--ink);color:var(--bone);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:3px;margin-bottom:8px}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}
+th{text-align:left;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:500;padding:8px 12px;border-bottom:2px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.high{color:var(--red);font-weight:500}
+td.good{color:var(--green);font-weight:500}
+
+/* EMAIL TEMPLATE */
+.email-block{background:#fff;border:1px solid var(--line);border-radius:8px;padding:24px 28px;margin:16px 0}
+.email-subject{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.email-subject span{color:var(--ink);font-weight:500;font-style:italic}
+.email-body{font-size:14px;color:var(--ink-soft);line-height:1.7;white-space:pre-wrap}
+
+/* CHECKLIST */
+.checklist{list-style:none;padding:0}
+.checklist li{padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;display:flex;align-items:flex-start;gap:10px}
+.checklist li:last-child{border-bottom:none}
+.checklist li::before{content:'□';color:var(--gold);font-size:16px;line-height:1;flex-shrink:0}
+
+/* SPRINT TABLE */
+.sprint td:first-child{font-weight:500;color:var(--ink);white-space:nowrap}
+
+/* SEGMENT CARD */
+.seg-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:24px;margin-bottom:16px}
+.seg-title{font-size:13px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ocean);margin-bottom:4px}
+.seg-problem{font-size:12px;color:var(--muted);margin-bottom:14px;font-style:italic}
+.seg-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+.seg-copy{font-size:14px;color:var(--ink-soft);margin:0}
+
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--line);margin:40px 0}
+
+/* FOOTER */
+footer{text-align:center;padding:40px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+footer a{color:var(--gold);text-decoration:none}
+
+@media(max-width:600px){
+  .page{padding:40px 20px 80px}
+  nav{padding:14px 20px}
+  h2{font-size:20px}
+  table{font-size:12px}
+  td,th{padding:8px 8px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Arri<span>v</span>able</div>
+  <div class="nav-tag">Internal — Positioning & Plan</div>
+</nav>
+
+<div class="page">
+
+  <div class="doc-header">
+    <div class="doc-eyebrow">Working Document</div>
+    <div class="doc-title">Arrivable — Positioning &amp; Rollout Plan</div>
+    <div class="doc-date">March 2026 · Kyle Long</div>
+  </div>
+
+  <!-- MASTER POSITIONING -->
+  <h2>Core Positioning</h2>
+
+  <div class="callout">
+    <p><strong>Master headline:</strong> "Arrivable delivers branded, personalized itineraries for every guest—turning empty travel time into seamless, high-value experiences."</p>
+  </div>
+
+  <!-- SEGMENTS -->
+  <h2>Segment Positioning</h2>
+
+  <div class="seg-card">
+    <div class="seg-title">1. Cruise Ship Companies</div>
+    <div class="seg-problem">Guests constantly ask "what should I do here?" across multiple ports → fragmented, repetitive burden on staff.</div>
+    <div class="seg-label">Long</div>
+    <p class="seg-copy">Arrivable gives every cruise guest a personalized, branded itinerary for every port—before they board, while they're docked, and after they disembark—so you reduce onboard questions and increase excursion and partner revenue.</p>
+    <div class="seg-label">Short</div>
+    <p class="seg-copy">We turn every port into a curated, personalized experience for your guests—without adding work for your crew.</p>
+  </div>
+
+  <div class="seg-card">
+    <div class="seg-title">2. Hotels &amp; Resorts</div>
+    <div class="seg-problem">Dead time (pre-check-in, gaps in schedule), underutilized amenities, repetitive concierge load.</div>
+    <div class="seg-label">Long</div>
+    <p class="seg-copy">Arrivable gives your guests a personalized daily itinerary—from the moment they land to the moment they leave—so they spend more, do more, and enjoy their stay more.</p>
+    <div class="seg-label">Short</div>
+    <p class="seg-copy">We turn time before check-in into a fully planned stay—without adding pressure to your concierge team.</p>
+  </div>
+
+  <div class="seg-card">
+    <div class="seg-title">3. Luxury Rentals</div>
+    <div class="seg-problem">Guests want guidance, hosts don't scale, experience quality impacts reviews.</div>
+    <div class="seg-label">Long</div>
+    <p class="seg-copy">Arrivable gives every guest a curated, luxury itinerary for their stay—so your luxury rental feels more like a five-star hotel concierge experience and earns better reviews.</p>
+    <div class="seg-label">Short</div>
+    <p class="seg-copy">No more "what should we do?". Arrivable creates personalized itineraries for every guest automatically.</p>
+  </div>
+
+  <div class="seg-card">
+    <div class="seg-title">4. Executive Travel / Luxury Tour Operators</div>
+    <div class="seg-problem">Gaps before/after tours, brand experience breaks, manual planning overhead.</div>
+    <div class="seg-label">Long</div>
+    <p class="seg-copy">Arrivable extends your brand beyond the tour—giving clients curated, on-brand itineraries before and after their trip, from the moment they arrive.</p>
+    <div class="seg-label">Short</div>
+    <p class="seg-copy">Your clients never feel "on their own"—Arrivable fills every gap in their journey with curated, personalized experiences.</p>
+  </div>
+
+  <!-- CURRENT STATE -->
+  <h2>Current State</h2>
+
+  <ul>
+    <li><strong>Product:</strong> Static HTML demos — SOL (PIN-gated), Amanpulo, Montepulciano, Istanbul, Ponant</li>
+    <li><strong>Brand:</strong> "Arrivable" — live at arrivable.io, landing page live, visual identity established</li>
+    <li><strong>Sales:</strong> Zero outreach sent. One warm contact (SOL / Hayley). Demo ready.</li>
+    <li><strong>Data:</strong> No customer proof points yet</li>
+    <li><strong>Team:</strong> Solo (Kyle)</li>
+  </ul>
+
+  <!-- PHASE 1 -->
+  <h2>Phase 1 — Foundation <span style="font-family:'DM Sans';font-size:13px;font-weight:300;color:var(--muted)">(Weeks 1–2)</span></h2>
+
+  <h3>Brand Guide</h3>
+  <p>Visual identity is established in the SOL demo. Needs to be codified into a one-page reference PDF.</p>
+  <ul>
+    <li><strong>Palette:</strong> <code style="background:#f0ebe0;padding:1px 5px;border-radius:3px">#9B7D45</code> gold · <code style="background:#f0ebe0;padding:1px 5px;border-radius:3px">#0F1E18</code> dark · <code style="background:#f0ebe0;padding:1px 5px;border-radius:3px">#EFEBE3</code> bone</li>
+    <li><strong>Typography:</strong> Cormorant Garamond (headlines) · DM Sans (body)</li>
+    <li><strong>Voice:</strong> Calm authority. No startup energy. No AI hype. Luxury hospitality native.</li>
+    <li><strong>One-liner:</strong> "Arrivable turns the pre-arrival window into your highest-margin touchpoint."</li>
+    <li><strong>Tag:</strong> "The pre-arrival experience, done properly."</li>
+  </ul>
+
+  <h3>Tech Audit — Gaps vs Needs</h3>
+  <table>
+    <thead><tr><th>Layer</th><th>Current</th><th>Gap</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr><td>Demo</td><td>Static HTML, PIN-gated</td><td>Not configurable per-property without dev work</td><td>Medium</td></tr>
+      <tr><td>Hosting</td><td>Nginx on VPS</td><td>Fine for now</td><td class="good">Low</td></tr>
+      <tr><td>Domain</td><td>arrivable.io</td><td class="good">✓ Good</td><td>—</td></tr>
+      <tr><td>Forms / submissions</td><td>None</td><td>Guests can't actually submit to anyone</td><td class="high">High</td></tr>
+      <tr><td>Dashboard</td><td>None</td><td>Lodges can't see guest selections</td><td class="high">High</td></tr>
+      <tr><td>Auth</td><td>PIN only</td><td>No per-property login</td><td>Medium</td></tr>
+      <tr><td>Analytics</td><td>None</td><td>Can't track demo engagement</td><td>Medium</td></tr>
+      <tr><td>Email triggers</td><td>None</td><td>No automated pre-arrival send</td><td>Low (later)</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Immediate tech priorities:</h4>
+  <ul class="checklist">
+    <li>Wire up folio submission on SOL demo (Formspree/EmailJS — free, ~30 min)</li>
+    <li>Add Plausible analytics to arrivable.io + all demo pages ($9/mo)</li>
+    <li>Build one configurable demo template (JSON config file → populates HTML)</li>
+  </ul>
+
+  <h4>Medium-term (before scaling outreach):</h4>
+  <ul class="checklist">
+    <li>Simple lodge dashboard (Airtable or Notion embed) showing guest submissions</li>
+    <li>Booking confirmation → Arrivable link send flow (manual OK for first 3 pilots)</li>
+  </ul>
+
+  <h3>Marketing Materials</h3>
+  <h4>Must-haves (build now):</h4>
+  <ul class="checklist">
+    <li>One-pager PDF — problem, solution, demo screenshot, pilot offer, contact</li>
+    <li>Demo walk-through deck — 6 slides max</li>
+    <li>30-second screen-record of SOL demo (Loom) — for cold email follow-ups</li>
+  </ul>
+  <h4>Nice-to-have (after first 2 replies):</h4>
+  <ul class="checklist">
+    <li>Before/After email thread screenshots</li>
+    <li>Case study template ready for first pilot</li>
+  </ul>
+
+  <!-- PHASE 2 -->
+  <h2>Phase 2 — Warm Outreach <span style="font-family:'DM Sans';font-size:13px;font-weight:300;color:var(--muted)">(Weeks 2–3)</span></h2>
+
+  <h3>SOL / Hayley</h3>
+  <p><strong>Goal:</strong> Feedback + pilot agreement. Not a sale.</p>
+
+  <h4>Sequence:</h4>
+  <ol>
+    <li><strong>Email (this week)</strong> — brief, references rebuild journey, asks for feedback on the demo</li>
+    <li><strong>If reply:</strong> 20-min Zoom. Walk demo live. Pitch 90-day free pilot.</li>
+    <li><strong>If no reply in 5 days:</strong> Follow up with Loom screen-record link</li>
+    <li><strong>If pilot agreed:</strong> Document everything → becomes first case study</li>
+  </ol>
+
+  <h4>Pilot terms to offer:</h4>
+  <ul>
+    <li>Free 90-day pilot</li>
+    <li>Kyle manages setup and maintenance</li>
+    <li>Testimonial + reference property in exchange</li>
+    <li>Option to convert to paid after 90 days</li>
+  </ul>
+
+  <div class="email-block">
+    <div class="email-subject">Subject: <span>quick one</span></div>
+    <div class="email-body">Hey Hayley,
+
+The rebuild story has been incredible to watch — the Michelin Keys and World's 50 Best recognition are well deserved.
+
+I'm building a tool that lets guests explore and book their stay add-ons (dining, spa, experiences) before they arrive — curious if that's something you'd ever want to give feedback on?
+
+Kyle</div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <h2>Phase 3 — Cold Outreach <span style="font-family:'DM Sans';font-size:13px;font-weight:300;color:var(--muted)">(Weeks 3–6)</span></h2>
+
+  <h3>Target Tiers</h3>
+
+  <h4>Tier 1 — Luxury Lodges of Australia (cluster around SOL)</h4>
+  <p>Start with Baillie Lodges — same ownership as SOL, so a SOL pilot = internal social proof:</p>
+  <ul>
+    <li>Longitude 131° (Uluru)</li>
+    <li>Silky Oaks Lodge (Daintree)</li>
+    <li>The Louise (Barossa Valley)</li>
+    <li>Capella Lodge (Lord Howe Island)</li>
+    <li>Clayoquot Wilderness Lodge (BC, Canada — also Baillie)</li>
+  </ul>
+  <p>Then LLA members: Sal Salis · Bamurru Plains · El Questro · Spicers · Jackalope</p>
+
+  <h4>Tier 2 — NZ &amp; Pacific</h4>
+  <ul>
+    <li>Huka Lodge · Blanket Bay · Eagles Nest</li>
+  </ul>
+
+  <h4>Tier 3 — International high-value</h4>
+  <ul>
+    <li>Post Ranch Inn (Big Sur) · Brush Creek Ranch (Wyoming)</li>
+    <li>andBeyond (Africa) · Explora (Patagonia) · Six Senses boutiques</li>
+  </ul>
+
+  <h4>Tier 4 — Cruise / Expedition (later)</h4>
+  <ul>
+    <li>Ponant · Aurora Expeditions · Scenic Eclipse</li>
+  </ul>
+
+  <h3>Cold Email Playbook</h3>
+  <h4>Finding contacts:</h4>
+  <ul>
+    <li>LinkedIn: "[Property] + General Manager / Director of Guest Experience"</li>
+    <li>Hunter.io or Apollo.io (free tier) for email addresses</li>
+    <li>Luxury Lodges of Australia member directory for AU properties</li>
+  </ul>
+  <h4>Personalization hook (one per email):</h4>
+  <ul>
+    <li>Recent award or press mention</li>
+    <li>New room / wing / program launch</li>
+    <li>Hiring for guest experience roles (signals intent)</li>
+  </ul>
+  <p><strong>Cadence:</strong> 3 emails, 4–5 days apart</p>
+
+  <h3>Email Templates — Hotels &amp; Luxury Lodges</h3>
+
+  <div class="email-block">
+    <div class="email-subject">Email 1 — Subject: <span>pre-arrival upsells</span></div>
+    <div class="email-body">Hey [Name],
+
+[Property] keeps coming up as a reference point for what high-end wilderness hospitality actually looks like — the [specific differentiator] is genuinely different.
+
+One thing I hear from properties at your level: the highest-margin experiences — private dining, spa, guided tours — often go unbought not because guests don't want them, but because they're hard to discover before arrival.
+
+I built a tool called Arrivable that gives guests a pre-arrival portal to explore their stay, customise packages, and book add-ons. Your team fields fewer "what's included?" emails. Guests arrive having already said yes to the things that make the stay memorable.
+
+Worth a look?
+
+Kyle</div>
+  </div>
+
+  <div class="email-block">
+    <div class="email-subject">Email 2 (Day 4) — Subject: <span>what the numbers look like</span></div>
+    <div class="email-body">Quick follow-up on Arrivable.
+
+For a 20-suite property running 2–4 night stays, the pre-arrival window is the highest-leverage moment to increase revenue per guest — but most lodges are handling it over email, which means the best add-ons never get seen.
+
+Arrivable surfaces them in a clean, visual format that's on-brand and easy for guests to act on. The average lift in ancillary bookings (spa, dining, experiences) is significant — and staff email volume drops at the same time.
+
+Happy to show you what it would look like for [Property] specifically. 20 minutes?</div>
+  </div>
+
+  <div class="email-block">
+    <div class="email-subject">Email 3 (Day 10) — Subject: <span>closing the loop</span></div>
+    <div class="email-body">Last note from me, [Name].
+
+If now's not the right time to look at the pre-arrival experience, completely understood. Happy to revisit whenever it becomes relevant.
+
+Kyle</div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <h2>Phase 4 — Content &amp; Credibility <span style="font-family:'DM Sans';font-size:13px;font-weight:300;color:var(--muted)">(Ongoing from Week 3)</span></h2>
+
+  <h4>Quick wins:</h4>
+  <ul class="checklist">
+    <li>Screenshot the SOL demo → LinkedIn post as "what we're building"</li>
+    <li>LinkedIn post: "The pre-arrival email at a $2,000/night lodge is still a PDF. Here's what it should look like." + demo link</li>
+    <li>Document the pilot as it happens — metrics become the case study</li>
+  </ul>
+  <h4>Later:</h4>
+  <ul class="checklist">
+    <li>First pilot case study (Hayley/SOL ideally)</li>
+    <li>Video testimonial or written quote</li>
+    <li>Press release at 3 properties ("Arrivable launches with Southern Ocean Lodge, [X], [Y]")</li>
+  </ul>
+
+  <!-- PHASE 5 -->
+  <h2>Phase 5 — Pricing <span style="font-family:'DM Sans';font-size:13px;font-weight:300;color:var(--muted)">(Before 3rd outreach)</span></h2>
+
+  <table>
+    <thead><tr><th>Tier</th><th>Price</th><th>Includes</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Pilot</strong></td><td>Free (90 days)</td><td>1 property, testimonial in exchange</td></tr>
+      <tr><td><strong>Starter</strong></td><td>$499/mo</td><td>1 property, up to 50 guest submissions/mo, standard template</td></tr>
+      <tr><td><strong>Pro</strong></td><td>$999/mo</td><td>Custom branding, unlimited submissions, basic dashboard</td></tr>
+      <tr><td><strong>Enterprise</strong></td><td>Custom</td><td>Multi-property (e.g. Baillie Lodges group deal)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- SPRINT -->
+  <h2>6-Week Sprint</h2>
+
+  <table class="sprint">
+    <thead><tr><th>Week</th><th>Focus</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td>Week 1</td><td>Brand guide + one-pager PDF</td><td>PDF ready to attach</td></tr>
+      <tr><td>Week 1</td><td>Wire up folio form submission on SOL demo</td><td>Folio actually sends somewhere</td></tr>
+      <tr><td>Week 1</td><td>Add Plausible analytics to all demo pages</td><td>Know who's looking</td></tr>
+      <tr><td>Week 2</td><td>Send Hayley email</td><td>Warm outreach live</td></tr>
+      <tr><td>Week 2</td><td>Build Airtable outreach tracker</td><td>CRM ready</td></tr>
+      <tr><td>Week 3</td><td>Start cold outreach — Tier 1 (Baillie first)</td><td>5 emails/week</td></tr>
+      <tr><td>Week 3</td><td>Record SOL demo Loom walkthrough</td><td>Video ready for follow-ups</td></tr>
+      <tr><td>Week 4</td><td>Follow-up sequences running</td><td>First replies expected</td></tr>
+      <tr><td>Week 4</td><td>LinkedIn post — "what we're building"</td><td>Inbound interest</td></tr>
+      <tr><td>Weeks 5–6</td><td>Convert first pilot</td><td>SOL or Tier 1 property signed</td></tr>
+      <tr><td>Week 6</td><td>Start building case study doc</td><td>Proof for wave 2 outreach</td></tr>
+    </tbody>
+  </table>
+
+  <!-- NEXT ACTIONS -->
+  <h2>Immediate Next Actions</h2>
+
+  <ul class="checklist">
+    <li>Send Hayley email (draft above)</li>
+    <li>Wire up SOL demo folio submission (Formspree — free, 30 min)</li>
+    <li>Add Plausible to arrivable.io + demo pages</li>
+    <li>Create outreach tracker in Airtable or Notion</li>
+    <li>Pull GM contacts for: Longitude 131°, Silky Oaks, Capella Lodge, Huka Lodge</li>
+  </ul>
+
+</div>
+
+<footer>
+  <a href="https://arrivable.io">arrivable.io</a> · Internal working document · March 2026
+</footer>
+
+</body>
+</html>

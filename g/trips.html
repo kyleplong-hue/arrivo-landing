@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Molino Nobile — Day Trips</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C5A255;
+  --gold-light: #E8D5A3;
+  --cream: #F5F0E8;
+  --dark: #1A1714;
+  --dark-warm: #2A2520;
+  --dark-card: #221F1B;
+  --text-muted: #8A8279;
+  --wine: #722F37;
+  --teal: #2A7C6F;
+  --olive: #4A5A2C;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--dark);
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(26,23,20,0.97);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(197,162,85,0.15);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
+}
+.nav-brand { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--gold); }
+.nav-back {
+  display: none; align-items: center; gap: 6px;
+  background: transparent; border: none; color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer;
+  padding: 4px 0;
+}
+.nav-back:hover { color: var(--cream); }
+.nav-back.show { display: flex; }
+
+/* ── VIEWS ── */
+.view { display: none; position: relative; z-index: 1; }
+.view.active { display: block; }
+
+/* ══════════════════════ BROWSE ══════════════════════ */
+.browse-hero {
+  text-align: center; padding: 44px 20px 28px;
+  border-bottom: 1px solid rgba(197,162,85,0.12);
+}
+.eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.browse-hero h1 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 400; color: var(--cream); margin-bottom: 8px; line-height: 1.2; }
+.browse-hero p { font-size: 13px; color: var(--text-muted); font-weight: 300; }
+
+/* Filter strip */
+.filter-strip {
+  padding: 16px 20px 12px; display: flex; gap: 7px; flex-wrap: wrap;
+  justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.f-btn {
+  background: transparent;
+  border: 1px solid rgba(197,162,85,0.22);
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all .18s;
+}
+.f-btn:hover { border-color: var(--gold); color: var(--gold); }
+.f-btn.on { background: var(--gold); border-color: var(--gold); color: #1A1714; font-weight: 500; }
+
+/* CSS Grid — equal-height rows, 3 columns on mobile+ */
+.pin-grid {
+  padding: 16px 16px 50px; max-width: 1200px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media(min-width: 900px) { .pin-grid { grid-template-columns: repeat(4, 1fr); } }
+@media(max-width: 560px) { .pin-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+
+.pin-card {
+  background: var(--dark-card); border: 1px solid rgba(197,162,85,0.14);
+  border-radius: 14px; overflow: hidden; cursor: pointer;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+  position: relative; display: flex; flex-direction: column;
+}
+.pin-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(197,162,85,0.45);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.55);
+}
+.pin-card.hidden { display: none; }
+.pin-img { width: 100%; position: relative; overflow: hidden; background: #2A2018; aspect-ratio: 4/3; flex-shrink: 0; }
+.pin-img img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform .4s; }
+.pin-card:hover .pin-img img { transform: scale(1.05); }
+.pin-img-fb { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 44px; background: linear-gradient(160deg,#2A2018,#3A2E20); }
+.pin-dur {
+  position: absolute; bottom: 8px; right: 8px;
+  background: rgba(20,16,12,0.86); color: var(--gold);
+  font-size: 9px; letter-spacing: .5px; padding: 3px 9px; border-radius: 9px; font-weight: 500;
+}
+.pin-body { padding: 12px 13px 14px; flex: 1; display: flex; flex-direction: column; }
+.pin-title { font-family: 'Playfair Display', serif; font-size: 12px; color: var(--cream); margin-bottom: 4px; line-height: 1.3; }
+.pin-tagline { font-size: 10px; color: var(--text-muted); font-weight: 300; line-height: 1.4; margin-bottom: 6px; }
+.pin-tags { display: flex; flex-wrap: wrap; gap: 3px; }
+.pt { font-size: 8px; letter-spacing: .4px; text-transform: uppercase; padding: 2px 6px; border-radius: 7px; font-weight: 500; }
+.t-wine { background: rgba(114,47,55,.35); color: #E8A5A5; border: 1px solid rgba(114,47,55,.5); }
+.t-food { background: rgba(197,162,85,.1); color: var(--gold); border: 1px solid rgba(197,162,85,.22); }
+.t-hike { background: rgba(59,109,17,.22); color: #90C45A; border: 1px solid rgba(59,109,17,.38); }
+.t-family { background: rgba(52,85,162,.22); color: #89B4F0; border: 1px solid rgba(52,85,162,.38); }
+.t-cooking { background: rgba(185,78,19,.22); color: #F0A07A; border: 1px solid rgba(185,78,19,.38); }
+.t-culture { background: rgba(90,55,150,.22); color: #C090F5; border: 1px solid rgba(90,55,150,.38); }
+.t-romantic { background: rgba(160,40,80,.22); color: #F090B0; border: 1px solid rgba(160,40,80,.38); }
+.t-mix { background: rgba(50,50,50,.38); color: #B0A898; border: 1px solid rgba(120,120,110,.28); }
+.t-spa { background: rgba(0,120,130,.22); color: #7ED8E0; border: 1px solid rgba(0,120,130,.38); }
+.t-art { background: rgba(80,20,100,.28); color: #D090F0; border: 1px solid rgba(80,20,100,.42); }
+.t-cycling { background: rgba(10,80,60,.28); color: #60D0A0; border: 1px solid rgba(10,80,60,.42); }
+.no-results { text-align: center; padding: 50px 20px; color: #4A4038; font-family: 'Playfair Display', serif; font-style: italic; }
+
+/* ══════════════════════ ITINERARY VIEW ══════════════════════ */
+/* Exactly matches the Arrivo spec */
+.container { max-width: 520px; margin: 0 auto; padding: 0 20px 60px; position: relative; z-index: 1; }
+.header { padding: 36px 0 28px; text-align: center; }
+.header-eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+.header-title { font-family: 'Playfair Display', serif; font-size: 30px; line-height: 1.2; color: var(--cream); margin-bottom: 8px; }
+.header-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+.weather-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.weather { display: inline-flex; align-items: center; gap: 6px; background: var(--dark-warm); border: 1px solid rgba(197,162,85,0.2); border-radius: 20px; padding: 6px 12px; font-size: 11px; color: var(--gold-light); }
+
+/* Starting address pill (editable) */
+.start-address-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(197,162,85,0.06); border: 1px solid rgba(197,162,85,0.2);
+  border-radius: 10px; padding: 10px 14px; margin: 0 0 24px;
+}
+.start-icon { font-size: 14px; flex-shrink: 0; }
+.start-content { flex: 1; min-width: 0; }
+.start-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 2px; }
+.start-input {
+  background: transparent; border: none; color: var(--cream);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 300;
+  width: 100%; outline: none;
+}
+.start-input::placeholder { color: #4A4038; }
+
+.day-header { display: flex; align-items: center; gap: 14px; margin: 28px 0 20px; }
+.day-number { background: var(--gold); color: var(--dark); font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.day-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+.day-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--cream); }
+
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(to bottom, var(--gold), rgba(197,162,85,0.15)); }
+.stop { position: relative; margin-bottom: 28px; opacity: 0; transform: translateY(16px); animation: fadeUp 0.5s ease forwards; }
+.stop:nth-child(1) { animation-delay: .08s; }
+.stop:nth-child(2) { animation-delay: .16s; }
+.stop:nth-child(3) { animation-delay: .24s; }
+.stop:nth-child(4) { animation-delay: .32s; }
+.stop:nth-child(5) { animation-delay: .40s; }
+.stop:nth-child(6) { animation-delay: .48s; }
+.stop:nth-child(7) { animation-delay: .56s; }
+.stop:nth-child(8) { animation-delay: .64s; }
+.stop:nth-child(9) { animation-delay: .72s; }
+.stop:nth-child(10) { animation-delay: .80s; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.stop-dot { position: absolute; left: -24px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--dark-warm); border: 2px solid var(--gold); }
+.stop-dot.gold { background: var(--gold); }
+.stop-dot.teal { border-color: var(--teal); background: var(--teal); }
+.stop-dot.wine { border-color: var(--wine); background: var(--wine); }
+.stop-dot.olive { border-color: var(--olive); background: var(--olive); }
+
+.stop-time { font-size: 11px; letter-spacing: 1.5px; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+.stop-title { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--cream); line-height: 1.3; margin-bottom: 2px; }
+.stop-type { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+
+.stop-details { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 14px 16px; }
+.stop-details p { font-size: 13.5px; color: #B8B0A6; margin-bottom: 8px; line-height: 1.65; }
+.stop-details p:last-of-type { margin-bottom: 0; }
+.stop-address { font-size: 12px !important; color: var(--text-muted) !important; font-style: italic; }
+.stop-links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+.stop-link { font-size: 12px; color: var(--gold); text-decoration: none; border: 1px solid rgba(197,162,85,0.3); border-radius: 4px; padding: 4px 10px; transition: background .2s; }
+.stop-link:hover { background: rgba(197,162,85,0.1); }
+.stop-link.primary { background: var(--gold); color: var(--dark); border-color: var(--gold); font-weight: 500; }
+.stop-link.primary:hover { background: var(--gold-light); }
+
+/* Swap button — sits beside Maps link */
+.btn-swap-stop {
+  font-size: 11px; color: var(--text-muted);
+  background: transparent; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px; padding: 4px 9px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all .18s;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.btn-swap-stop:hover { border-color: rgba(197,162,85,0.35); color: var(--gold); }
+
+.tip { display: flex; gap: 8px; align-items: flex-start; background: rgba(197,162,85,0.07); border-left: 2px solid var(--gold); border-radius: 0 6px 6px 0; padding: 8px 12px; margin-top: 10px; font-size: 12px; color: var(--gold-light); line-height: 1.5; }
+.tip-icon { flex-shrink: 0; }
+
+.connector { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+.connector-line { flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+/* Full-day route button */
+.route-btn-wrap { padding: 8px 0 32px; }
+.btn-full-route {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 15px 20px;
+  background: #1A6B3C; border: none; border-radius: 12px;
+  color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; text-decoration: none; transition: all .2s;
+}
+.btn-full-route:hover { background: #145A32; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,107,60,0.4); }
+.maps-icon { font-size: 18px; }
+
+.footer { text-align: center; padding: 28px 0 0; border-top: 1px solid rgba(255,255,255,0.06); }
+.footer-emoji { font-size: 24px; margin-bottom: 8px; }
+.footer-text { font-family: 'Playfair Display', serif; font-style: italic; font-size: 15px; color: var(--text-muted); }
+
+/* ══════════════════════ SWAP DRAWER ══════════════════════ */
+.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.62); z-index: 90; display: none; }
+.backdrop.show { display: block; }
+
+.swap-drawer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--dark-warm); border-top: 1px solid rgba(197,162,85,0.28);
+  border-radius: 20px 20px 0 0; z-index: 100;
+  transform: translateY(100%); transition: transform .28s ease;
+  max-height: 72vh; display: flex; flex-direction: column;
+}
+.swap-drawer.open { transform: translateY(0); }
+.drawer-handle { width: 36px; height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 12px auto 0; flex-shrink: 0; }
+.drawer-header { padding: 12px 18px 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+.drawer-title { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--cream); }
+.drawer-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.btn-close-drawer { background: transparent; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; }
+.btn-close-drawer:hover { color: var(--cream); }
+.swap-options { overflow-y: auto; padding: 10px 14px 24px; flex: 1; }
+.swap-opt {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 10px; border-radius: 10px; cursor: pointer;
+  border: 1px solid transparent; margin-bottom: 6px; transition: all .18s;
+}
+.swap-opt:hover { background: rgba(197,162,85,0.06); border-color: rgba(197,162,85,0.2); }
+.swap-opt.current { border-color: rgba(197,162,85,0.35); background: rgba(197,162,85,0.05); }
+.swap-opt-img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #2A2018; flex-shrink: 0; }
+.swap-opt-img-fb { width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg,#2A2018,#3A2E20); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.swap-opt-info { flex: 1; min-width: 0; }
+.swap-opt-name { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--cream); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.swap-opt-meta { font-size: 11px; color: var(--text-muted); }
+.swap-opt-tags { display: flex; gap: 3px; margin-top: 3px; flex-wrap: wrap; }
+.swap-check { font-size: 16px; color: var(--gold); flex-shrink: 0; opacity: 0; }
+.swap-opt.current .swap-check { opacity: 1; }
+
+/* Admin view */
+.admin-wrap { max-width: 700px; margin: 0 auto; padding: 24px 20px 60px; position: relative; z-index: 1; }
+.admin-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.admin-h { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--cream); }
+.admin-hint { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.btn-new { background: var(--gold); border: none; color: #1A1714; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 9px 18px; border-radius: 18px; cursor: pointer; }
+.drag-list { display: flex; flex-direction: column; gap: 7px; }
+.drag-item { background: var(--dark-card); border: 1px solid rgba(197,162,85,0.12); border-radius: 10px; padding: 11px 13px; display: flex; align-items: center; gap: 10px; cursor: grab; user-select: none; transition: border-color .2s; }
+.drag-item:active { cursor: grabbing; }
+.drag-item.dragging { opacity: .3; }
+.drag-item.drag-over { border-color: var(--gold); }
+.dh { color: #4A4038; font-size: 15px; flex-shrink: 0; }
+.dthumb { width: 38px; height: 38px; border-radius: 7px; object-fit: cover; flex-shrink: 0; background: #2A2018; }
+.dthumb-fb { width: 38px; height: 38px; border-radius: 7px; background: #2A2018; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.di { flex: 1; min-width: 0; }
+.dn { font-size: 13px; color: var(--cream); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.dm { font-size: 10px; color: var(--text-muted); }
+.da { display: flex; gap: 5px; flex-shrink: 0; }
+.ba, .bd, .bt { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); font-size: 10px; padding: 4px 9px; border-radius: 6px; cursor: pointer; transition: all .18s; font-family: 'DM Sans', sans-serif; }
+.ba:hover { border-color: var(--gold); color: var(--gold); }
+.bd:hover { border-color: #E8A5A5; color: #E8A5A5; }
+.bt.on { border-color: #90C45A; color: #90C45A; }
+
+/* Edit modal */
+.edit-ov { position: fixed; inset: 0; background: rgba(8,6,4,.96); z-index: 200; display: none; overflow-y: auto; padding: 16px; }
+.edit-ov.open { display: block; }
+.edit-box { background: var(--dark-warm); border: 1px solid rgba(197,162,85,.22); border-radius: 16px; max-width: 520px; margin: 0 auto; padding: 22px; }
+.edit-box h3 { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--cream); margin-bottom: 16px; }
+.fg { margin-bottom: 11px; }
+.fl { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 4px; }
+.fi, .fta, .fsl { width: 100%; background: #1A1714; border: 1px solid rgba(197,162,85,.15); color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 8px 11px; border-radius: 7px; outline: none; transition: border-color .18s; }
+.fi:focus, .fta:focus, .fsl:focus { border-color: var(--gold); }
+.fta { resize: vertical; min-height: 60px; line-height: 1.5; }
+.fsl { cursor: pointer; } .fsl option { background: #1A1714; }
+.fr { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tcbs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tcb { display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 11px; color: var(--text-muted); }
+.tcb input { accent-color: var(--gold); }
+.photo-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; margin-top: 5px; }
+.popt { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 5px; cursor: pointer; border: 2px solid transparent; opacity: .6; transition: all .18s; }
+.popt:hover { opacity: 1; border-color: rgba(197,162,85,.5); }
+.popt.sel { border-color: var(--gold); opacity: 1; }
+.stops-edit-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.srow { background: #1A1714; border: 1px solid rgba(197,162,85,.1); border-radius: 7px; padding: 10px; }
+.srow-h { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.snum { font-size: 8px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+.brem { background: transparent; border: none; color: #5A5248; font-size: 12px; cursor: pointer; }
+.brem:hover { color: #E8A5A5; }
+.bas { background: transparent; border: 1px dashed rgba(197,162,85,.2); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 11px; padding: 7px; border-radius: 7px; cursor: pointer; width: 100%; margin-bottom: 11px; }
+.edit-acts { display: flex; gap: 8px; margin-top: 14px; }
+.bsv { background: var(--gold); border: none; color: #1A1714; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 10px 20px; border-radius: 16px; cursor: pointer; flex: 1; }
+.bcx { background: transparent; border: 1px solid rgba(255,255,255,.1); color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 10px 16px; border-radius: 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <div class="nav-brand">Molino Nobile</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="nav-back" id="navBack" onclick="showBrowse()">← All trips</button>
+    <button onclick="switchToAdmin()" style="background:transparent;border:1px solid rgba(197,162,85,0.2);color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 12px;border-radius:14px;cursor:pointer;" id="adminToggle">Edit</button>
+  </div>
+</div>
+
+<!-- ══ BROWSE VIEW ══ -->
+<div id="view-browse" class="view active">
+  <div class="browse-hero">
+    <div class="eyebrow">Val d'Orcia · Sant'Albino</div>
+    <h1>Day trips from the villa</h1>
+    <p>Tap any card to open the full itinerary</p>
+  </div>
+  <div class="filter-strip" id="filterStrip"></div>
+  <div class="pin-grid" id="pinGrid"></div>
+  <div class="no-results" id="noResults" style="display:none">No trips match this filter.</div>
+</div>
+
+<!-- ══ ITINERARY VIEW ══ -->
+<div id="view-itinerary" class="view">
+  <div class="container">
+    <!-- Header rendered by JS -->
+    <div id="itinHeader"></div>
+
+    <!-- Editable start address -->
+    <div class="start-address-pill" id="startPill">
+      <div class="start-icon">🏡</div>
+      <div class="start-content">
+        <div class="start-label">Starting from</div>
+        <input class="start-input" id="startAddr" value="Via Fontecornino 7a, Sant'Albino" placeholder="Your starting address...">
+      </div>
+    </div>
+
+    <!-- Day header + timeline rendered by JS -->
+    <div id="itinBody"></div>
+
+    <!-- Full route button -->
+    <div class="route-btn-wrap">
+      <a class="btn-full-route" id="routeBtn" href="#" target="_blank">
+        <span class="maps-icon">🗺️</span>
+        <span id="routeBtnText">Open full day route in Google Maps</span>
+      </a>
+    </div>
+
+    <!-- Footer rendered by JS -->
+    <div id="itinFooter"></div>
+  </div>
+</div>
+
+<!-- ══ ADMIN VIEW ══ -->
+<div id="view-admin" class="view">
+  <div class="admin-wrap">
+    <div class="admin-header-row">
+      <div>
+        <div class="admin-h">Manage day trips</div>
+        <div class="admin-hint">Drag to reorder · Edit · Toggle visibility</div>
+      </div>
+      <button class="btn-new" onclick="openEdit(null)">+ Add trip</button>
+    </div>
+    <div class="drag-list" id="dragList"></div>
+  </div>
+</div>
+
+<!-- Swap drawer -->
+<div class="backdrop" id="backdrop" onclick="closeSwap()"></div>
+<div class="swap-drawer" id="swapDrawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-title" id="drawerTitle">Swap this stop</div>
+      <div class="drawer-subtitle" id="drawerSubtitle">Choose a similar alternative</div>
+    </div>
+    <button class="btn-close-drawer" onclick="closeSwap()">✕</button>
+  </div>
+  <div class="swap-options" id="swapOptions"></div>
+</div>
+
+<!-- Edit modal -->
+<div class="edit-ov" id="editOv">
+  <div class="edit-box">
+    <h3 id="editH">Add trip</h3>
+    <div class="fr">
+      <div class="fg"><label class="fl">Emoji</label><input class="fi" id="f-emo" placeholder="🍷" maxlength="4"></div>
+      <div class="fg"><label class="fl">Duration</label><input class="fi" id="f-dur" placeholder="Full day"></div>
+    </div>
+    <div class="fg"><label class="fl">Title</label><input class="fi" id="f-tit"></div>
+    <div class="fg"><label class="fl">Tagline (card)</label><input class="fi" id="f-tag"></div>
+    <div class="fg"><label class="fl">Footer tagline</label><input class="fi" id="f-ftr" placeholder="Clever closing line for the itinerary..."></div>
+    <div class="fg"><label class="fl">Footer emojis</label><input class="fi" id="f-femo" placeholder="🍷🌅🏰"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Drive from villa</label><input class="fi" id="f-drv" placeholder="15 min"></div>
+      <div class="fg"><label class="fl">Effort</label>
+        <select class="fsl" id="f-dif"><option>Very easy</option><option>Easy</option><option>Easy–Moderate</option><option>Moderate</option><option>Moderate–Hard</option><option>Hard</option></select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Best for</label><input class="fi" id="f-bst"></div>
+    <div class="fg"><label class="fl">Tags</label><div class="tcbs" id="tagCBs"></div></div>
+    <div class="fg"><label class="fl">Cover photo (from your albums)</label><div class="photo-grid" id="photoGrid"></div></div>
+    <div class="fg">
+      <label class="fl">Itinerary stops</label>
+      <div class="stops-edit-list" id="stopsList"></div>
+      <button class="bas" onclick="addStopRow()">+ Add stop</button>
+    </div>
+    <div class="edit-acts">
+      <button class="bsv" onclick="saveTrip()">Save</button>
+      <button class="bcx" onclick="closeEdit()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Photo library ──
+const BASE = 'https://lh3.googleusercontent.com/pw/';
+const PHOTOS = [
+  'AP1GczOgiz8imf1km-ZLqQ-o-izSBDXL9kWRULh4hL7Std9XnzqiewTIqC7oU_zsTRRBzKPB6gWelaGNb7hxOiZn2Vqhx4z-O1FJHaJVgRhKKovBBQb1Zylf',
+  'AP1GczM60cKDZNb4Jt24gyz8TwHrFs4rQ4ZNEsHc770kb1YQ1Ncop37tqdK37EAG3t9xe0WcQiLPbz7qsb2T_Bb_j2UmRFNGLiwj30vfAKKkv-W4qfAE8sef',
+  'AP1GczPZQoFdb0rv3zQ3s9tibBiMLW0NIkoMb5W3tfdHoLBWQYCdwLC-XUf-LqUwSp07zNYVY4wMskpcAUzXzDwH04fyPiJ3-ZskY7UsxutQXccfabo7b22E',
+  'AP1GczMdgv714cqGXHSLUD_2JSEQeUZmYZjt5zJjZVaXTSTFYh6xIkth7HyeXHT3vve_7RZ2vVO4qH2midg_TAOFt1CdJ7neCyvSXhMfygP7PXy2060DZxzf',
+  'AP1GczMbekWsC_C3OelVM17W8hHE07bvGjhT9b3I0BxsDtlp3ED1lOqMvxVRYP6OAnSlBm7JC0PRqUCQzixWrIfz3dHd0QHUu8urxVFRmYtSwczWheQRkC20',
+  'AP1GczOzuuobQ5TtCQyWJfvq5_QNaAqx_bM55-jaxYtZBAQw1cDYgBVQpIaUlzSq5pRdTlHGyb_gfVUo0KCdjeIb74n-M2CkK9r7Q6YsRlUwuHH6V8-uLpm2',
+  'AP1GczMmla_BV5pSnM9WapvdcQu6ZQa1ZegmmkhojT-u4s9dezX9HA-JJJ0E4hKdbPtQTbhdsqJrXRf0IwTOdSRNIvwTVi6vtTAwM2G-tpClKnlDTm0LoNRF',
+  'AP1GczPVdqCeubZvI2aiS6PfHgnI8QlDyfXCKa5eZIwcx-R3GN4HlD63xMo9RFF_KcSaO3JtTm-LLgC8YupDnFM7nI97df3JJ8nqSAMQwip5AWVTkAmvMFVA',
+  'AP1GczNTylSdnkCpqeZEut5F7RL6Db7qoSZnFLZyONRCjZfD-Z78H3DSP_14lIVY_yxHTztA6B-uqc7G1OitBfNlyNgfoiqr7f00avjY-jc7IbCxX1d-',
+  'AP1GczOehDvoo7bdD-qsLi8bzgjzR2P9hv5nFx8hqTJC1g8uvej5NU9NaL0sDAJjn4dyX_x9i0SmpQj8gDPC8o18ugfyTJI_GZyPi8VWWPpbXgRuVb921TF3a',
+  'AP1GczPvcO10HQYwzXsjAv5a65T5TVKkSeK4FhFSDKYtCnM1Hj53PvxHdYqdLFOr1ONQePlyZl8fFC_9fabegtf15Vsfb5PFQOEgIrKhI0xqliVkrOUFLqkG',
+  'AP1GczNJQaCAGFzc6PYFcC9-5mnfWsslT5j_fRr7MHTEU62mxidH7mtkD2BJviY32OI6OGZsmCRTkPAaOSmxPxfxz2-gFHy0cjZsTf10DHoAwLrTI71yB3fn',
+  'AP1GczOg_6Vyhtnvy-Mg7XLvwy5d0xOQ-l49uZ1hLAaIAVDvMzz2qtCq4fg7zA8dZ64OEWYRspRl_BKIWXlpdgSZemsgaf6LULHUOW3Uur7ce4RgmhVGK1x2',
+  'AP1GczPKbj846DltzqWCEY3JpK6a8FkqgmyPqyoUwu3XACBad6ZMHtbp30V-xMIRVjrIyD5XkiCwTFcsrh3Qb1xImatqWfs8ilG9kdKT-9esieSp93ZDqT3J',
+  'AP1GczNanTm9dHoweZyaFJ46LtLcaWx5qTqzsDz6sD2GQSGyHRdFjJ3hnC8CPmEOUEq_1M5JNDSTTAqeVAKArkF0KCfMOc-mAOxGf0Ib_fr7pgKK0eV6MIQQ',
+  'AP1GczP9yJMfv2ad7CVeK2ZZI3NzVjF6k4MFkLeU9ZPbRVcDO11_ANJ41QuN534nvGvm-aufe8kT9c3Pp4OoZWC2lVRWrkoPX-Nnj8zNWtEj-peN69Ye2NWf',
+  'AP1GczNvoC_OcaBz114T4_T7iIkjJRPFtlrtb3CipowgchiL0FUlmAsNurdukrWhRagZyjTWzsJKXHsx5hsMD3JmQbEefzxJdYuuTAsHoT9NR2FdN_8yrtHk',
+  'AP1GczMPr7rrWYD0JAxQL348XYuckEF584SdIcTob1oHJysL0dUBxPWLj9mHo9OcETdEa7yue972Yi_ppoO7UGr5XKw3Kf3C0HiEIg4GQFXW6WUnZd0t6IaZ',
+  'AP1GczNkQPWsq_ZqZrZhPUI2qT2d68OywFrmK9UJInd7t-BuNvi-Yiz79vCW3wG8Vi3Pt6yY8l0xYMTjUaQVnwFSYKLPp_kBmt8iTgepu0Hgt92U2vfGaKeg',
+  'AP1GczMQ1F2SRi28Q-0IUQcGM8IstTEKpeuMvnXkK3DQOYZ14uVUp8MTOox2WXJxIh1TcGeNumxp7gK1sWQIy0gZEVUEco8OnRuFQhhJz9KMIwk8yFU2JI-R',
+  'AP1GczNalx0SWot9V4G4hXZNnDxw1edKmmjZ1_tmmtppTyShbY3_srZi1DNSDoyXrgiIRZPSFQwvu16KbWrcuxOrpxPaGhRblsvpAQhJZMNxhfGVvhz-M5WW',
+  'AP1GczM15H9yKmEo2iXNPhK32MqWOScImQp3Xn4XGoPcssmxq8tCkf__fTeJDhrfYhdKiR3mEVWZjuHuiXvB2FSuj-uVawexBiyKErqWeo1TAiNfMXvyEHBW',
+  'AP1GczMIEiznBXYObORxcbx6o3C2CnC9f-d2cFsFE6axtn2qBl32dW4cXV4sxI8xj9DnjSwnEVhrO_gLmpm0C4owR_UHykZOEWDjdlkvKwxX8-GouOwU2rmH',
+  'AP1GczNNI_Z7XYcNkThnWtl5X-wrrGKn5yk_ZDH8jjeSb6YWulPETLbLU3uHD2T_04XO3Bj21-kYjAcrm76GO2jYydZ0cbw5FdzpGwrPhxd2bBll-9D9ZVw2',
+  'AP1GczPxSQGd0nO__LXHVHAYIqzTiD8OhLjm2M5-ncO_EZC6_vMcIXjjaREDPf2i9r4nHVQoavO4aekVW7S4grlRmRTjhrb097YdSy-ftvvUpYa-kk4SPs_-',
+  'AP1GczMZLIEMqx3hC-eKXQ4OERPl_lbgyLS6ZuNIANVT63bPBzZwDa9uJHMjiqIQfhqz8jrMQyX6cFTqUOCqtw1GhJaU--twjYMeljnIvJ5B7-8317Dlzwe-',
+  'AP1GczOlZcCB7SWg6cjxvXbph5iKCu8lWP5i5r16JXG-5bUvtmA5H4UGzzjFvYV63WzRdANa61W6TSe0eLVFJRkW4vWQxXUDfEWbEiUnlDGt17Vjo7N-cMnO',
+  'AP1GczNNsIfhnUVsFKhe88up4qkdkP4aZRjmDXcq7Qr7yHWNZ1TZwoJwD7SYPdmQkluA5jBZknbKcpoCfNHlC__4yYg8YQJFJ9IL5RQP3B9qIL_wqWDtTA9g',
+  'AP1GczOoF2djgGz_rhPsqJiFzeVDsATU1vERtibeDGEQEI6OtaODWQxfBKNh9E7sd0BsP1mn4YMWFJLIZx7ZiemsaY8fBVis35Y6THiYm6whw79wlGzZNoJK',
+  'AP1GczP2BY6u1cLJN6Jo_U6k9Cfku_TPDCLJO7fNc4N0sBJ_l4OSxaswJE_iIrCuRE_kctyMzJDe2az3lUvlZFLvIbV1sojBB1dxhSouCPAY-KzFLJXuIUbS',
+  'AP1GczPiBKXPdbv-vSfIdTtVJIlb7SPDbdNFiSJN5hyfPeiSJTljGU6pNN8uIDyL5Yh3iUkmS8f-Uzi9ictmLcrKao4ZTUdwAJU2izRVT7dwLRzI8jteYUzT',
+  'AP1GczOxEmgrMIoznzTBP80mrhMIj3tL_d3icPNDKzWGzppTP-lpVgCEMBygfOKf-2ceXy9KeSHpCbMYZblDzWH47FKb1NclzleyYYaOrMU__t9wy1v2RSj6',
+  'AP1GczNCpMquWjMnNkQ3qcoJAPAanME5lgHSSnLCR1qCpQJBIw6yPPVmoP6as8XAut7wy_VyZyzu91IBvnTs2ynmHJwCqkqPgcykO3e7bmwfNYHlBUNCT7Av',
+  'AP1GczMVPVURCnhV8MbXl8xwtUhghaLHKR2ETtK5IsAyWfGh4U0EUw5-J9UKnOSFk6p9Qgibh4s9JVuRFtQT-svzmbzu1bqCaCrvO0zVM_7u3grJNnNUb9GL',
+  'AP1GczNtN4n5clJrwUDKnKQVgtpTVhsQCl7eU8NibSEf8V-Z-aWhrxdpCitmGq7ihuhS8tMzg_UJWCpDQ64jdDcwq6tH0CG6cLn5K_8CLOQFWa4M5CVEBfBE',
+  'AP1GczOiZ-xCoPbsxXIhCKfLOAjim5z9IQ0fLjFM4frLGFDP_r4Y2HTvN4zmj-YQfg2cYJT_XiZ4zqSJ2b6nHC44NoN0Hg7yG61I47_BuMxCnCrC0c4Lgif-',
+  'AP1GczMEKCKNNgFeZQFJoFYPfNgn6vtozCnhf87x19RkV20inCRKQqJkDRYp0GFNUj9ORqXMzvuN4ztd6Y6bFz5MrC6siRZ1oszF9jcgAAnpZKZhTLZed4kF',
+  'AP1GczMUd0L0UJnN4XPmrmgQfBid7_20z3X_Vb7OWccWRVom91K9wZ6NYFyMOEygG2U5amvMcYocxofPj1bj24tEEPiEzkFnRJ06CSn9p_rW6fA24oMBfDEy',
+  'AP1GczPJSe8Hby6Gln1OgFMd_JDf-4-t6X_1Ah6vu3ux7DxHSPCHsQAw-2f2Bk6O6ujwizoGZp7-uMRtSOucHD14eIWMclFiQMk0eTrHaDvUlgd5vEKv4a1L',
+  'AP1GczPUPJ5YcEcdKrLYzY6Wb5k--6l2paTb1IMbCvRy-ydS4Aa3TXrK6olFV3TclFxQWyK6KADPOGuQAL8AzeDc8BfZQe6g4UBAzKEy_jjVxQ1UMH-AparO',
+  'AP1GczNLO6qs6msLIZarPlEFQFwvuDMpyVKeq6COR5lsVS-7k7lPcNQfM1X6UPNrxiV1bP-Wi7EgDv3QQJP_7od28NAzyKzOiOJg5SZBQi4E4FoUhremhS-k',
+];
+function photoUrl(id,w=600,h=400){return `${BASE}${id}=w${w}-h${h}-no`;}
+function thumbUrl(id){return `${BASE}${id}=w200-h200-c`;}
+
+const ALL_TAGS = [
+  {id:'wine',label:'Wine',cls:'t-wine'},{id:'food',label:'Food',cls:'t-food'},
+  {id:'hike',label:'Hiking',cls:'t-hike'},{id:'family',label:'Family',cls:'t-family'},
+  {id:'cooking',label:'Cooking',cls:'t-cooking'},{id:'culture',label:'Culture',cls:'t-culture'},
+  {id:'romantic',label:'Romantic',cls:'t-romantic'},{id:'mix',label:'Mix',cls:'t-mix'},
+  {id:'spa',label:'Spa',cls:'t-spa'},{id:'art',label:'Art',cls:'t-art'},
+  {id:'cycling',label:'Cycling',cls:'t-cycling'},
+];
+
+// ── TRIP DATA ──
+// Each stop has: time, dot (gold/teal/wine/olive/''), title, type, desc, address, mapsQuery, tip, altIds (array of other trip IDs that can swap in)
+const DEFAULT_TRIPS = [
+{id:1,visible:true,photo:0,emoji:'🍷',title:'The Vino Nobile Deep Dive',tagline:'Three exceptional cantine, underground Etruscan caves, aperitivo on the main piazza.',tags:['wine','food'],duration:'Full day',drive:'5 min',difficulty:'Easy',bestFor:'Wine lovers',footerEmoji:'🍷🏛️🌅',footerText:'Etruscan caves, biodynamic vineyards, and a Campari spritz as the Val d\'Orcia turns gold.',stops:[
+  {time:'10:00 AM',dot:'gold',title:'Bindella Winery',type:'Wine estate — just down the road',desc:'Wine, 4-course lunch, and tour — one of our all-time favourites. Gorgeous valley views, family friendly. The Gemella white is exceptional. Book ahead.',address:'Loc. Vallocaia, 53045 Montepulciano SI',mapsQuery:'Bindella+Winery+Montepulciano',tip:'💡 Ask for a table on the terrace — the view of the vineyard rows stretching to the horizon is worth arriving early for.',altIds:[2,3]},
+  {time:'12:30 PM',dot:'teal',title:'De Ricci Wine Caves',type:'Historic cantina — Montepulciano centro',desc:'Right across from the villa, the local legends. The Etruscan wine caves beneath the historic centre are extraordinary — a 1,000+ year old cathedral hewn into the tufa. Free to walk in.',address:'Via Ricci 11, 53045 Montepulciano SI',mapsQuery:'De+Ricci+cantina+Montepulciano',tip:'💡 Walk into the caves and let your eyes adjust — the columns of ageing bottles disappear into the dark.',altIds:[4,5]},
+  {time:'2:30 PM',dot:'',title:'Salcheto Winery',type:'Biodynamic estate — outskirts of town',desc:'Innovative eco-friendly winery with the best views over Montepulciano. Organic production, solar-powered, and a stunning modern tasting room that feels like it landed from another planet.',address:'Via di Gracciano nel Corso 83, Montepulciano SI',mapsQuery:'Salcheto+Winery+Montepulciano',altIds:[6,7]},
+  {time:'5:30 PM',dot:'gold',title:'Caffè Poliziano — aperitivo',type:'Bar — Piazza Grande, Montepulciano',desc:'Campari spritz on the loggia with the full Val d\'Orcia panorama at golden hour. The best view in Montepulciano. The piazza glows gold and you can see three provinces from your barstool.',address:'Via di Voltaia nel Corso 27, 53045 Montepulciano SI',mapsQuery:'Caffe+Poliziano+Montepulciano',altIds:[8]},
+]},
+{id:2,visible:true,photo:2,emoji:'🌿',title:'La Foce Gardens & Val d\'Orcia Drive',tagline:'Historic hillside gardens, the most photographed road in Italy, and the thermal pool piazza.',tags:['culture','romantic','mix'],duration:'Full day',drive:'20 min',difficulty:'Easy',bestFor:'Couples, photographers',footerEmoji:'🌿🛣️♨️',footerText:'Cypress allées at dawn, Renaissance gardens at noon, and thermal steam as the sun drops.',stops:[
+  {time:'9:00 AM',dot:'teal',title:'La Foce Gardens',type:'Historic villa gardens — 20 min from villa',desc:'Stunning historic gardens designed by Cecil Pinsent for Iris Origo in the 1920s. Tours run Wednesdays (3, 4:30, 6pm) and Sundays (11:30am, 3, 4:30pm). Book ahead — small groups only. The Dopolavoro restaurant across the road is excellent for lunch after.',address:'Strada della Vittoria 61, 53042 Chianciano Terme SI',mapsQuery:'La+Foce+Gardens+Chianciano',tip:'💡 The Wednesday afternoon slot (3pm) hits the best light in the formal terraces. Sunday mornings are also magical.',altIds:[9,10]},
+  {time:'11:30 AM',dot:'',title:'SP146 — the cypress road',type:'Scenic drive — Val d\'Orcia',desc:'The most photographed road in Italy. Drive south toward Pienza on the SP146 and pull over whenever the light catches the cypress allées just right. May–June the wheat fields are electric green. August they\'re gold. Any time is the right time.',address:'SP146, Val d\'Orcia',mapsQuery:'SP146+Pienza+cypress+road',altIds:[11]},
+  {time:'1:00 PM',dot:'wine',title:'Pienza — cheese & lunch',type:'UNESCO hill town — 25 min from villa',desc:'Walk the Renaissance streets, taste Pecorino at the shops on Via del Casello (all offer free tastes), and sit outside at one of the bars near the Duomo for a proper lunch.',address:'Piazza Pio II, 53026 Pienza SI',mapsQuery:'Pienza+piazza',altIds:[12,13]},
+  {time:'3:30 PM',dot:'teal',title:'Bagno Vignoni thermal pool piazza',type:'Thermal springs — 35 min from villa',desc:'The medieval town piazza filled with geothermal water — steam rising from the ancient basin. Walk the Parco dei Mulini below the village along the hot-water channels. One of the strangest and most beautiful spots in Tuscany.',address:'Piazza delle Sorgenti, 53027 Bagno Vignoni SI',mapsQuery:'Bagno+Vignoni+thermal+piazza',altIds:[14]},
+]},
+{id:3,visible:true,photo:3,emoji:'👨‍👩‍👧‍👦',title:'Pienza, Pecorino & the Farm',tagline:'UNESCO hilltop town, legendary cheese shops, and a kid-friendly afternoon at a working sheep farm.',tags:['family','food','culture'],duration:'Full day',drive:'20 min',difficulty:'Easy',bestFor:'Families with kids',footerEmoji:'🧀🐑🍦',footerText:'A Pecorino crawl, a lamb that let you pet it, and gelato that made everyone forget the drive home.',stops:[
+  {time:'9:30 AM',dot:'teal',title:'Pienza centro storico',type:'UNESCO village — 20 min from villa',desc:'Palazzo Piccolomini, Renaissance streets, and the panoramic UNESCO valley views from the cathedral loggia garden. Kids love the rooftop panorama — on a clear day you can count the hilltowns.',address:'Piazza Pio II, 53026 Pienza SI',mapsQuery:'Pienza+centro+storico',tip:'💡 The Palazzo Piccolomini garden loggia is free to walk through — the view from there rivals anything in Tuscany.',altIds:[15]},
+  {time:'10:30 AM',dot:'wine',title:'Pecorino cheese crawl',type:'Via del Casello — Pienza',desc:'Three or four Pecorino shops face each other on the main street — all offer free tastings. Try the fresh marzolino, semi-stagionato, and the one aged in walnut leaves. Buy the walnut one.',address:'Via del Casello, 53026 Pienza SI',mapsQuery:'Via+del+Casello+Pienza+pecorino',altIds:[16]},
+  {time:'12:30 PM',dot:'gold',title:'Podere il Casale — farm lunch',type:'Organic farm — 15 min from Pienza',desc:'A working organic sheep farm that does rustic fixed lunches. Kids can feed the animals after eating. The ricotta and Pecorino are made here. Simple, seasonal, wonderful. Book at least a day ahead.',address:'Loc. il Casale, 53026 Pienza SI',mapsQuery:'Podere+il+Casale+Pienza',tip:'💡 Ask about the truffle hunting season — they do excellent morning hunts followed by a truffle breakfast.',altIds:[17,18]},
+  {time:'3:30 PM',dot:'wine',title:'Buongusto Gelato',type:'Gelateria — Pienza',desc:'The best artisanal all-natural gelato in the area. The pistachio di Bronte and seasonal fig are extraordinary. A perfect final stop before the drive back to the villa.',address:'Via del Casello 2, 53026 Pienza SI',mapsQuery:'Buongusto+gelateria+Pienza',altIds:[19]},
+]},
+{id:4,visible:true,photo:4,emoji:'💆',title:'Theia Spa & the Thermal Waters',tagline:'The best spa in the area — thermal pools, steam caves, and an ancient geothermal piazza.',tags:['spa','romantic'],duration:'Full day',drive:'10 min',difficulty:'Very easy',bestFor:'Couples, relaxation',footerEmoji:'♨️🌿🥂',footerText:'Hot water, old stones, and an afternoon that moves at the speed of steam.',stops:[
+  {time:'10:00 AM',dot:'gold',title:'Theia Thermal Spa',type:'Spa — 10 min from villa',desc:'Best in the area. Indoor, outdoor and kid\'s pool areas, steam cave, cold plunge, full restaurant and bar. Day passes available without staying — book online ahead of time. Arrive at opening to get a sunbed with a view.',address:'Viale della Libertà 510, 53042 Chianciano Terme SI',mapsQuery:'Theia+spa+Chianciano+Terme',tip:'💡 The outdoor thermal pools facing the Val d\'Orcia are open even in cooler weather — the steam in the cold air is extraordinary.',altIds:[20]},
+  {time:'1:00 PM',dot:'wine',title:'Lunch at the Theia restaurant',type:'Restaurant — on-site',desc:'Light Tuscan fare on the terrace over the thermal pools. Bean soups, grilled fish, and a cold Vernaccia di San Gimignano. No need to move.',address:'On-site at Theia spa',mapsQuery:'Theia+spa+restaurant+Chianciano',altIds:[21]},
+  {time:'3:30 PM',dot:'teal',title:'Bagno Vignoni — Parco dei Mulini',type:'Thermal springs — 35 min from spa',desc:'The thermal spring piazza (free to walk). Below the village, the Parco dei Mulini follows the ancient hot-water channels through a deeply atmospheric valley. Follow it to the end — maybe 20 minutes — for the best light in late afternoon.',address:'Via delle Sorgenti, 53027 Bagno Vignoni SI',mapsQuery:'Parco+dei+Mulini+Bagno+Vignoni',altIds:[14]},
+]},
+{id:5,visible:true,photo:5,emoji:'🏛️',title:'Siena in a Day',tagline:'The world\'s greatest medieval city — Piazza del Campo, the Duomo, and one perfect lunch.',tags:['culture','food','family'],duration:'Full day',drive:'65 min',difficulty:'Easy–Moderate',bestFor:'Culture lovers, families',footerEmoji:'🏛️🍝🍷',footerText:'A piazza shaped like a scallop shell, frescoes that make you stop mid-sentence, and pappardelle that fixes everything.',stops:[
+  {time:'9:00 AM',dot:'gold',title:'Piazza del Campo — early',type:'Piazza — before the crowds',desc:'Arrive early and walk the shell-shaped piazza at its most peaceful. Coffee at Bar Il Palio with a cornetto alla crema while the pigeons have it to themselves.',address:'Piazza del Campo, 53100 Siena SI',mapsQuery:'Piazza+del+Campo+Siena',altIds:[22]},
+  {time:'9:45 AM',dot:'teal',title:'Duomo di Siena',type:'Cathedral — Siena',desc:'One of Italy\'s greatest Gothic cathedrals. The Libreria Piccolomini inside has Pinturicchio frescoes that stop people mid-sentence. Book tickets ahead — the combined ticket includes the Baptistery and crypt.',address:'Piazza del Duomo 8, 53100 Siena SI',mapsQuery:'Duomo+di+Siena',tip:'💡 The floor of the cathedral is made of 56 marble inlaid panels — they\'re usually covered to protect them but uncovered in August–October.',altIds:[23]},
+  {time:'12:30 PM',dot:'wine',title:'Osteria Il Carroccio',type:'Lunch — Via Casato di Sotto',desc:'Local lunch on a back street below the Campo — ribollita, pappardelle al cinghiale, house Chianti. Beloved by Sienese and ignored by tourists. Small room with low ceilings and checked cloths. Book ahead.',address:'Via Casato di Sotto 32, 53100 Siena SI',mapsQuery:'Osteria+Il+Carroccio+Siena',altIds:[24,25]},
+  {time:'2:30 PM',dot:'olive',title:'Enoteca Italiana (Medici Fortress)',type:'Wine bar — Fortezza Medicea',desc:'A national wine library inside a 16th-century fortress. Taste wines from every Italian region at one of the most atmospheric bars in Tuscany. Completely uncrowded in the afternoon.',address:'Fortezza Medicea, 53100 Siena SI',mapsQuery:'Enoteca+Italiana+Siena+Fortezza',altIds:[26]},
+]},
+{id:6,visible:true,photo:6,emoji:'🐴',title:'Horseback Riding in the Val d\'Orcia',tagline:'Ride through cypress-lined countryside with one of three exceptional local stables.',tags:['family','mix'],duration:'Half day',drive:'15 min',difficulty:'Easy',bestFor:'All ages, families',footerEmoji:'🐴🌾🍷',footerText:'The valley looks completely different from horseback. Slower, older, more like it should.',stops:[
+  {time:'9:30 AM',dot:'gold',title:'Choose your stable',type:'Stables — Val d\'Orcia',desc:'Three great options: Centro Equestre Tre Laghi, Agriturismo Cognanello, or Borgo di Castelvecchio. Ask us which suits your experience level — we\'ll help you book. All three include helmets and a guide.',address:'Val d\'Orcia, Montepulciano area',mapsQuery:'Centro+Equestre+Tre+Laghi+Montepulciano',tip:'💡 If you have young kids (under 6), Agriturismo Cognanello has lead ponies — no experience needed.',altIds:[27]},
+  {time:'10:00 AM',dot:'teal',title:'Trail ride — Val d\'Orcia',type:'Riding — cypress roads and vineyard tracks',desc:'Guided trail through rolling Tuscan hills, cypress allées, and vineyard tracks. Routes available for complete beginners through experienced riders. Most rides 1.5–2 hours.',address:'Via Fontecornino area, Val d\'Orcia',mapsQuery:'Val+d\'Orcia+horseback+riding',altIds:[]},
+  {time:'12:00 PM',dot:'wine',title:'Farm lunch at the agriturismo',type:'Lunch — on the farm',desc:'Most stables are attached to working farms — ask about staying for a simple lunch of local pasta and house wine in the courtyard after the ride. Usually around €20–25 per person.',address:'On-site at stable',mapsQuery:'Podere+il+Casale+Pienza',altIds:[17]},
+]},
+{id:7,visible:true,photo:7,emoji:'🏔️',title:'Montalcino & Sant\'Antimo Abbey',tagline:'Brunello country — a wine fortress, an ancient Romanesque abbey, and Gregorian chant at 2:15pm.',tags:['wine','culture','romantic'],duration:'Full day',drive:'50 min',difficulty:'Easy',bestFor:'Wine lovers, couples',footerEmoji:'🍷⛪🎵',footerText:'Brunello, a bell tower, and monks singing in a stone valley. Tuscany at its most serious.',stops:[
+  {time:'10:00 AM',dot:'gold',title:'Montalcino Fortress — Brunello tasting',type:'Historic fortress — Montalcino',desc:'Taste Brunello, Rosso, and Moscadello di Montalcino at the bar inside the 14th-century fortress walls — all produced in the Montalcino DOC zone. The views across the Orcia valley are exceptional.',address:'Piazzale della Fortezza, 53024 Montalcino SI',mapsQuery:'Fortezza+di+Montalcino',tip:'💡 The Rosso di Montalcino (not the Brunello) is the everyday wine here — equally good character at half the price.',altIds:[1,28]},
+  {time:'11:30 AM',dot:'wine',title:'Tenimenti Andreucci',type:'Winery — Montalcino area',desc:'Sits at the DOC crossroads of Montalcino and Chianti — unusual position means you can taste Brunello, Super Tuscans, and Vino Nobile side by side. Their laid-back lunch pairing is excellent.',address:'Montalcino SI',mapsQuery:'Tenimenti+Andreucci+Montalcino',altIds:[4,5,29]},
+  {time:'2:15 PM',dot:'teal',title:'Sant\'Antimo Abbey',type:'Romanesque abbey — valley below Montalcino',desc:'Drive down into the valley south of Montalcino to this 11th-century Romanesque abbey in a perfect setting. Gregorian chant at 2:15pm daily (check times seasonally). The honey-coloured travertine glows in afternoon light. Franciscan friars still live here.',address:'Castelnuovo dell\'Abate, 53020 Montalcino SI',mapsQuery:'Sant\'Antimo+Abbey+Castelnuovo',altIds:[30]},
+]},
+{id:8,visible:true,photo:8,emoji:'🌅',title:'Dawn at the Cypress Road',tagline:'The most iconic image in Tuscany, captured before any other car is on the road.',tags:['romantic','mix'],duration:'Half day',drive:'5 min',difficulty:'Very easy',bestFor:'Photographers, couples, early risers',footerEmoji:'🌅🌾☕',footerText:'First light, empty roads, and a cornetto in Pienza before the world wakes up.',stops:[
+  {time:'6:30 AM',dot:'gold',title:'Poggio Covili cypress road',type:'Landmark — 10 min from villa',desc:'The iconic cypress-lined driveway, 10 minutes from the villa. Arrive at first light — mist sits in the valleys, the farmhouse glows amber, and you\'ll have it completely to yourself for at least an hour.',address:'Poggio Covili, Loc. Cassia Nord, 53043 Chiusi SI',mapsQuery:'Agriturismo+Poggio+Covili+cypress+road',tip:'💡 Best in May–June when the wheat is electric green. Autumn mist (October–November) is also extraordinary.',altIds:[31]},
+  {time:'7:30 AM',dot:'',title:'SP146 golden hour drive',type:'Scenic drive — Val d\'Orcia',desc:'The most photographed road in Tuscany in its best light. Pull over freely. The cypress allées and rolling fields are extraordinary in the early morning, well before tourist coaches arrive.',address:'SP146, Val d\'Orcia',mapsQuery:'SP146+scenic+road+Val+d+Orcia',altIds:[11]},
+  {time:'9:00 AM',dot:'wine',title:'Breakfast in Pienza',type:'Bar — centro storico',desc:'Sit outside at one of the bars near the Duomo for a proper espresso, cornetto caldo, and the morning air before any tourists arrive. A perfect unhurried end to an early morning.',address:'Piazza Pio II, 53026 Pienza SI',mapsQuery:'bar+colazione+Pienza',altIds:[19]},
+]},
+{id:9,visible:true,photo:9,emoji:'🌅',title:'Truffle Hunter\'s Dawn',tagline:'Follow a real trifolao and his dogs into the oak forest at sunrise, then eat what you find.',tags:['food','romantic','mix'],duration:'Half day',drive:'15 min',difficulty:'Very easy',bestFor:'Couples, adventurous guests',footerEmoji:'🌿🐕🍳',footerText:'The dogs know where to go. You just follow, and hope the prosecco is cold.',stops:[
+  {time:'6:30 AM',dot:'gold',title:'Meet your truffle hunter',type:'Meeting point — Montefollonico',desc:'A traditional trifolao with decades of experience and two hunting dogs (ask for them by name). The hunt begins at first light in the oak woodland. Book through us — we know the best hunters in the valley.',address:'Montefollonico, 53040 Torrita di Siena SI',mapsQuery:'Montefollonico+Siena',tip:'💡 Dress in layers — the woods are cold at dawn even in summer. Bring rubber-soled shoes.',altIds:[]},
+  {time:'8:00 AM',dot:'teal',title:'The hunt — oak forest',type:'Foraging — woodland near Montefollonico',desc:'Follow the dogs as they work the undergrowth. They move fast — stay close. With luck: black summer truffle (tuber aestivum) or white bianchetto. The hunter explains the ecosystem, the seasons, and the lore.',address:'Oak forest, Montefollonico area',mapsQuery:'Montefollonico+truffle+hunting',altIds:[]},
+  {time:'9:30 AM',dot:'wine',title:'Truffle breakfast',type:'Farmhouse — back at base',desc:'Whatever was found gets shaved over fresh scrambled eggs, bruschetta with local lard, and aged Pecorino. A glass of prosecco if the haul is good. One of the most memorable mornings possible in this valley.',address:'Montefollonico area',mapsQuery:'Montefollonico+farmhouse',altIds:[32]},
+]},
+{id:10,visible:true,photo:10,emoji:'🎨',title:'Cortona & the Etruscan Roots',tagline:'A hilltop city of Etruscan princes — great museum, steep streets, a superb lunch.',tags:['culture','food','romantic'],duration:'Full day',drive:'50 min',difficulty:'Easy–Moderate',bestFor:'Culture lovers, couples',footerEmoji:'🏺⛪🍝',footerText:'Etruscan gold, a Signorelli nobody tells you about, and pici all\'aglione so thick you could climb it.',stops:[
+  {time:'9:30 AM',dot:'teal',title:'MAEC — Etruscan museum',type:'Museum — Palazzo Casali, Cortona',desc:'One of Italy\'s finest Etruscan collections. The famous 5th-century BC bronze chandelier, gold jewellery, and burial urns — compact and excellent. Allow 1.5 hours. Buy the combined ticket.',address:'Piazza Signorelli 9, 52044 Cortona AR',mapsQuery:'MAEC+museo+Cortona',tip:'💡 The Cortona bronze chandelier (Lampadario Etrusco) in Room 16 is genuinely world-class — most visitors rush past it.',altIds:[23]},
+  {time:'11:00 AM',dot:'olive',title:'Cortona centro & fortress views',type:'Walking — old town + Fortezza del Girifalco',desc:'Walk up to the Basilica di Santa Margherita, then higher to the Medici fortress at the very top — almost always uncrowded and the panorama over Lake Trasimeno and the Val di Chiana is staggering.',address:'Fortezza del Girifalco, 52044 Cortona AR',mapsQuery:'Fortezza+del+Girifalco+Cortona',altIds:[]},
+  {time:'1:00 PM',dot:'wine',title:'Trattoria Dardano',type:'Lunch — Via Dardano, Cortona',desc:'Classic Cortona trattoria, family-run, checked tablecloths, handwritten menu. The pici all\'aglione is the signature dish of the whole Val di Chiana. The tagliata di Chianina is exceptional. Ask for the house carafe.',address:'Via Dardano 24, 52044 Cortona AR',mapsQuery:'Trattoria+Dardano+Cortona',tip:'💡 Book a day ahead for lunch — it\'s small and locals eat here daily.',altIds:[24,25]},
+  {time:'3:00 PM',dot:'olive',title:'San Niccolò church — hidden Signorelli',type:'Church — Via San Niccolò, Cortona',desc:'Ring the bell to have the sacristan open the church. Inside: a double-sided altarpiece by Luca Signorelli that almost nobody talks about. Free. One of the quietly extraordinary things in Tuscany.',address:'Via San Niccolò, 52044 Cortona AR',mapsQuery:'Chiesa+San+Nicolo+Cortona',altIds:[30]},
+]},
+{id:11,visible:true,photo:11,emoji:'🚴',title:'Bike the Strade Bianche',tagline:'Rent vintage steel-frame bikes and ride the legendary white gravel roads of the Crete Senesi.',tags:['cycling','mix'],duration:'Full day',drive:'20 min',difficulty:'Moderate',bestFor:'Active adults',footerEmoji:'🚴🌾☕',footerText:'White gravel, clay hills, a farm trattoria, and legs that earned the gelato.',stops:[
+  {time:'9:00 AM',dot:'gold',title:'Bike hire — Buonconvento',type:'Bike rental — Buonconvento',desc:'Several outfitters rent Eroica-style steel-frame bikes with panniers. Book the day before. Get an early start — the strade bianche heat up by noon.',address:'Buonconvento, 53022 SI',mapsQuery:'noleggio+bici+Buonconvento',tip:'💡 Bring a printed or downloaded map — the white road junctions aren\'t always signed.',altIds:[]},
+  {time:'9:30 AM',dot:'teal',title:'Strade bianche — Crete Senesi',type:'Cycling — gravel roads',desc:'The classic white gravel roads through the lunar Crete Senesi landscape — bare clay hills, solitary farmhouses, almost no cars. This section to Asciano is about 22km and takes 2–2.5 hours.',address:'Strade bianche, Crete Senesi',mapsQuery:'Strade+Bianche+Crete+Senesi+cycling',altIds:[]},
+  {time:'12:00 PM',dot:'wine',title:'Farm trattoria lunch on the route',type:'Trattoria — Crete Senesi',desc:'A working farm trattoria that feeds cyclists. Rustic pasta, local meats, cold beer. No menus — just whatever they cooked that day. Ask at the bike hire which one is open.',address:'Crete Senesi area',mapsQuery:'agriturismo+Crete+Senesi+pranzo',altIds:[33]},
+  {time:'3:00 PM',dot:'gold',title:'Return and gelato in Buonconvento',type:'Gelato — Buonconvento main street',desc:'Complete the loop and reward yourself with a two-scoop gelato on the main street. Pistachio, always.',address:'Via Soccini, 53022 Buonconvento SI',mapsQuery:'gelato+Buonconvento',altIds:[19]},
+]},
+{id:12,visible:true,photo:12,emoji:'🏛️',title:'Arezzo & the Piero della Francesca Frescoes',tagline:'One of the greatest fresco cycles in Italy, a Roman amphitheatre, and a legendary antiques market.',tags:['culture','art','mix'],duration:'Full day',drive:'55 min',difficulty:'Easy',bestFor:'Art lovers, culture travellers',footerEmoji:'🖼️🏺🍷',footerText:'Frescoes that took 15 years to paint, a Roman circus buried under a piazza, and Chianina bistecca for lunch.',stops:[
+  {time:'9:30 AM',dot:'teal',title:'Basilica di San Francesco — frescoes',type:'Church — Piazza San Francesco, Arezzo',desc:'Piero della Francesca\'s Legend of the True Cross — one of the greatest fresco cycles in Italy. Book timed tickets well in advance. Only 25 people per slot. Allow 45 minutes inside the chapel.',address:'Piazza San Francesco 1, 52100 Arezzo AR',mapsQuery:'Basilica+San+Francesco+Arezzo',tip:'💡 Timed slots sell out weeks ahead in summer. Book online via the Arezzo museum system before you arrive in Tuscany.',altIds:[23]},
+  {time:'11:00 AM',dot:'olive',title:'Roman amphitheatre & Piazza Grande',type:'Archaeological site + piazza — Arezzo centro',desc:'The 1st-century amphitheatre is embedded in the city fabric — freely walkable. Then walk up to the magnificent Piazza Grande (Giorgio Vasari designed the loggia). The antiques fair fills the piazza on the first Saturday of every month.',address:'Via Crispi, 52100 Arezzo AR',mapsQuery:'anfiteatro+romano+Arezzo',altIds:[]},
+  {time:'1:00 PM',dot:'wine',title:'Lunch near Piazza Grande',type:'Restaurant — Arezzo centro',desc:'Sit at one of the enotece near Piazza Grande for a proper Aretine lunch — pappardelle al cinghiale, Chianina beef tagliata, and a carafe of local Cortona DOC or Chianti.',address:'Piazza Grande, 52100 Arezzo AR',mapsQuery:'ristorante+Piazza+Grande+Arezzo',altIds:[24]},
+  {time:'3:00 PM',dot:'olive',title:'Giorgio Vasari\'s house',type:'Museum — Via XX Settembre, Arezzo',desc:'The home of the man who wrote the first art history book (Lives of the Artists, 1550) — decorated by Vasari himself with frescoes of his artist friends. Small, personal, completely uncrowded.',address:'Via XX Settembre 55, 52100 Arezzo AR',mapsQuery:'Casa+Vasari+Arezzo',altIds:[]},
+]},
+{id:13,visible:true,photo:13,emoji:'🧀',title:'Pecorino Factory & Sheep Farm Morning',tagline:'A working cheese factory tour, a sheep farm, and a picnic that tastes like the valley itself.',tags:['food','family','cooking'],duration:'Half day',drive:'20 min',difficulty:'Easy',bestFor:'Food lovers, families',footerEmoji:'🧀🐑🫙',footerText:'You\'ll never buy supermarket Pecorino again.',stops:[
+  {time:'9:30 AM',dot:'gold',title:'Pecorino cheese factory tour',type:'Factory — near Pienza',desc:'A working production facility where you see the entire process from fresh milk to aged wheel. The tasting at the end is the point — try side-by-side comparisons of the same cheese at 30 days, 90 days, and 6 months.',address:'Near Pienza SI',mapsQuery:'caseificio+Pecorino+Pienza',tip:'💡 Call ahead — tours are small and fill up, especially in summer.',altIds:[3]},
+  {time:'11:00 AM',dot:'teal',title:'Fattoria il Colle sheep farm',type:'Organic farm — Val d\'Orcia',desc:'A working organic sheep farm in the Val d\'Orcia. Walk among the flocks, meet the shepherds, and understand why Pecorino di Pienza is considered Italy\'s finest. The farm shop has excellent olive oil too.',address:'Loc. il Casale, 53026 Pienza SI',mapsQuery:'Fattoria+il+Colle+Pienza',altIds:[]},
+  {time:'12:30 PM',dot:'wine',title:'Farm picnic in the olive grove',type:'Picnic — on the farm',desc:'Pick up fresh Pecorino, local honey, cured meats, and bruschetta from the farm shop and find a spot in the olive grove. Or stay for their simple lunch if offered. Either way, it\'s the best meal you\'ll have all week.',address:'Val d\'Orcia, Pienza area',mapsQuery:'Podere+il+Casale+picnic',altIds:[9]},
+]},
+{id:14,visible:true,photo:14,emoji:'🦌',title:'Crete Senesi & Monte Oliveto Monastery',tagline:'The lunar clay hills of the Crete Senesi leading to a 14th-century monastery with extraordinary frescoes.',tags:['culture','hike','mix'],duration:'Full day',drive:'40 min',difficulty:'Easy',bestFor:'Culture lovers, photographers',footerEmoji:'🦌🏛️🍯',footerText:'A moonscape that looks like Mars, monks who\'ve been here 700 years, and honey that tastes of lavender.',stops:[
+  {time:'9:00 AM',dot:'',title:'Drive the Crete Senesi',type:'Scenic drive — south of Siena',desc:'The bare clay hills south of Siena — one of the most alien and beautiful landscapes in Italy. Stop at the Accona viewpoints and the abandoned farmhouses (biancane) for photos. The light in the morning is extraordinary.',address:'Crete Senesi, south of Siena',mapsQuery:'Crete+Senesi+scenic+viewpoint',altIds:[8]},
+  {time:'10:30 AM',dot:'teal',title:'Abbazia di Monte Oliveto Maggiore',type:'Benedictine monastery — Asciano',desc:'A vast 14th-century monastery in the hills. The Great Cloister has a cycle of frescoes by Luca Signorelli and Sodoma — one of Italy\'s most underrated treasures. Free entry. The monks produce honey, grappa, and olive oil for sale.',address:'Loc. Monte Oliveto Maggiore, 53041 Asciano SI',mapsQuery:'Monte+Oliveto+Maggiore+monastery',tip:'💡 The monastery shop sells liqueurs and herbal remedies made by the monks — the Elisir dell\'Abate is excellent.',altIds:[]},
+  {time:'1:00 PM',dot:'wine',title:'Lunch at a local agriturismo',type:'Lunch — Asciano area',desc:'Drive 10 minutes to one of the agriturismos in the Asciano area for a slow lunch. Pici, roast pork, and the local Orcia DOC wine.',address:'Asciano SI area',mapsQuery:'agriturismo+pranzo+Asciano+Siena',altIds:[9]},
+  {time:'3:00 PM',dot:'olive',title:'Asciano Etruscan museum',type:'Museum — Asciano centro',desc:'A compact Museo Civico Archeologico with Etruscan burial urns from the surrounding necropolis. Almost no visitors, and the attendant will tell you stories about each piece if you let her.',address:'Corso Matteotti 122, 53041 Asciano SI',mapsQuery:'museo+Etrusco+Asciano',altIds:[]},
+]},
+{id:15,visible:true,photo:15,emoji:'⛵',title:'Lake Trasimeno & Castiglione del Lago',tagline:'A boat to a fortress island, lakeside lunch, and a perfectly preserved medieval town on the water.',tags:['family','mix','culture'],duration:'Full day',drive:'40 min',difficulty:'Easy',bestFor:'Families, leisurely days',footerEmoji:'⛵🏰🐟',footerText:'Freshwater perch, a medieval castle, and the whole of Umbria shimmering in the lake.',stops:[
+  {time:'10:00 AM',dot:'teal',title:'Castiglione del Lago',type:'Medieval town — Lake Trasimeno',desc:'A perfectly preserved medieval promontory town on Lake Trasimeno. Walk the walls of the Rocca, visit the Palazzo della Corgna, and take in the best lake views in all directions. The town is beautifully ungentrified.',address:'Piazza Gramsci, 06061 Castiglione del Lago PG',mapsQuery:'Castiglione+del+Lago+centro',altIds:[]},
+  {time:'11:30 AM',dot:'',title:'Boat to Isola Polvese',type:'Ferry — from the harbour',desc:'The largest island on Lake Trasimeno — medieval ruins of a monastery, an olive grove, swimming spots, and almost no visitors. The ferry runs regularly. A walk around the whole island takes about 45 minutes.',address:'Harbour, Castiglione del Lago',mapsQuery:'traghetto+Isola+Polvese+Castiglione',tip:'💡 Bring a swimsuit in summer — the swimming off the island\'s eastern shore is excellent.',altIds:[]},
+  {time:'1:30 PM',dot:'wine',title:'Lakefront lunch',type:'Restaurant — Castiglione del Lago harbour',desc:'L\'Acquario on the lakefront — freshwater fish from the lake (perch, pike, eel), local pasta with lake fish ragù, and cold local white wine on the terrace.',address:'Via Vittorio Emanuele II, Castiglione del Lago PG',mapsQuery:'ristorante+lago+Castiglione+del+Lago',altIds:[]},
+]},
+{id:16,visible:true,photo:16,emoji:'🎻',title:'Montepulciano After Dark',tagline:'A classical concert inside a medieval cantina or church, the best dinner in town.',tags:['romantic','culture','mix'],duration:'Evening',drive:'15 min',difficulty:'Easy',bestFor:'Couples, music lovers',footerEmoji:'🎻🕯️🍷',footerText:'Wine caves, candlelight, and strings echoing off 800-year-old stone. That\'s an evening.',stops:[
+  {time:'5:30 PM',dot:'gold',title:'Aperitivo at Caffè Poliziano',type:'Bar — Piazza Grande, Montepulciano',desc:'Campari spritz on the loggia with the full Val d\'Orcia panorama at golden hour. Walk up Piazza Grande at sunset — the Palazzo Comunale glows amber and you can see three provinces from the loggia.',address:'Via di Voltaia nel Corso 27, 53045 Montepulciano SI',mapsQuery:'Caffe+Poliziano+Montepulciano',altIds:[]},
+  {time:'7:00 PM',dot:'teal',title:'Cantiere Internazionale d\'Arte — concert',type:'Concert venue — historic cantinas and churches',desc:'Montepulciano hosts a summer classical music festival (July–August) with concerts in cantinas, courtyards, and churches. The underground cantina settings are extraordinary — check the programme at cantiere.org.',address:'Various venues, Montepulciano SI',mapsQuery:'Cantiere+Internazionale+Arte+Montepulciano',tip:'💡 The underground cantina concerts sell out fast. Book as early as possible — they\'re one of the genuinely great summer experiences in Tuscany.',altIds:[]},
+  {time:'8:30 PM',dot:'wine',title:'Dinner at L\'Altro Cantuccio',type:'Restaurant — Montepulciano centro',desc:'Tasting menus and innovative use of local ingredients in the heart of Montepulciano — this is the restaurant gunning for a Michelin star. Book ahead, dress nicely, take your time.',address:'Via delle Cantine 1, 53045 Montepulciano SI',mapsQuery:'L\'Altro+Cantuccio+Montepulciano',altIds:[]},
+]},
+{id:17,visible:true,photo:17,emoji:'🌊',title:'Florence in a Day',tagline:'The Uffizi, the Duomo, one legendary lunch — the whole thing, done properly.',tags:['culture','food','mix'],duration:'Full day',drive:'110 min',difficulty:'Moderate',bestFor:'First-timers, culture lovers',footerEmoji:'🖼️🏛️🍦',footerText:'The Gates of Paradise, Botticelli\'s Spring, and a bistecca that cost more than the train ticket. Worth every euro.',stops:[
+  {time:'8:00 AM',dot:'gold',title:'Early start — drive or train',type:'Departure — Montepulciano',desc:'Leave by 8am. Option 1: Drive 110 min and park at Fortezza da Basso (book ahead). Option 2: Train from Chiusi-Chianciano station (25 min from villa) — 1h20m to Santa Maria Novella, much easier.',address:'Chiusi-Chianciano Terme station, 53043 SI',mapsQuery:'Chiusi+Chianciano+Terme+stazione',tip:'💡 The train option removes parking stress and lets everyone drink at lunch. Trenitalia.com — book ahead in summer.',altIds:[]},
+  {time:'10:00 AM',dot:'teal',title:'Uffizi Gallery',type:'Museum — Piazzale degli Uffizi, Florence',desc:'Book timed entry well in advance. Focus on: Rooms 10–14 (Botticelli — Birth of Venus, Spring), Room 15 (Leonardo), Rooms 90–93 (Michelangelo\'s Doni Tondo, Caravaggio). Two hours is enough if you\'re focused.',address:'Piazzale degli Uffizi 6, 50122 Firenze FI',mapsQuery:'Uffizi+Gallery+Florence',tip:'💡 Book at uffizi.it — slots are available 60 days ahead. Mornings get crowded; the last entry of the day is quieter.',altIds:[]},
+  {time:'12:30 PM',dot:'wine',title:'Lunch in the Oltrarno',type:'Trattoria — south bank of the Arno',desc:'Cross the Ponte Vecchio and eat in the real Florentine neighbourhood. Trattoria dell\'Orto or Buca Mario — ribollita, tagliata, house Chianti. The Oltrarno is Florence without the tourist premium.',address:'Oltrarno, Firenze FI',mapsQuery:'trattoria+Oltrarno+Firenze',altIds:[]},
+  {time:'2:00 PM',dot:'teal',title:'Duomo & Battistero',type:'Cathedral — Piazza del Duomo, Florence',desc:'Book the dome climb at operaduomo.firenze.it — Brunelleschi\'s structural engineering is visible from inside (the double-shell construction, the herringbone brickwork). The Baptistery\'s Ghiberti doors (Gates of Paradise) are just outside.',address:'Piazza del Duomo, 50122 Firenze FI',mapsQuery:'Duomo+di+Firenze',altIds:[]},
+]},
+{id:18,visible:true,photo:18,emoji:'⛪',title:'Assisi — Basilica & Hermitage',tagline:'Where St Francis was born — one of Italy\'s most sacred places, Giotto frescoes, and a mountain hermitage.',tags:['culture','mix'],duration:'Full day',drive:'95 min',difficulty:'Easy–Moderate',bestFor:'Culture lovers, spiritual travellers',footerEmoji:'⛪🌿🕊️',footerText:'Giotto frescoes, a mountain hermitage, and a silence that hasn\'t changed in 800 years.',stops:[
+  {time:'9:00 AM',dot:'gold',title:'Basilica di San Francesco',type:'Double basilica — Piazza San Francesco, Assisi',desc:'The double basilica built over the tomb of St Francis — one of the most important Gothic monuments in Italy. The Giotto fresco cycle in the upper church (Life of St Francis) is extraordinary. The lower church has Cimabue and Lorenzetti.',address:'Piazza San Francesco, 06081 Assisi PG',mapsQuery:'Basilica+San+Francesco+Assisi',tip:'💡 Arrive early — the basilica is genuinely moving when it\'s quiet. By 11am the tour groups arrive.',altIds:[]},
+  {time:'11:00 AM',dot:'teal',title:'Assisi centro storico',type:'Walking — old town',desc:'Walk up through the pink limestone streets to Piazza del Comune and the perfectly intact 1st-century BC Temple of Minerva (converted into a church, the columns and pediment are Roman originals). The Rocca Maggiore above has extraordinary views.',address:'Piazza del Comune, 06081 Assisi PG',mapsQuery:'Piazza+del+Comune+Assisi',altIds:[]},
+  {time:'1:00 PM',dot:'wine',title:'Lunch at Osteria Piazzetta dell\'Erba',type:'Restaurant — Via San Gabriele dell\'Addolorata',desc:'Fresh Umbrian pasta, vegetarian dishes using local truffles, and excellent house wine. Consistently one of Assisi\'s best — book a day ahead.',address:'Via San Gabriele dell\'Addolorata 15b, 06081 Assisi PG',mapsQuery:'Osteria+Piazzetta+Erba+Assisi',altIds:[]},
+  {time:'3:00 PM',dot:'olive',title:'Eremo delle Carceri hermitage',type:'Mountain hermitage — 4km above Assisi',desc:'St Francis\'s mountain retreat carved into the rock — a 10-minute drive up Monte Subasio. Silent forest, ancient grottoes, and a 12th-century chapel where Francis prayed. The Franciscan friars still live here. Free to visit.',address:'Via Eremo delle Carceri, 06081 Assisi PG',mapsQuery:'Eremo+delle+Carceri+Assisi',altIds:[]},
+]},
+{id:19,visible:true,photo:19,emoji:'🏺',title:'Orvieto — Cathedral & Underground City',tagline:'Italy\'s greatest Gothic façade, a Signorelli Last Judgement, and 2,500 years of tunnels beneath the city.',tags:['culture','family','mix'],duration:'Full day',drive:'75 min',difficulty:'Easy',bestFor:'Families, culture lovers',footerEmoji:'🏺⛪🍷',footerText:'Golden mosaics, Etruscan tunnels, and Orvieto Classico at the source. A perfect day.',stops:[
+  {time:'9:30 AM',dot:'gold',title:'Arrive by funicular',type:'Funicular — base of the cliff, Orvieto',desc:'Park at the base and ride the funicular up into the old city. The approach from below — tufa cliff rising 200m, cathedral appearing over the edge — is one of the great travel moments in Italy.',address:'Via Angelo Costanzi, 05018 Orvieto TR',mapsQuery:'funicolare+Orvieto',altIds:[]},
+  {time:'10:00 AM',dot:'teal',title:'Orvieto Duomo — façade & Signorelli chapel',type:'Cathedral — Piazza del Duomo, Orvieto',desc:'The greatest Gothic façade in Italy — gilded mosaics, carved reliefs, massive rose window. Inside: the Cappella di San Brizio has Luca Signorelli\'s Last Judgement cycle (1499–1504), one of the most ambitious fresco programmes ever painted.',address:'Piazza del Duomo, 05018 Orvieto TR',mapsQuery:'Duomo+Orvieto+cattedrale',tip:'💡 The Signorelli chapel requires a separate ticket (worth it). The Last Judgement frescoes directly influenced Michelangelo\'s Sistine ceiling.',altIds:[]},
+  {time:'12:30 PM',dot:'wine',title:'Lunch in the centro storico',type:'Restaurant — Orvieto',desc:'Trattoria dell\'Orso on Via della Misericordia — umbricelli al tartufo, wild boar pasta, local Orvieto Classico white wine. A proper Umbrian lunch in a low-ceilinged medieval room.',address:'Via della Misericordia 18-20, 05018 Orvieto TR',mapsQuery:'Trattoria+Orso+Orvieto',altIds:[]},
+  {time:'2:30 PM',dot:'olive',title:'Underground Orvieto — Etruscan tunnels',type:'Guided tour — beneath the city',desc:'The Etruscan and medieval tunnels beneath the city have been inhabited for 2,500 years — dove cotes, olive mills cut from tufa, wells, and wartime shelters. Guided tours run regularly from Piazza del Duomo. Unmissable.',address:'Piazza del Duomo 23, 05018 Orvieto TR',mapsQuery:'Orvieto+Underground+tour',altIds:[]},
+]},
+{id:20,visible:true,photo:20,emoji:'🧺',title:'Market Morning & Farm Lunch',tagline:'The local weekly market, then a slow farm lunch at Podere il Casale with Vino Nobile and valley views.',tags:['food','mix'],duration:'Half day',drive:'10 min',difficulty:'Very easy',bestFor:'All guests, food lovers',footerEmoji:'🧺🍷🌾',footerText:'A basket of the valley\'s best things, eaten where they were made.',stops:[
+  {time:'9:00 AM',dot:'gold',title:'Montepulciano weekly market',type:'Market — Thursday mornings, Montepulciano',desc:'Local farmers, Pecorino vendors, truffle oil, seasonal vegetables, and the best norcineria in the area. Get there early. Pick up whatever looks good — the vendors know you\'re a guest at one of the villas and are genuinely helpful.',address:'Montepulciano, 53045 SI',mapsQuery:'mercato+settimanale+Montepulciano',tip:'💡 Thursday is the main weekly market. The small daily market near Piazza Grande has cheese and produce every morning.',altIds:[]},
+  {time:'10:30 AM',dot:'',title:'Podere il Casale farm shop',type:'Farm shop — near Pienza',desc:'Browse the farm shop for organic cheeses, olive oil, wine, honey, and preserves — all produced on the property. One of the finest farm shops in the Val d\'Orcia. Take home something.',address:'Loc. il Casale, 53026 Pienza SI',mapsQuery:'Podere+il+Casale+Pienza+shop',altIds:[]},
+  {time:'12:30 PM',dot:'wine',title:'Farm-to-table lunch',type:'Restaurant — on the farm',desc:'Long, slow lunch on the terrace with vineyard views — ribollita, roast lamb or pork, farm cheeses, and the house Vino Nobile. The kind of lunch you remember for years. Book the day before.',address:'Loc. il Casale, 53026 Pienza SI',mapsQuery:'Podere+il+Casale+pranzo',altIds:[3]},
+]},
+{id:21,visible:true,photo:21,emoji:'🔥',title:'Private Chef Evening at the Villa',tagline:'Hire one of our recommended chefs for an extraordinary dinner served in your own dining room.',tags:['food','romantic','cooking'],duration:'Evening',drive:'0 min',difficulty:'Very easy',bestFor:'Groups, special occasions',footerEmoji:'🔥🍝🥂',footerText:'Someone else does the cooking. You just pour the wine and pretend you live here.',stops:[
+  {time:'6:00 PM',dot:'gold',title:'Chef arrives & kitchen prep',type:'Villa kitchen — Molino Nobile',desc:'Your chef arrives an hour before service to prep. This is a good time to open a bottle of the local Vino Nobile from Bindella or De Ricci — grab one before they arrive.',address:'Via Fontecornino 7a, Sant\'Albino, Montepulciano SI',mapsQuery:'Molino+Nobile+villa+Montepulciano',altIds:[]},
+  {time:'7:30 PM',dot:'wine',title:'Antipasti & aperitivo',type:'Course 1 — dining room or terrace',desc:'A selection of local antipasti — bruschetta with truffle oil, crostini with local chicken liver pâté, artisanal cheeses and cured meats. With prosecco or a light white wine on the terrace as the valley turns gold.',address:'Molino Nobile',mapsQuery:'Molino+Nobile+Montepulciano',tip:'💡 Chef Francesco does brilliant traditional Italian classics at around €75/pp. For a more refined experience, Alessio Berlionni (€80–100/pp) or former MasterChef contestant Nicolo Duchini (€150/pp).',altIds:[]},
+  {time:'8:30 PM',dot:'',title:'Pasta & main course',type:'Courses 2–3 — dining room',desc:'Handmade pasta (usually pici, tortelli, or pappardelle) followed by a main of Chianina beef, local lamb, or seasonal vegetables. Your chef adjusts to dietary requirements and preferences — discuss before arrival.',address:'Molino Nobile',mapsQuery:'Molino+Nobile+Montepulciano',altIds:[]},
+  {time:'10:00 PM',dot:'gold',title:'Dessert & digestivo',type:'Course 4 — dining room',desc:'Cantucci with Vin Santo, tiramisu, or panna cotta with local berries. Finish with a glass of the Avignonesi Vin Santo (one of the greatest sweet wines in Italy) from the bottle on the honour bar.',address:'Molino Nobile',mapsQuery:'Molino+Nobile+Montepulciano',altIds:[]},
+]},
+{id:22,visible:true,photo:22,emoji:'🌄',title:'Chianciano Terme Thermal Day',tagline:'Italy\'s most famous thermal wellness town — Roman mineral waters, outdoor pools, and total relaxation.',tags:['spa','family','mix'],duration:'Full day',drive:'20 min',difficulty:'Very easy',bestFor:'All ages, wellness seekers',footerEmoji:'♨️💆🌿',footerText:'The Romans came here to cure their livers. You\'ll come back for entirely different reasons.',stops:[
+  {time:'10:00 AM',dot:'gold',title:'Terme di Chianciano — Acquasanta',type:'Thermal spa — Chianciano Terme',desc:'The thermal waters of Chianciano have been famous since Etruscan and Roman times. The Acquasanta park has outdoor thermal pools at 39°C, steam rooms, and mud treatments. The water is rich in minerals and genuinely restorative.',address:'Viale della Libertà, 53042 Chianciano Terme SI',mapsQuery:'Terme+Acquasanta+Chianciano',altIds:[4]},
+  {time:'1:00 PM',dot:'wine',title:'Lunch in Chianciano centro',type:'Restaurant — Chianciano Terme',desc:'A proper sit-down lunch in the historic centre — Tuscan ribollita, pici all\'aglione, and cold mineral water from the springs. The town feels stuck in a pleasant 1970s Italian spa-town time warp.',address:'Chianciano Terme centro, 53042 SI',mapsQuery:'ristorante+Chianciano+Terme+centro',altIds:[]},
+  {time:'3:00 PM',dot:'teal',title:'Afternoon soak at Theia',type:'Spa — 10 min drive',desc:'If energy remains, drive to Theia (10 minutes) for a second round in their outdoor thermal pools with Val d\'Orcia views. Or return to the villa for the pool and a long nap.',address:'Viale della Libertà 510, 53042 Chianciano Terme SI',mapsQuery:'Theia+spa+Chianciano',altIds:[4]},
+]},
+{id:23,visible:true,photo:23,emoji:'🚗',title:'Norcia — Black Truffles & the Piano Grande',tagline:'Cross into Umbria for the home of Italian cured meats and one of the most dramatic plateaus in Europe.',tags:['food','culture','mix'],duration:'Full day',drive:'75 min',difficulty:'Easy',bestFor:'Serious food lovers, adventurers',footerEmoji:'🍄🥩🏔️',footerText:'Black truffle on everything, the best prosciutto in Italy, and a plateau that looks like another planet.',stops:[
+  {time:'9:00 AM',dot:'gold',title:'Drive over the Sibillini mountains',type:'Scenic drive — Valnerina pass',desc:'The road from Montepulciano over the Valnerina and into Umbria is one of the most beautiful drives in central Italy. Allow 1h30m and stop at the summit viewpoint — on a clear day you can see the Adriatic.',address:'Valnerina pass, Umbria',mapsQuery:'Valnerina+scenic+route+Norcia',altIds:[]},
+  {time:'10:30 AM',dot:'teal',title:'Norcia market & norcerie',type:'Market + shops — Piazza San Benedetto, Norcia',desc:'Every shop on the main street sells cured meats, black truffle products, and aged cheeses. Walk freely, taste everything, and buy what you can\'t resist. The black truffle honey and the truffle salami are extraordinary.',address:'Piazza San Benedetto, 06046 Norcia PG',mapsQuery:'Norcia+norceria+piazza',tip:'💡 The Ansuini family shop (est. 1850) on the main street is the most serious. Ask for the local Valnerina truffle, not the imported product.',altIds:[]},
+  {time:'12:30 PM',dot:'wine',title:'Lunch in Norcia',type:'Trattoria — Norcia centro',desc:'Strangozzi pasta with black truffle shavings, grilled norcineria, and a carafe of Sagrantino. Simple, seasonal, extraordinary. Dal Francesco is reliable — no reservations needed at lunch.',address:'Via Riguardati 16, 06046 Norcia PG',mapsQuery:'trattoria+Dal+Francesco+Norcia',altIds:[]},
+  {time:'2:30 PM',dot:'teal',title:'Piano Grande di Castelluccio',type:'Plateau — 30 min from Norcia',desc:'A vast flat plateau at 1,400m, ringed by the Sibillini peaks. In May–June it erupts in wildflowers (lenticchie flowers, poppies, wild orchids) in one of the great natural spectacles in Italy. Drive up, walk the edge, stand in silence.',address:'Piano Grande, 06046 Castelluccio di Norcia PG',mapsQuery:'Piano+Grande+Castelluccio',altIds:[]},
+]},
+{id:24,visible:true,photo:24,emoji:'🏰',title:'San Gimignano & Vernaccia Wine',tagline:'The Manhattan of the Middle Ages — 14 towers, the best white wine in Tuscany, and a gelato that won the world championship.',tags:['wine','culture','food'],duration:'Full day',drive:'70 min',difficulty:'Easy',bestFor:'Culture lovers, wine enthusiasts',footerEmoji:'🗼🍷🍦',footerText:'Medieval skyscrapers, a Ghirlandaio fresco, and gelato that made a gelatiere cry at the world championships.',stops:[
+  {time:'9:30 AM',dot:'teal',title:'San Gimignano — Piazza della Cisterna',type:'Historic town — early morning',desc:'Arrive before the coaches and walk the piazza when it\'s quiet. The 14 medieval towers were built by rival families as status symbols — San Gimignano had 72 of them in the 13th century. Climb the Torre Grossa for the panorama.',address:'Piazza della Cisterna, 53037 San Gimignano SI',mapsQuery:'San+Gimignano+Piazza+della+Cisterna',tip:'💡 Arrive by 9:30am — by 11am the narrow streets are overwhelmed. Leave by 2pm.',altIds:[]},
+  {time:'10:30 AM',dot:'olive',title:'Museo Civico & Ghirlandaio frescoes',type:'Museum — Palazzo del Popolo',desc:'The Sala di Dante (where Dante actually spoke in 1300) and extraordinary Sienese paintings. On the same ticket: the Annunciation by Ghirlandaio that lives in a small room and stops everyone cold.',address:'Piazza del Popolo 2, 53037 San Gimignano SI',mapsQuery:'Museo+Civico+San+Gimignano',altIds:[]},
+  {time:'12:30 PM',dot:'wine',title:'Vernaccia di San Gimignano tasting',type:'Enoteca — Via San Giovanni',desc:'The only DOCG white wine in Tuscany — crisp, mineral, slightly bitter finish. Walk down Via San Giovanni and taste at two or three of the small enoteche. The best are the ones you can smell oak and old stone as you push the door open.',address:'Via San Giovanni, 53037 San Gimignano SI',mapsQuery:'enoteca+Vernaccia+San+Gimignano',altIds:[1]},
+  {time:'2:00 PM',dot:'gold',title:'Gelateria Dondoli — world champion gelato',type:'Gelateria — Piazza della Cisterna',desc:'Sergio Dondoli won the World Gelato Championships twice. The crema di Santa Fina (saffron) and champelmo (grapefruit, champagne) are unlike anything else. Queue is worth every minute.',address:'Piazza della Cisterna 4, 53037 San Gimignano SI',mapsQuery:'Gelateria+Dondoli+San+Gimignano',altIds:[]},
+]},
+];
+
+function pUrl(id,w,h){
+  if(w && h) return `${BASE}${id}=w${w}-h${h}-c`;
+  return `${BASE}${id}=w600`;
+}
+
+let trips = JSON.parse(localStorage.getItem('mn-v3-trips')||'null') || JSON.parse(JSON.stringify(DEFAULT_TRIPS));
+let activeFilter = null;
+let currentTripId = null;
+let swapStopIndex = null;
+let editIdx = null;
+let selPhoto = 0;
+let dragSrc = null;
+
+function save(){ localStorage.setItem('mn-v3-trips', JSON.stringify(trips)); }
+
+// ── VIEW ROUTING ──
+function showBrowse(){
+  document.getElementById('view-browse').classList.add('active');
+  document.getElementById('view-itinerary').classList.remove('active');
+  document.getElementById('view-admin').classList.remove('active');
+  document.getElementById('navBack').classList.remove('show');
+  document.getElementById('adminToggle').style.display = '';
+  renderBrowse();
+if(window.self !== window.top){ document.querySelector(".top-nav").style.display="none"; document.querySelectorAll(".view").forEach(v=>v.style.paddingTop="0"); }
+}
+function showItinerary(id){
+  currentTripId = id;
+  document.getElementById('view-browse').classList.remove('active');
+  document.getElementById('view-itinerary').classList.add('active');
+  document.getElementById('view-admin').classList.remove('active');
+  document.getElementById('navBack').classList.add('show');
+  document.getElementById('adminToggle').style.display = 'none';
+  renderItinerary();
+  window.scrollTo(0,0);
+}
+function switchToAdmin(){
+  document.getElementById('view-browse').classList.remove('active');
+  document.getElementById('view-itinerary').classList.remove('active');
+  document.getElementById('view-admin').classList.add('active');
+  document.getElementById('navBack').classList.remove('show');
+  document.getElementById('adminToggle').style.display = '';
+  renderAdmin();
+}
+
+// ── BROWSE ──
+function renderBrowse(){
+  renderFilters();
+  renderPins();
+}
+function renderFilters(){
+  const strip = document.getElementById('filterStrip');
+  const used = new Set(trips.flatMap(t => t.visible ? t.tags : []));
+  strip.innerHTML = '';
+  const all = document.createElement('button');
+  all.className = 'f-btn' + (activeFilter === null ? ' on' : '');
+  all.textContent = 'All trips';
+  all.onclick = () => { activeFilter = null; renderBrowse();
+if(window.self !== window.top){ document.querySelector(".top-nav").style.display="none"; document.querySelectorAll(".view").forEach(v=>v.style.paddingTop="0"); } };
+  strip.appendChild(all);
+  ALL_TAGS.filter(t => used.has(t.id)).forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'f-btn' + (activeFilter === t.id ? ' on' : '');
+    b.textContent = t.label;
+    b.onclick = () => { activeFilter = t.id; renderBrowse();
+if(window.self !== window.top){ document.querySelector(".top-nav").style.display="none"; document.querySelectorAll(".view").forEach(v=>v.style.paddingTop="0"); } };
+    strip.appendChild(b);
+  });
+}
+function renderPins(){
+  const grid = document.getElementById('pinGrid');
+  const noR = document.getElementById('noResults');
+  grid.innerHTML = '';
+  const visible = trips.filter(t => t.visible && (activeFilter === null || t.tags.includes(activeFilter)));
+  noR.style.display = visible.length === 0 ? 'block' : 'none';
+  visible.forEach(t => {
+    const pid = PHOTOS[t.photo % PHOTOS.length] || PHOTOS[0];
+    const tagHtml = t.tags.map(tid => { const x = ALL_TAGS.find(a => a.id === tid); return x ? `<span class="pt ${x.cls}">${x.label}</span>` : ''; }).join('');
+    const card = document.createElement('div');
+    card.className = 'pin-card';
+    // Use =w800-h600-c for crop mode which is reliable
+    const imgSrc = `${BASE}${pid}=w800-h600-c`;
+    card.innerHTML = `
+      <div class="pin-img">
+        <img src="${imgSrc}" alt="${t.title}" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="pin-img-fb" style="display:none">${t.emoji}</div>
+        <div class="pin-dur">${t.duration}</div>
+      </div>
+      <div class="pin-body">
+        <div class="pin-title">${t.title}</div>
+        <div class="pin-tagline">${t.tagline}</div>
+        <div class="pin-tags" style="margin-top:auto;padding-top:6px">${tagHtml}</div>
+      </div>`;
+    card.onclick = () => showItinerary(t.id);
+    grid.appendChild(card);
+  });
+}
+
+// ── ITINERARY ──
+function getTrip(id){ return trips.find(t => t.id === id); }
+
+function buildMapsUrl(){
+  const trip = getTrip(currentTripId);
+  if(!trip) return '#';
+  const start = encodeURIComponent(document.getElementById('startAddr').value || 'Via Fontecornino 7a, Montepulciano SI');
+  // Build multi-stop directions URL: origin + waypoints + destination
+  const waypoints = trip.stops.map(s => encodeURIComponent(s.mapsQuery + ' Tuscany Italy')).filter(Boolean);
+  if(waypoints.length === 0) return `https://maps.google.com/?q=${start}`;
+  if(waypoints.length === 1) return `https://maps.google.com/dir/${start}/${waypoints[0]}`;
+  const dest = waypoints[waypoints.length - 1];
+  const wps = waypoints.slice(0, -1).join('/');
+  return `https://maps.google.com/dir/${start}/${wps}/${dest}`;
+}
+
+function renderItinerary(){
+  const trip = getTrip(currentTripId);
+  if(!trip) return;
+  const pid = PHOTOS[trip.photo||0];
+
+  // Header
+  document.getElementById('itinHeader').innerHTML = `
+    <div class="header">
+      <div class="header-eyebrow">Day Trip · Molino Nobile</div>
+      <h1 class="header-title">${trip.title}</h1>
+      <p class="header-subtitle">${trip.tagline}</p>
+      <div class="weather-row">
+        <div class="weather">🚗 ${trip.drive} from villa</div>
+        <div class="weather">⏱ ${trip.duration}</div>
+        <div class="weather">✨ ${trip.difficulty}</div>
+      </div>
+    </div>`;
+
+  // Body — day header + stops
+  let html = `
+    <div class="day-header">
+      <div class="day-number">${trip.emoji}</div>
+      <div class="day-info">
+        <div class="day-label">Best for · ${trip.bestFor}</div>
+        <div class="day-title">${trip.title}</div>
+      </div>
+    </div>
+    <div class="timeline" id="tripTimeline">`;
+
+  trip.stops.forEach((s, i) => {
+    const mapLink = s.mapsQuery ? `<a class="stop-link" href="https://maps.google.com/?q=${encodeURIComponent(s.mapsQuery)}" target="_blank">Open in Maps ↗</a>` : '';
+    const tip = s.tip ? `<div class="tip"><span class="tip-icon">${s.tip.charAt(0)}</span>${s.tip.substring(1)}</div>` : '';
+    const addr = s.address ? `<p class="stop-address">${s.address}</p>` : '';
+    const hasAlts = s.altIds && s.altIds.length > 0;
+    const swapBtn = hasAlts ? `<button class="btn-swap-stop" onclick="openSwap(${i})">⇄ Swap</button>` : '';
+
+    html += `
+      <div class="stop" data-stop-idx="${i}">
+        <div class="stop-dot ${s.dot||''}"></div>
+        <div class="stop-time">${s.time}</div>
+        <div class="stop-title">${s.title}</div>
+        <div class="stop-type">${s.type}</div>
+        <div class="stop-details">
+          <p>${s.desc}</p>
+          ${tip}
+          ${addr}
+          <div class="stop-links">${mapLink}${swapBtn}</div>
+        </div>
+      </div>`;
+
+    // Add connector between stops (not after last)
+    if(i < trip.stops.length - 1){
+      html += `<div class="connector"><span>🚗</span><span class="connector-line"></span><span class="connector-line"></span></div>`;
+    }
+  });
+
+  html += `</div>`; // close timeline
+  document.getElementById('itinBody').innerHTML = html;
+
+  // Footer
+  document.getElementById('itinFooter').innerHTML = `
+    <div class="footer">
+      <div class="footer-emoji">${trip.footerEmoji||trip.emoji}</div>
+      <p class="footer-text">${trip.footerText||trip.tagline}</p>
+    </div>`;
+
+  // Route button
+  updateRouteBtn();
+  document.getElementById('startAddr').oninput = updateRouteBtn;
+}
+
+function updateRouteBtn(){
+  const btn = document.getElementById('routeBtn');
+  btn.href = buildMapsUrl();
+  document.getElementById('routeBtnText').textContent = 'Open full day route in Google Maps';
+}
+
+// ── SWAP DRAWER ──
+function openSwap(stopIdx){
+  const trip = getTrip(currentTripId);
+  const stop = trip.stops[stopIdx];
+  swapStopIndex = stopIdx;
+
+  document.getElementById('drawerTitle').textContent = 'Swap: ' + stop.title;
+  document.getElementById('drawerSubtitle').textContent = 'Choose a similar alternative stop';
+
+  const opts = document.getElementById('swapOptions');
+  opts.innerHTML = '';
+
+  // Current stop first
+  const curOpt = buildSwapOption(stop, true, null);
+  opts.appendChild(curOpt);
+
+  // Alternatives: other trips with same tags
+  if(stop.altIds && stop.altIds.length > 0){
+    stop.altIds.forEach(altId => {
+      const altTrip = getTrip(altId);
+      if(!altTrip) return;
+      // Use the first stop of the alt trip as the swap option
+      const altStop = altTrip.stops[0];
+      const el = buildSwapOption(altStop, false, altId);
+      opts.appendChild(el);
+    });
+  }
+
+  // Also show any other visible trips of same tags
+  trips.filter(t => t.visible && t.id !== currentTripId && !stop.altIds?.includes(t.id)).forEach(t => {
+    const s = t.stops[0];
+    const el = buildSwapOption(s, false, t.id, '(from: ' + t.title + ')');
+    opts.appendChild(el);
+  });
+
+  document.getElementById('backdrop').classList.add('show');
+  document.getElementById('swapDrawer').classList.add('open');
+}
+
+function buildSwapOption(stop, isCurrent, tripId, subtitle=''){
+  const pid = tripId ? PHOTOS[((getTrip(tripId)||{photo:0}).photo||0) % PHOTOS.length] : null;
+  const imgSrc = pid ? `${BASE}${pid}=w200-h200-c` : null;
+  const div = document.createElement('div');
+  div.className = 'swap-opt' + (isCurrent ? ' current' : '');
+  const imgHtml = imgSrc
+    ? `<img class="swap-opt-img" src="${imgSrc}" onerror="this.outerHTML='<div class=swap-opt-img-fb>⭐</div>'">`
+    : `<div class="swap-opt-img-fb">⭐</div>`;
+  div.innerHTML = `
+    ${imgHtml}
+    <div class="swap-opt-info">
+      <div class="swap-opt-name">${stop.title}</div>
+      <div class="swap-opt-meta">${stop.type}${subtitle ? ' · ' + subtitle : ''}</div>
+    </div>
+    <div class="swap-check">✓</div>`;
+  if(!isCurrent && tripId){
+    div.onclick = () => {
+      // Swap this stop in the current trip with the first stop of the alt trip
+      const trip = getTrip(currentTripId);
+      const altTrip = getTrip(tripId);
+      if(!altTrip) return;
+      trip.stops[swapStopIndex] = { ...altTrip.stops[0], time: trip.stops[swapStopIndex].time };
+      save();
+      closeSwap();
+      renderItinerary();
+    };
+  }
+  return div;
+}
+
+function closeSwap(){
+  document.getElementById('backdrop').classList.remove('show');
+  document.getElementById('swapDrawer').classList.remove('open');
+}
+
+// ── ADMIN ──
+function renderAdmin(){
+  const list = document.getElementById('dragList');
+  list.innerHTML = '';
+  trips.forEach((t, i) => {
+    const pid = PHOTOS[(t.photo||0) % PHOTOS.length];
+    const thumbSrc = `${BASE}${pid}=w200-h200-c`;
+    const item = document.createElement('div');
+    item.className = 'drag-item'; item.draggable = true; item.dataset.i = i;
+    const tagNames = t.tags.slice(0,3).map(tid => { const x = ALL_TAGS.find(a => a.id === tid); return x ? x.label : ''; }).join(', ');
+    item.innerHTML = `
+      <div class="dh">⠿</div>
+      <img class="dthumb" src="${thumbSrc}" onerror="this.outerHTML='<div class=dthumb-fb>${t.emoji}</div>'">
+      <div class="di"><div class="dn">${t.title}</div><div class="dm">${t.duration} · ${t.drive} · ${tagNames}</div></div>
+      <div class="da">
+        <button class="bt${t.visible?' on':''}" onclick="toggleVis(${i})">${t.visible?'Visible':'Hidden'}</button>
+        <button class="ba" onclick="openEdit(${i})">Edit</button>
+        <button class="bd" onclick="delTrip(${i})">Delete</button>
+      </div>`;
+    item.addEventListener('dragstart', e => { dragSrc = i; item.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+    item.addEventListener('dragend', () => { item.classList.remove('dragging'); document.querySelectorAll('.drag-item').forEach(el => el.classList.remove('drag-over')); });
+    item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-over'); });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+    item.addEventListener('drop', e => {
+      e.preventDefault(); item.classList.remove('drag-over');
+      if(dragSrc === null || dragSrc === i) return;
+      const moved = trips.splice(dragSrc, 1)[0]; trips.splice(i, 0, moved);
+      save(); renderAdmin();
+    });
+    list.appendChild(item);
+  });
+}
+function toggleVis(i){ trips[i].visible = !trips[i].visible; save(); renderAdmin(); }
+function delTrip(i){ if(confirm('Delete "' + trips[i].title + '"?')){ trips.splice(i,1); save(); renderAdmin(); } }
+
+// ── EDIT MODAL ──
+function openEdit(i){
+  editIdx = i;
+  const t = i !== null ? trips[i] : {emoji:'🌟',title:'',tagline:'',footerText:'',footerEmoji:'',tags:[],duration:'Full day',drive:'',difficulty:'Easy',bestFor:'',photo:0,stops:[]};
+  document.getElementById('editH').textContent = i !== null ? 'Edit trip' : 'Add trip';
+  document.getElementById('f-emo').value = t.emoji;
+  document.getElementById('f-dur').value = t.duration;
+  document.getElementById('f-tit').value = t.title;
+  document.getElementById('f-tag').value = t.tagline;
+  document.getElementById('f-ftr').value = t.footerText||'';
+  document.getElementById('f-femo').value = t.footerEmoji||'';
+  document.getElementById('f-drv').value = t.drive;
+  document.getElementById('f-dif').value = t.difficulty;
+  document.getElementById('f-bst').value = t.bestFor;
+  selPhoto = t.photo||0;
+  document.getElementById('tagCBs').innerHTML = ALL_TAGS.map(tag => `<label class="tcb"><input type="checkbox" value="${tag.id}"${t.tags.includes(tag.id)?' checked':''}> ${tag.label}</label>`).join('');
+  const pg = document.getElementById('photoGrid');
+  pg.innerHTML = '';
+  PHOTOS.forEach((p, idx) => {
+    const img = document.createElement('img');
+    img.className = 'popt' + (idx === selPhoto ? ' sel' : '');
+    img.src = thumbUrl(p);
+    img.onclick = () => { selPhoto = idx; document.querySelectorAll('.popt').forEach(el => el.classList.remove('sel')); img.classList.add('sel'); };
+    pg.appendChild(img);
+  });
+  document.getElementById('stopsList').innerHTML = '';
+  (t.stops||[]).forEach(s => addStopRow(s));
+  document.getElementById('editOv').classList.add('open');
+}
+function closeEdit(){ document.getElementById('editOv').classList.remove('open'); }
+function addStopRow(s){
+  const list = document.getElementById('stopsList');
+  const idx = list.children.length + 1;
+  const row = document.createElement('div'); row.className = 'srow';
+  row.innerHTML = `
+    <div class="srow-h"><span class="snum">Stop ${idx}</span><button class="brem" onclick="this.closest('.srow').remove();renumStops()">✕</button></div>
+    <div class="fr" style="margin-bottom:7px">
+      <div class="fg" style="margin-bottom:0"><label class="fl">Time</label><input class="fi" name="st" value="${s?s.time:''}" placeholder="9:00 AM"></div>
+      <div class="fg" style="margin-bottom:0"><label class="fl">Dot color</label>
+        <select class="fsl" name="sd">${['','gold','teal','wine','olive'].map(d=>`<option value="${d}"${s&&s.dot===d?' selected':''}>${d||'outline'}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="fg" style="margin-bottom:7px"><label class="fl">Stop title</label><input class="fi" name="sn" value="${s?s.name:''}" placeholder="Bindella Winery"></div>
+    <div class="fg" style="margin-bottom:7px"><label class="fl">Type / location</label><input class="fi" name="sty" value="${s?s.type:''}" placeholder="Wine estate — 5 min from villa"></div>
+    <div class="fg" style="margin-bottom:7px"><label class="fl">Description</label><textarea class="fta" name="sde" placeholder="What to do, see, eat...">${s?s.desc:''}</textarea></div>
+    <div class="fr" style="margin-bottom:7px">
+      <div class="fg" style="margin-bottom:0"><label class="fl">Address</label><input class="fi" name="sa" value="${s?s.address||'':''}" placeholder="Via Example 1, Siena SI"></div>
+      <div class="fg" style="margin-bottom:0"><label class="fl">Google Maps search</label><input class="fi" name="sm" value="${s?s.mapsQuery||'':''}" placeholder="Bindella+Winery+Montepulciano"></div>
+    </div>
+    <div class="fg" style="margin-bottom:0"><label class="fl">Tip (optional)</label><input class="fi" name="sti" value="${s?s.tip||'':''}" placeholder="💡 Practical tip for guests..."></div>`;
+  list.appendChild(row);
+}
+function renumStops(){ document.querySelectorAll('.snum').forEach((el,i) => el.textContent = 'Stop ' + (i+1)); }
+function saveTrip(){
+  const title = document.getElementById('f-tit').value.trim();
+  if(!title){ alert('Please add a title'); return; }
+  const tags = [...document.querySelectorAll('#tagCBs input:checked')].map(el => el.value);
+  const stops = [...document.querySelectorAll('#stopsList .srow')].map(row => ({
+    time: row.querySelector('[name="st"]').value.trim(),
+    dot: row.querySelector('[name="sd"]').value,
+    title: row.querySelector('[name="sn"]').value.trim(),
+    type: row.querySelector('[name="sty"]').value.trim(),
+    desc: row.querySelector('[name="sde"]').value.trim(),
+    address: row.querySelector('[name="sa"]').value.trim() || null,
+    mapsQuery: row.querySelector('[name="sm"]').value.trim() || null,
+    tip: row.querySelector('[name="sti"]').value.trim() || null,
+    altIds: [],
+  }));
+  const trip = {
+    id: editIdx !== null ? trips[editIdx].id : Date.now(),
+    visible: editIdx !== null ? trips[editIdx].visible : true,
+    photo: selPhoto,
+    emoji: document.getElementById('f-emo').value.trim() || '🌟',
+    title,
+    tagline: document.getElementById('f-tag').value.trim(),
+    footerText: document.getElementById('f-ftr').value.trim(),
+    footerEmoji: document.getElementById('f-femo').value.trim(),
+    tags,
+    duration: document.getElementById('f-dur').value.trim(),
+    drive: document.getElementById('f-drv').value.trim(),
+    difficulty: document.getElementById('f-dif').value,
+    bestFor: document.getElementById('f-bst').value.trim(),
+    stops,
+  };
+  if(editIdx !== null) trips[editIdx] = trip; else trips.push(trip);
+  save(); closeEdit(); renderAdmin();
+}
+
+// ── INIT ──
+renderBrowse();
+if(window.self !== window.top){ document.querySelector(".top-nav").style.display="none"; document.querySelectorAll(".view").forEach(v=>v.style.paddingTop="0"); }
+</script>
+</body>
+</html>

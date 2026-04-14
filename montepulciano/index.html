@@ -200,7 +200,7 @@ function addDays(d,n){const dt=new Date(d+"T12:00:00");dt.setDate(dt.getDate()+n
 /* ═══ HEADER ═══ */
 function Header({tab,setTab,isOwner,setIsOwner,guestMode,guestInfo}){
   const[sp,setSp]=useState(false);const[pin,setPin]=useState("");
-  const gT=[{id:"week",l:"Your Week"},{id:"trips",l:"Day Trips"},{id:"info",l:"Essentials"},{id:"requests",l:"Bookings"},{id:"chat",l:"Concierge"}];
+  const gT=[{id:"week",l:"Your Week"},{id:"daytrips",l:"Day Trip Ideas"},{id:"info",l:"Essentials"},{id:"requests",l:"Bookings"},{id:"chat",l:"Concierge"}];
   const tabs=isOwner?[...gT,{id:"owner",l:"Dashboard"}]:gT;
   return<header style={{background:T.dw,borderBottom:"1px solid "+T.bdr,position:"sticky",top:0,zIndex:100}}>
     <div style={{maxWidth:780,margin:"0 auto",padding:"12px 14px 0"}}>
@@ -757,7 +757,7 @@ function App(){
     </div>}
 
     {tab==="week"&&<WeekTab week={week} setWeek={setWeek} terms={terms} guestInfo={guestInfo} alts={alts} isOwner={isOwner} gated={gated}/>}
-    {tab==="trips"&&<TripsTab terms={terms} setWeek={gated(setWeek)} setTab={setTab}/>}
+    {tab==="daytrips"&&<div style={{width:"100%",height:"calc(100vh - 54px)",overflow:"hidden"}}><iframe src="/montepulciano/trips.html" style={{width:"100%",height:"100%",border:"none"}} title="Day Trip Ideas"/></div>}
     {tab==="info"&&<InfoTab/>}
     {tab==="requests"&&<RequestsTab requests={requests} setRequests={setRequests} isOwner={isOwner}/>}
     {tab==="chat"&&(isUnlocked?<ChatTab terms={terms} guestInfo={guestInfo||lead}/>:<div style={{padding:40,textAlign:"center"}}><div style={{fontSize:28,marginBottom:12}}>💬</div><p style={{fontSize:14,color:T.cream,marginBottom:6}}>Concierge is for logged-in guests</p><button onClick={()=>setShowGate(true)} style={{padding:"10px 24px",background:T.gold,color:T.dark,border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}}>Get access →</button></div>)}

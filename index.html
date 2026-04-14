@@ -393,9 +393,35 @@ body { font-family: 'DM Sans', -apple-system, sans-serif; font-weight: 300; colo
   <div class="cta-inner">
     <h2 class="cta-title">See what Arrivable looks like for your brand.</h2>
     <p class="cta-sub">Send us your existing guest guide, package list, or itinerary PDF and we will build a working demo with your branding, your experiences, and your guest journey. Free, in 48 hours.</p>
-    <div class="cta-email">
-      <input class="cta-input" type="email" placeholder="your@email.com">
-      <button class="cta-submit" onclick="this.textContent='Thank you ✓'; this.style.background='#2E5E3E';">Request Demo</button>
+    <form class="cta-email" id="demoForm" onsubmit="return submitDemo(event)">
+      <input class="cta-input" type="email" id="demoEmail" placeholder="your@email.com" required>
+      <button class="cta-submit" type="submit" id="demoBtn">Request Demo</button>
+    </form>
+    <script>
+    async function submitDemo(e){
+      e.preventDefault();
+      const email=document.getElementById('demoEmail').value.trim();
+      const btn=document.getElementById('demoBtn');
+      if(!email)return false;
+      btn.textContent='Sending...';
+      btn.style.opacity='.6';
+      try{
+        await fetch('https://formsubmit.co/ajax/kyleplong@gmail.com',{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Accept':'application/json'},
+          body:JSON.stringify({email:email,_subject:'Arrivable Demo Request',message:'New demo request from: '+email})
+        });
+        btn.textContent='Thank you \u2713';
+        btn.style.background='#2E5E3E';
+        document.getElementById('demoEmail').value='';
+      }catch{
+        window.location.href='mailto:kyleplong@gmail.com?subject=Arrivable+Demo+Request&body=I%27d+like+to+request+a+demo.+My+email:+'+encodeURIComponent(email);
+        btn.textContent='Thank you \u2713';
+        btn.style.background='#2E5E3E';
+      }
+      return false;
+    }
+    </script>
     </div>
   </div>
 </section>

@@ -346,6 +346,27 @@ function ChatTab({terms,guestInfo}){const[msgs,setMsgs]=useState([{role:"assista
 /* ═══ ICAL IMPORT ═══ */
 function ICalImport({onImport}){
   const[url,setUrl]=useState("");const[loading,setLoading]=useState(false);const[result,setResult]=useState(null);
+  const parseICSFallback=(text)=>{
+    const events=(text||"").split('BEGIN:VEVENT').slice(1).map(chunk=>chunk.split('END:VEVENT')[0]);
+    const rows=[];
+    events.forEach((ev,idx)=>{
+      const summary=(ev.match(/SUMMARY:(.+)/)||[])[1]?.trim()||'';
+      if(!/Reserved/i.test(summary))return;
+      const checkin=(ev.match(/DTSTART;VALUE=DATE:(\d{8})/)||[])[1];
+      const checkout=(ev.match(/DTEND;VALUE=DATE:(\d{8})/)||[])[1];
+      const last4=(ev.match(/Phone Number \(Last 4 Digits\):\s*(\d{4})/)||[])[1];
+      const fmt=v=>v?`${v.slice(0,4)}-${v.slice(4,6)}-${v.slice(6,8)}`:'';
+      rows.push({
+        id:`ical-${idx}-${checkin||Date.now()}`,
+        name:last4?`Airbnb Guest ${last4}`:`Reserved Guest ${idx+1}`,
+        checkin:fmt(checkin),
+        checkout:fmt(checkout),
+        notes:last4?`Imported from Airbnb calendar · last 4 digits ${last4}`:'Imported from Airbnb calendar',
+        placeholder:true
+      });
+    });
+    return rows;
+  };
   const sync=async()=>{
     if(!url.trim()||loading)return;
     setLoading(true);setResult(null);
@@ -353,8 +374,19 @@ function ICalImport({onImport}){
       const res=await fetch('/ical/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url.trim()})});
       const data=await res.json();
       if(data.error)throw new Error(data.error);
+      let imported=data.guests||[];
+      if((!imported||!imported.length) && /airbnb\.com\/calendar\/ical/i.test(url.trim())){
+        try{
+          const ics=await fetch(url.trim()).then(r=>r.text());
+          imported=parseICSFallback(ics);
+          if(imported.length){
+            data.guests=imported;
+            data.note='Airbnb calendar does not expose guest names, so placeholder guests were created from reservation dates and phone digits.';
+          }
+        }catch{}
+      }
       setResult(data);
-      if(onImport)onImport(data.guests||[]);
+      if(onImport)onImport(imported||[]);
     }catch(e){setResult({error:e.message});}
     setLoading(false);
   };
@@ -367,6 +399,7 @@ function ICalImport({onImport}){
     </div>
     {result&&!result.error&&<div style={{marginTop:10,padding:10,background:T.dw,borderRadius:8,border:"1px solid "+T.ol+"33"}}>
       <div style={{fontSize:11,color:T.ol,fontWeight:600,marginBottom:4}}>✓ {result.created} imported · {result.updated} updated · {result.skipped} unchanged</div>
+      {result.note&&<div style={{fontSize:10,color:T.mut,marginBottom:4}}>{result.note}</div>}
       {(result.guests||[]).map((g,i)=><div key={i} style={{fontSize:10,color:T.mut,marginTop:2}}>{g.name} · {g.checkin} → {g.checkout}</div>)}
     </div>}
     {result?.error&&<div style={{marginTop:8,fontSize:11,color:"#C44"}}>{result.error}</div>}
@@ -440,8 +473,11 @@ function OwnerTab({terms,setTerms,week,guests,setGuests,alts,setAlts}){
     {/* ═══ ICAL IMPORT ═══ */}
     <ICalImport onImport={(gs)=>{
       if(gs.length){
-        const newGuests=gs.map(g=>({id:g.link.split('/g/')[1]||Date.now().toString(36),name:g.name,checkin:g.checkin,checkout:g.checkout,notes:'Imported from calendar',week:[],created:Date.now()}));
-        setGuests(p=>[...p,...newGuests]);
+        const newGuests=gs.map((g,idx)=>({id:(g.link&&g.link.split('/g/')[1])||g.id||(`${Date.now().toString(36)}-${idx}`),name:g.name,checkin:g.checkin,checkout:g.checkout,notes:g.notes||'Imported from calendar',week:JSON.parse(JSON.stringify(week)).slice(0,Math.min((g.checkout&&g.checkin)?Math.max(1,Math.ceil((new Date(g.checkout)-new Date(g.checkin))/86400000)+1):week.length,week.length)),created:Date.now()}));
+        setGuests(p=>{
+          const existing=new Set(p.map(x=>`${x.checkin}|${x.checkout}|${x.name}`));
+          return [...p,...newGuests.filter(x=>!existing.has(`${x.checkin}|${x.checkout}|${x.name}`))];
+        });
       }
     }}/>
 

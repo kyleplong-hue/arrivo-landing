@@ -636,6 +636,11 @@ function pUrl(id,w,h){
 }
 
 let trips = JSON.parse(localStorage.getItem('mn-v3-trips')||'null') || JSON.parse(JSON.stringify(DEFAULT_TRIPS));
+// Force refresh if cached trips are missing coverUrl (photo upgrade)
+if(trips.length && trips[0] && !trips[0].coverUrl){
+  trips = JSON.parse(JSON.stringify(DEFAULT_TRIPS));
+  localStorage.setItem('mn-v3-trips', JSON.stringify(trips));
+}
 let activeFilter = null;
 let currentTripId = null;
 let swapStopIndex = null;

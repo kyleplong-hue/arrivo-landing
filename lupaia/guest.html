@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lupaia — Plan Your Stay</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bone: #F5F0E8;
+  --bone-dark: #EDE5D8;
+  --sand: #DDD5C3;
+  --ink: #2C1810;
+  --ink-soft: #4A2E1E;
+  --muted: #9A7E65;
+  --gold: #B8922A;
+  --gold-light: #D4A84B;
+  --terra: #C4603A;
+  --olive: #5A6B3A;
+  --included: #5A6B3A;
+  --included-bg: rgba(90,107,58,0.08);
+  --line: rgba(44,24,16,0.1);
+  --line-soft: rgba(44,24,16,0.06);
+  --danger: #8B3A3A;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif; font-weight: 300;
+  background: var(--bone); color: var(--ink);
+  min-height: 100vh; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── PIN GATE ── */
+#pin-gate {
+  position: fixed; inset: 0; z-index: 600;
+  background: #1C0E08;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px;
+  transition: opacity .5s ease;
+}
+#pin-gate::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(196,96,58,0.22) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 60%, rgba(184,146,42,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+#pin-gate.exit { opacity: 0; pointer-events: none; }
+.pin-eyebrow {
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(245,240,232,0.3); margin-bottom: 10px;
+  position: relative; z-index: 1;
+}
+.pin-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; letter-spacing: 7px; text-transform: uppercase;
+  color: rgba(245,240,232,0.65); margin-bottom: 48px;
+  position: relative; z-index: 1;
+}
+.pin-label {
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(245,240,232,0.4); margin-bottom: 24px;
+  position: relative; z-index: 1;
+}
+.pin-dots {
+  display: flex; gap: 16px; margin-bottom: 32px;
+  position: relative; z-index: 1;
+}
+.pin-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(245,240,232,0.25);
+  background: transparent;
+  transition: all .2s;
+}
+.pin-dot.filled {
+  background: #B8922A;
+  border-color: #B8922A;
+}
+.pin-keypad {
+  display: grid; grid-template-columns: repeat(3, 64px);
+  gap: 10px; position: relative; z-index: 1;
+}
+.pin-key {
+  height: 56px; background: rgba(245,240,232,0.04);
+  border: 1px solid rgba(245,240,232,0.1);
+  color: #F5F0E8; font-family: 'DM Sans', sans-serif;
+  font-size: 20px; font-weight: 300; cursor: pointer;
+  border-radius: 4px; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.pin-key:hover { background: rgba(245,240,232,0.09); border-color: rgba(245,240,232,0.25); }
+.pin-key:active { transform: scale(.94); }
+.pin-key.del { font-size: 16px; }
+.pin-error {
+  font-size: 12px; color: #C0706A; letter-spacing: 1px;
+  margin-top: 16px; position: relative; z-index: 1;
+  min-height: 18px; text-align: center;
+}
+
+/* ── WELCOME SCREEN ── */
+#welcome-screen {
+  position: fixed; inset: 0; z-index: 500;
+  background: #1C0E08;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px;
+  transition: opacity .6s ease, transform .6s ease;
+}
+#welcome-screen::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(196,96,58,0.2) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 60%, rgba(184,146,42,0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+#welcome-screen.exit { opacity: 0; pointer-events: none; }
+.welcome-eyebrow {
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(245,240,232,0.3); margin-bottom: 10px;
+  position: relative; z-index: 1;
+}
+.welcome-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px; letter-spacing: 7px; text-transform: uppercase;
+  color: rgba(245,240,232,0.65); margin-bottom: 40px;
+  position: relative; z-index: 1;
+}
+.welcome-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 4.5vw, 44px); font-weight: 300;
+  color: var(--bone); text-align: center; line-height: 1.25;
+  margin-bottom: 10px; position: relative; z-index: 1;
+}
+.welcome-sub {
+  font-size: 13px; color: rgba(245,240,232,0.4); text-align: center;
+  margin-bottom: 48px; font-weight: 300; position: relative; z-index: 1;
+}
+.welcome-guest-cards {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  max-width: 820px; position: relative; z-index: 1;
+}
+.guest-card-select {
+  background: rgba(245,240,232,0.04);
+  border: 1px solid rgba(245,240,232,0.1);
+  padding: 20px 24px; cursor: pointer; transition: all .25s;
+  text-align: left; min-width: 220px; flex: 1; max-width: 280px;
+}
+.guest-card-select:hover {
+  background: rgba(245,240,232,0.09);
+  border-color: rgba(212,168,75,0.45);
+  transform: translateY(-2px);
+}
+.gc-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,232,0.3); margin-bottom: 8px; }
+.gc-name { font-family: 'Cormorant Garamond', serif; font-size: 21px; color: var(--bone); margin-bottom: 4px; }
+.gc-detail { font-size: 12px; color: rgba(245,240,232,0.45); margin-bottom: 6px; }
+.gc-package { font-size: 11px; color: var(--gold-light); }
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(245,240,232,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--ink); font-weight: 400;
+}
+.nav-guest { display: flex; align-items: center; gap: 14px; }
+.nav-name { font-size: 13px; font-weight: 500; }
+.nav-detail { font-size: 11px; color: var(--muted); }
+.nav-folio-badge {
+  font-size: 11px; font-weight: 500; letter-spacing: 1px;
+  padding: 7px 16px; background: var(--ink); color: var(--bone);
+  cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.nav-folio-badge:hover { background: var(--ink-soft); }
+.nav-folio-badge.has-items { background: var(--terra); }
+
+/* ── PACKAGE HERO ── */
+.package-hero {
+  padding: 36px 24px 28px;
+  background: linear-gradient(135deg, rgba(90,107,58,0.07), rgba(196,96,58,0.04));
+  border-bottom: 1px solid var(--line);
+}
+.ph-inner { max-width: 800px; margin: 0 auto; }
+.ph-eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--olive); margin-bottom: 8px; }
+.ph-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(24px,3.5vw,36px); font-weight: 300; margin-bottom: 6px; }
+.ph-desc { font-size: 13px; color: var(--muted); margin-bottom: 18px; max-width: 560px; }
+.ph-includes { display: flex; flex-wrap: wrap; gap: 8px; }
+.ph-item {
+  font-size: 12px; padding: 5px 14px;
+  background: var(--included-bg); color: var(--olive);
+  border: 1px solid rgba(90,107,58,0.15);
+}
+.ph-item.highlight { border-color: var(--gold); background: rgba(184,146,42,0.08); color: var(--gold); }
+
+/* ── MAIN LAYOUT ── */
+.main-content { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+/* ── DAY TABS ── */
+.day-tabs-wrap {
+  display: flex; gap: 6px; overflow-x: auto; padding: 0 0 16px;
+  scrollbar-width: none;
+}
+.day-tabs-wrap::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0; padding: 8px 18px; font-size: 12px; font-weight: 400;
+  background: transparent; border: 1px solid var(--line);
+  cursor: pointer; transition: all .2s; white-space: nowrap; color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+}
+.day-tab:hover { border-color: var(--ink); color: var(--ink); }
+.day-tab.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+/* ── ITINERARY ── */
+.section-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin: 24px 0 12px;
+}
+.itinerary-empty {
+  padding: 40px 20px; text-align: center;
+  border: 1px dashed var(--line); color: var(--muted); font-size: 13px;
+}
+.itin-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; background: white;
+  border: 1px solid var(--line); margin-bottom: 8px;
+  position: relative; cursor: grab; transition: box-shadow .2s, border-color .2s;
+}
+.itin-item:active { cursor: grabbing; }
+.itin-item.dragging { opacity: 0.5; border-color: var(--gold); }
+.itin-item.drag-over { border-top: 2px solid var(--gold); }
+.itin-item.included { background: var(--included-bg); border-color: rgba(90,107,58,0.2); }
+.itin-item .itin-img { width: 56px; height: 56px; object-fit: cover; flex-shrink: 0; }
+.itin-item .itin-info { flex: 1; min-width: 0; }
+.itin-item .itin-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.itin-item .itin-meta { font-size: 11px; color: var(--muted); }
+.itin-item .itin-badge {
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 8px; display: inline-block; margin-top: 4px;
+}
+.itin-item .itin-badge.inc { background: var(--included-bg); color: var(--olive); }
+.itin-item .itin-badge.addon { background: rgba(184,146,42,0.08); color: var(--gold); }
+.itin-item .itin-time-btn {
+  font-size: 11px; color: var(--gold); cursor: pointer;
+  text-decoration: underline; background: none; border: none;
+  padding: 0; font-family: inherit;
+}
+.itin-item .itin-remove {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 16px; color: var(--muted); cursor: pointer;
+  background: none; border: none; line-height: 1;
+  opacity: 0.5; transition: opacity .2s;
+}
+.itin-item .itin-remove:hover { opacity: 1; color: var(--danger); }
+.itin-item .itin-guests-ctrl {
+  display: flex; align-items: center; gap: 6px; margin-top: 4px;
+}
+.itin-item .itin-guests-ctrl span { font-size: 11px; color: var(--muted); }
+.itin-item .itin-guests-ctrl button {
+  width: 22px; height: 22px; border: 1px solid var(--line);
+  background: white; cursor: pointer; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); transition: all .15s; font-family: inherit;
+}
+.itin-item .itin-guests-ctrl button:hover { border-color: var(--gold); }
+.itin-item .itin-price {
+  font-size: 13px; font-weight: 500; white-space: nowrap;
+  margin-left: auto; padding-left: 10px; align-self: center;
+}
+.itin-item .itin-price.free { color: var(--olive); }
+
+/* ── CATALOG ── */
+.catalog-header { margin: 36px 0 16px; }
+.catalog-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(22px,3vw,30px); font-weight: 300; margin-bottom: 4px; }
+.catalog-sub { font-size: 13px; color: var(--muted); }
+
+.cat-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+.cat-filter {
+  font-size: 11px; padding: 6px 14px; border: 1px solid var(--line);
+  background: transparent; cursor: pointer; transition: all .2s; color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+}
+.cat-filter:hover { border-color: var(--ink); color: var(--ink); }
+.cat-filter.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+
+.activity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.activity-card {
+  background: white; border: 1px solid var(--line); overflow: hidden;
+  cursor: pointer; transition: all .25s;
+}
+.activity-card:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+.activity-card.complimentary { border-color: rgba(90,107,58,0.3); background: var(--included-bg); }
+.ac-img-wrap { position: relative; width: 100%; height: 180px; overflow: hidden; background: var(--sand); }
+.ac-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.activity-card:hover .ac-img-wrap img { transform: scale(1.04); }
+.ac-img-wrap .ac-badge-float {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 10px; background: rgba(44,24,16,0.7); color: var(--bone);
+  backdrop-filter: blur(4px);
+}
+.ac-img-wrap .ac-badge-float.inc { background: rgba(90,107,58,0.85); }
+.ac-img-wrap .ac-emoji {
+  position: absolute; bottom: 10px; right: 10px;
+  font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.ac-body { padding: 14px 16px; }
+.ac-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.ac-desc {
+  font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ac-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ac-meta { font-size: 11px; color: var(--muted); }
+.ac-price { font-size: 13px; font-weight: 500; color: var(--gold); }
+.ac-price.free { color: var(--olive); }
+
+/* ── MODAL ── */
+.modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(44,24,16,0.5); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-bg.open { display: flex; }
+.modal-box {
+  background: var(--bone); max-width: 560px; width: 100%;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.modal-img { width: 100%; height: 240px; object-fit: cover; }
+.modal-content { padding: 24px; }
+.modal-badge { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.modal-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; margin-bottom: 6px; }
+.modal-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.modal-desc { font-size: 14px; line-height: 1.7; color: var(--ink-soft); margin-bottom: 20px; }
+.modal-section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.modal-date-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.modal-date-btn {
+  padding: 6px 14px; font-size: 12px; border: 1px solid var(--line);
+  background: white; cursor: pointer; transition: all .2s; font-family: inherit; color: var(--ink);
+}
+.modal-date-btn:hover { border-color: var(--gold); }
+.modal-date-btn.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+.modal-time-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.time-opt {
+  padding: 6px 14px; font-size: 12px; border: 1px solid var(--line);
+  background: white; cursor: pointer; transition: all .2s; font-family: inherit; color: var(--ink);
+}
+.time-opt:hover { border-color: var(--gold); }
+.time-opt.active { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+.modal-guests { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.modal-guests label { font-size: 13px; color: var(--ink); }
+.guest-stepper { display: flex; align-items: center; gap: 0; border: 1px solid var(--line); overflow: hidden; }
+.guest-stepper button {
+  width: 34px; height: 34px; border: none; background: white;
+  cursor: pointer; font-size: 16px; transition: background .15s; font-family: inherit;
+}
+.guest-stepper button:hover { background: var(--bone-dark); }
+.guest-stepper span { padding: 0 14px; font-size: 14px; font-weight: 500; }
+.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-add-itin {
+  flex: 1; padding: 13px 20px; background: var(--ink); color: var(--bone);
+  border: 1px solid var(--ink); font-family: inherit; font-size: 13px;
+  cursor: pointer; transition: all .2s; min-height: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-add-itin:hover { background: var(--ink-soft); }
+.btn-add-itin.included-act { background: var(--olive); border-color: var(--olive); }
+.btn-close-modal {
+  padding: 13px 20px; background: white; color: var(--ink);
+  border: 1px solid var(--line); font-family: inherit; font-size: 13px;
+  cursor: pointer; transition: all .2s; min-height: 46px;
+}
+.btn-close-modal:hover { border-color: var(--ink); }
+
+/* ── FOLIO MODAL ── */
+.folio-modal .modal-box { max-width: 480px; }
+.folio-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.folio-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; }
+.folio-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted); padding: 0 4px; }
+.folio-body { padding: 16px 24px; max-height: 55vh; overflow-y: auto; }
+.folio-day-header {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 400; color: var(--ink);
+  padding: 16px 0 8px; border-bottom: 1px solid var(--line); margin-bottom: 10px;
+}
+.folio-day-header:first-child { padding-top: 8px; }
+.folio-day-header .folio-day-date {
+  font-family: 'DM Sans', sans-serif; font-size: 11px; color: var(--muted);
+  font-weight: 300; letter-spacing: 1px; text-transform: uppercase; display: block; margin-top: 2px;
+}
+.folio-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
+.folio-item:last-child { border-bottom: none; }
+.folio-item-img { width: 44px; height: 44px; object-fit: cover; flex-shrink: 0; }
+.folio-item-info { flex: 1; }
+.folio-item-name { font-size: 13px; font-weight: 500; }
+.folio-item-detail { font-size: 11px; color: var(--muted); }
+.folio-item-price { font-size: 13px; font-weight: 500; white-space: nowrap; }
+.folio-item-price.free { color: var(--olive); }
+.folio-totals { padding: 16px 0; margin-top: 8px; border-top: 2px solid var(--ink); }
+.folio-total-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; color: var(--muted); }
+.folio-total-row.grand { font-size: 16px; font-weight: 500; color: var(--ink); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+.folio-footer { padding: 16px 24px 24px; display: flex; gap: 10px; }
+.folio-footer button {
+  flex: 1; padding: 13px 20px; font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: all .2s; min-height: 46px;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-folio-edit { background: white; border: 1px solid var(--line); color: var(--ink); }
+.btn-folio-edit:hover { border-color: var(--ink); }
+.btn-folio-send { background: var(--ink); border: 1px solid var(--ink); color: var(--bone); font-weight: 400; letter-spacing: 0.5px; }
+.btn-folio-send:hover { background: var(--ink-soft); }
+
+/* ── SUCCESS ── */
+.success-state { text-align: center; padding: 48px 24px; }
+.success-icon { font-size: 48px; margin-bottom: 16px; }
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; margin-bottom: 8px; }
+.success-msg { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.success-ref { font-size: 12px; color: var(--gold); letter-spacing: 1px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--bone); font-size: 13px; padding: 12px 24px;
+  opacity: 0; transition: all .3s; z-index: 400; pointer-events: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .activity-grid { grid-template-columns: 1fr; }
+  .welcome-guest-cards { flex-direction: column; }
+  .guest-card-select { min-width: unset; max-width: 100%; }
+  .top-nav { padding: 12px 16px; }
+  .main-content { padding: 16px; }
+  .modal-box { max-height: 95vh; }
+  .modal-actions, .folio-footer { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ PIN GATE ═══ -->
+<div id="pin-gate">
+  <div class="pin-eyebrow">Torrita di Siena · Tuscany</div>
+  <div class="pin-logo">Lupaia</div>
+  <div class="pin-label">Enter access code</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-keypad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key del" onclick="pinDel()">⌫</button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-key" style="opacity:0;pointer-events:none"></button>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+</div>
+
+<!-- ═══ WELCOME ═══ -->
+<div id="welcome-screen">
+  <div class="welcome-eyebrow">Torrita di Siena · Tuscany</div>
+  <div class="welcome-logo">Lupaia</div>
+  <div class="welcome-title">Plan Your Stay</div>
+  <div class="welcome-sub">Browse experiences, shape your days, and send your wishes to Roberta, Christine, or Gabriella — they'll arrange everything.</div>
+  <div class="welcome-guest-cards" id="welcome-cards"></div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div id="app" style="display:none">
+  <nav class="top-nav">
+    <div class="nav-logo">Lupaia</div>
+    <div class="nav-guest">
+      <div>
+        <div class="nav-name" id="nav-name"></div>
+        <div class="nav-detail" id="nav-detail"></div>
+      </div>
+      <div class="nav-folio-badge" id="folio-btn" onclick="openFolio()">View Folio →</div>
+    </div>
+  </nav>
+
+  <div class="package-hero" id="package-hero" style="display:none">
+    <div class="ph-inner">
+      <div class="ph-eyebrow">Included in Your Stay</div>
+      <div class="ph-title" id="ph-title"></div>
+      <div class="ph-desc" id="ph-desc"></div>
+      <div class="ph-includes" id="ph-includes"></div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="section-label">Your Itinerary</div>
+    <div class="day-tabs-wrap" id="dayTabs"></div>
+    <div id="itineraryBody"></div>
+
+    <div class="catalog-header">
+      <div class="catalog-title">Experiences &amp; Excursions</div>
+      <div class="catalog-sub">Tap any experience to learn more and add it to a day.</div>
+    </div>
+    <div class="cat-filters" id="catFilters"></div>
+    <div class="activity-grid" id="activityGrid"></div>
+  </div>
+</div>
+
+<!-- ═══ DETAIL MODAL ═══ -->
+<div class="modal-bg" id="detail-modal" onclick="if(event.target===this)closeDetail()">
+  <div class="modal-box" id="detail-box"></div>
+</div>
+
+<!-- ═══ FOLIO MODAL ═══ -->
+<div class="modal-bg folio-modal" id="folio-modal" onclick="if(event.target===this)closeFolio()">
+  <div class="modal-box" id="folio-box"></div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// PIN GATE
+// ═══════════════════════════════════════════════
+(function(){
+  const CORRECT = '1234';
+  let entered = '';
+
+  function updateDots(){
+    for(let i=0;i<4;i++){
+      const d = document.getElementById('pd'+i);
+      d.classList.toggle('filled', i < entered.length);
+    }
+  }
+
+  window.pinKey = function(k){
+    if(entered.length >= 4) return;
+    entered += k;
+    updateDots();
+    document.getElementById('pin-error').textContent = '';
+    if(entered.length === 4){
+      if(entered === CORRECT){
+        const gate = document.getElementById('pin-gate');
+        gate.classList.add('exit');
+        setTimeout(()=>{ gate.style.display='none'; }, 520);
+      } else {
+        setTimeout(()=>{
+          entered = '';
+          updateDots();
+          document.getElementById('pin-error').textContent = 'Incorrect code';
+        }, 300);
+      }
+    }
+  };
+
+  window.pinDel = function(){
+    if(entered.length > 0){
+      entered = entered.slice(0,-1);
+      updateDots();
+      document.getElementById('pin-error').textContent = '';
+    }
+  };
+
+  document.addEventListener('keydown', function(e){
+    if(document.getElementById('pin-gate').style.display === 'none') return;
+    if(e.key >= '0' && e.key <= '9') pinKey(e.key);
+    else if(e.key === 'Backspace') pinDel();
+  });
+})();
+
+// ═══════════════════════════════════════════════
+// LUPAIA — DATA
+// ═══════════════════════════════════════════════
+
+const P = 'https://images.pexels.com/photos/';
+const px = (id, w) => `${P}${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=${w||600}`;
+
+// Persona default guest counts
+const PERSONA_GUESTS = [2, 4, 1]; // Emma & James, Fischer Family, Sofia
+
+const GUESTS = [
+  {
+    id: 0,
+    name: 'Emma & James',
+    detail: 'Anniversary Stay · 4 nights · arriving May 2026',
+    arrival: '2026-05-08',
+    nights: 4,
+    defaultGuests: 2,
+    pkg: {
+      id: 'anniversary',
+      name: 'Anniversary at Lupaia',
+      desc: 'Four nights on the hillside estate, surrounded by vines and olive groves. Your suggested itinerary is curated for romance — wine, massage, truffles, and slow Tuscan mornings.',
+      includes: [
+        { actId: 'negroni-sunset',  name: 'Sunset Negroni Experience',         note: 'pergola · evening',             suggestedDay: 0, included: false },
+        { actId: 'dinner-pergola',  name: 'Private Dinner under the Pergola',  note: '4 courses · wine pairing',      suggestedDay: 0, included: false },
+        { actId: 'massage-couples', name: 'Couples Massage',                   note: '60 min · morning',              suggestedDay: 1, included: false },
+        { actId: 'wine-tasting',    name: 'Private Wine Tasting',              note: 'Lupaia cellar · afternoon',     suggestedDay: 1, included: false },
+        { actId: 'ebike-guided',    name: 'Guided E-bike to Montepulciano',    note: 'half day · morning',            suggestedDay: 2, included: false },
+        { actId: 'poolside-lunch',  name: 'Poolside Lunch & Wine',             note: 'afternoon',                     suggestedDay: 2, included: false },
+        { actId: 'truffle-hunting', name: 'Truffle Hunting with Pierpaolo',    note: 'dawn · forest',                 suggestedDay: 3, included: false },
+        { actId: 'cooking-class',   name: 'Private Cooking Class',             note: '3-course lunch with chef',      suggestedDay: 3, included: false },
+      ]
+    }
+  },
+  {
+    id: 1,
+    name: 'The Fischer Family',
+    detail: 'Family Stay · 5 nights · arriving May 2026',
+    arrival: '2026-05-10',
+    nights: 5,
+    defaultGuests: 4,
+    pkg: {
+      id: 'family',
+      name: 'Family Discovery at Lupaia',
+      desc: 'Five nights of Tuscan exploration for the whole family — e-bikes, truffles, Val d\'Orcia, cooking, and long afternoons by the pool. Heidi, Christopher, and the team have you covered.',
+      includes: [
+        { actId: 'poolside-lunch',  name: 'Poolside Lunch & Wine',             note: 'welcome afternoon',             suggestedDay: 0, included: false },
+        { actId: 'ebike-guided',    name: 'Guided E-bike Tour',                note: 'half day · guide included',     suggestedDay: 1, included: false },
+        { actId: 'amaro-games',     name: 'Amaro & Board Games Evening',       note: 'lounge · fireplace',            suggestedDay: 1, included: true  },
+        { actId: 'daytrip-pienza',  name: 'Day Trip to Pienza & Val d\'Orcia', note: 'private driver · full day',     suggestedDay: 2, included: false },
+        { actId: 'cooking-class',   name: 'Private Cooking Class',             note: 'family lunch with chef',        suggestedDay: 3, included: false },
+        { actId: 'picnic',          name: 'Picnic Basket for the Grounds',     note: 'afternoon on the estate',       suggestedDay: 3, included: false },
+        { actId: 'truffle-hunting', name: 'Truffle Hunting with Pierpaolo',    note: 'dogs & forest · morning',       suggestedDay: 4, included: false },
+        { actId: 'massage-60',      name: 'In-room Massage',                   note: '60 min · parents\' afternoon',  suggestedDay: 4, included: false },
+      ]
+    }
+  },
+  {
+    id: 2,
+    name: 'Sofia',
+    detail: 'Solo Stay · 3 nights · arriving May 2026',
+    arrival: '2026-05-15',
+    nights: 3,
+    defaultGuests: 1,
+    pkg: {
+      id: 'writers-retreat',
+      name: 'Writer\'s Retreat at Lupaia',
+      desc: 'Three nights of quiet, culture, and Tuscan light. A gentle itinerary built for a writer — mornings on the estate, afternoons in the valley, evenings by the fire.',
+      includes: [
+        { actId: 'massage-60',      name: 'In-room Massage',                   note: '60 min · welcome evening',      suggestedDay: 0, included: false },
+        { actId: 'amaro-games',     name: 'Amaro by the Fire',                 note: 'library · early evening',       suggestedDay: 0, included: true  },
+        { actId: 'wine-tasting',    name: 'Private Wine Tasting',              note: 'Lupaia cellar · afternoon',     suggestedDay: 1, included: false },
+        { actId: 'negroni-sunset',  name: 'Sunset Negroni',                    note: 'pergola · golden hour',         suggestedDay: 1, included: false },
+        { actId: 'ebike-fullday',   name: 'Full-day E-bike to Montepulciano',  note: 'self-guided · morning',         suggestedDay: 2, included: false },
+        { actId: 'winery-ricci',    name: 'Cantina De\' Ricci Winery Visit',   note: 'Montepulciano · afternoon',     suggestedDay: 2, included: false },
+      ]
+    }
+  }
+];
+
+const ACTIVITIES = [
+
+  // ── SPA & WELLNESS ──
+  {
+    id: 'massage-60', cat: 'Spa & Wellness', emoji: '🌿',
+    title: 'In-Room Massage · 60 min',
+    duration: '60 min', price: 150, perPerson: true, perCouple: false,
+    desc: 'A restorative massage in the privacy of your room, using Tuscan botanical oils. Deeply relaxing after a day of travel or exploration.',
+    longDesc: 'Lupaia\'s in-room massage brings the calm of a spa directly to your suite. Your therapist uses warm Tuscan botanical oils — lavender, sage, and olive — in a full-body treatment tailored to your preferences. Ideal as a welcome ritual on arrival, or as a slow recovery after a day on the e-bikes. Available in the morning, afternoon, or early evening. Please request at least 12 hours in advance.',
+    img: px('3757942'), fallbackImg: px('3822864'),
+    times: ['9:00 am', '10:00 am', '3:00 pm', '4:30 pm', '6:00 pm'], best: 'Anytime'
+  },
+  {
+    id: 'massage-90', cat: 'Spa & Wellness', emoji: '🌿',
+    title: 'In-Room Massage · 90 min',
+    duration: '90 min', price: 210, perPerson: true, perCouple: false,
+    desc: 'The extended version — deeper, slower, more complete. Perfect for unwinding after a long journey or a full day in the valley.',
+    longDesc: 'Ninety minutes of unhurried attention. Your therapist adapts the pressure and rhythm throughout — beginning with long, slow strokes to release surface tension, moving into deeper tissue work for the shoulders and lower back, and finishing with a scalp and face sequence. Warm oil, quiet room, complete stillness. Available on request with 24 hours\' notice.',
+    img: px('3822864'), fallbackImg: px('3757952'),
+    times: ['9:00 am', '10:00 am', '3:00 pm', '4:30 pm'], best: 'Anytime'
+  },
+  {
+    id: 'massage-couples', cat: 'Spa & Wellness', emoji: '💆',
+    title: 'Couples Massage · 60 min',
+    duration: '60 min', price: 280, perPerson: false, perCouple: true,
+    desc: 'Side by side in your room, two therapists, one quiet hour. The definitive start to a romantic stay at Lupaia.',
+    longDesc: 'Two therapists arrive simultaneously — your room arranged with candles, soft light, and the scent of Tuscan herbs. The massage is synchronised, unhurried, and completely private. A bottle of local Prosecco waits for you when it\'s done. Couples massage is a signature Lupaia experience: book early, as availability is limited to two sessions per day. Price is per couple.',
+    img: px('3757952'), fallbackImg: px('3757942'),
+    times: ['9:00 am', '10:00 am', '3:00 pm', '5:00 pm'], best: 'Morning or afternoon'
+  },
+  {
+    id: 'facial', cat: 'Spa & Wellness', emoji: '✨',
+    title: 'Beauty Treatment · Facial 45 min',
+    duration: '45 min', price: 120, perPerson: true, perCouple: false,
+    desc: 'A reviving facial using locally-sourced ingredients — rosehip, olive squalane, and Chianti clay. Skin feels clarified and luminous.',
+    longDesc: 'A 45-minute facial grounded in Tuscany\'s botanical tradition. Your therapist works with a Chianti clay cleanse, a rosehip and lavender serum, and a cold-pressed olive squalane finishing oil. The treatment targets dehydration and dullness — common companions of travel. Finishes with a light jade massage. Your skin will be genuinely different afterward.',
+    img: px('3757942'), fallbackImg: px('3822864'),
+    times: ['9:00 am', '10:30 am', '2:00 pm', '4:00 pm'], best: 'Morning'
+  },
+  {
+    id: 'gym-private', cat: 'Spa & Wellness', emoji: '🏋️',
+    title: 'Private Gym Session · 1 hr exclusive use',
+    duration: '1 hour', price: 0, perPerson: false, perCouple: false,
+    desc: 'The estate gym, reserved exclusively for you. Weights, cardio equipment, and a terrace overlooking the Sienese hills.',
+    longDesc: 'Lupaia\'s private gym is available to reserve for exclusive one-hour use — just let the team know the night before. The space has free weights, a treadmill, and a stationary bike, plus a glass door opening onto a small terrace with a view across the olive groves and valley. Yoga mats, towels, and water are provided. A quiet, focused hour before breakfast or after a long day on the estate.',
+    img: px('1552242'), fallbackImg: px('4162579'),
+    times: ['7:00 am', '8:00 am', '5:00 pm', '6:00 pm'], best: 'Early morning'
+  },
+
+  // ── WINE & FOOD ──
+  {
+    id: 'wine-tasting', cat: 'Wine & Food', emoji: '🍷',
+    title: 'Private Wine Tasting · Lupaia Cellar',
+    duration: '1 hour', price: 45, perPerson: true, perCouple: false,
+    desc: 'Five wines from the Lupaia cellar — local Nobile di Montepulciano, Brunello, and a surprise from Christopher\'s private reserve.',
+    longDesc: 'Descend into the Lupaia wine cellar — stone walls, low light, and rows of bottles collected by Christopher Mueller over many years. Your host pours five wines: typically a local Vernaccia or Vermentino to open, moving through a Rosso di Montepulciano, a Nobile, and a Brunello di Montalcino, finishing with something from the private reserve. No ceremony, no performance — just wine, conversation, and context. Paired with estate olive oil, local pecorino, and salumi.',
+    img: px('2912735'), fallbackImg: px('1407846'),
+    times: ['4:00 pm', '5:00 pm', '6:00 pm'], best: 'Late afternoon'
+  },
+  {
+    id: 'negroni-sunset', cat: 'Wine & Food', emoji: '🍊',
+    title: 'Sunset Negroni Experience',
+    duration: '1 hour', price: 35, perPerson: true, perCouple: false,
+    desc: 'Your own barman on the pergola at golden hour. Three variations on the Negroni, Tuscan snacks, the valley turning orange below.',
+    longDesc: 'At around 7 pm — when the light goes horizontal and the Sienese hills take on their best colour — a personal barman sets up on the Lupaia pergola. Three Negroni variations are served over the course of the hour: the classic, a twist with local amaro, and a white Negroni made with estate-infused gin. Accompanied by bruschetta with the estate\'s own olive oil, local olives, and pecorino crisps. One of the estate\'s most reliably joyful rituals.',
+    img: px('3407777'), fallbackImg: px('1089931'),
+    times: ['6:30 pm', '7:00 pm', '7:30 pm'], best: 'Sunset'
+  },
+  {
+    id: 'cooking-class', cat: 'Wine & Food', emoji: '👨‍🍳',
+    title: 'Private Cooking Class with Chef',
+    duration: '3 hours', price: 95, perPerson: true, perCouple: false,
+    desc: 'Three courses with the Lupaia chef — fresh pasta, a seasonal secondo, and something sweet. Then you eat what you made.',
+    longDesc: 'Meet the Lupaia chef in the estate kitchen at 10 am. Over three hours, you\'ll make fresh pasta from scratch (pici or pappardelle, depending on the season), a second course built around local ingredients — wild boar ragù, saffron-braised pork, or truffle in season — and a simple dessert such as panna cotta or cantucci with Vin Santo. The class ends as lunch: you sit down and eat everything you\'ve made, with a bottle chosen by the team to match. A genuinely useful and satisfying morning.',
+    img: px('2696568'), fallbackImg: px('3184192'),
+    times: ['10:00 am', '11:00 am'], best: 'Morning'
+  },
+  {
+    id: 'truffle-hunting', cat: 'Wine & Food', emoji: '🐕',
+    title: 'Truffle Hunting with Pierpaolo',
+    duration: '2–3 hours', price: 120, perPerson: true, perCouple: false,
+    desc: 'Into the oak forest at dawn with Pierpaolo and his two Lagotto Romagnolo dogs — the finest way to spend a morning in Tuscany.',
+    longDesc: 'Pierpaolo has been hunting truffles in these forests since he was a boy. His two Lagotto Romagnolo dogs — bred specifically for the purpose — move ahead through the undergrowth, noses low. When they stop, you stop. This is one of the most grounding experiences Lupaia offers: early morning, cool forest air, the patience of dogs, and a man who knows every tree. Depending on season, you may find black summer truffle, bianchetto, or the elusive white truffle of Crete Senesi. Whatever is found, the kitchen will use it. Best combined with the cooking class on the same morning.',
+    img: px('825949'), fallbackImg: px('4622385'),
+    times: ['6:30 am', '7:00 am', '7:30 am'], best: 'Dawn'
+  },
+  {
+    id: 'dinner-pergola', cat: 'Wine & Food', emoji: '🕯️',
+    title: 'Private Dinner under the Pergola',
+    duration: 'Evening', price: 150, perPerson: true, perCouple: false,
+    desc: 'A four-course dinner for two, set under the wisteria pergola with views of the valley. Wine pairing by the team. Entirely private.',
+    longDesc: 'On a warm evening, the Lupaia team sets a table under the wisteria pergola — candlelight, linen, and the valley laid out below in the dark. Four courses prepared by the chef: a cold antipasto with estate olive oil, a hand-made pasta, a seasonal meat or fish main, and a Tuscan dessert. Wine pairing is chosen by the team to complement each course. The space is entirely yours for the evening — no other guests, no shared tables. This is the definitive Lupaia dinner and the most requested experience on the estate. For a very special occasion, worth doing even if you do nothing else.',
+    img: px('1488327'), fallbackImg: px('262978'),
+    times: ['7:30 pm', '8:00 pm', '8:30 pm'], best: 'Evening'
+  },
+
+  // ── ACTIVITIES & EXCURSIONS ──
+  {
+    id: 'ebike-guided', cat: 'Activities & Excursions', emoji: '🚴',
+    title: 'Guided E-bike Tour · Half Day',
+    duration: 'Half day', price: 100, perPerson: true, perCouple: false,
+    desc: 'A guided ride through the Crete Senesi — cypress alleys, hill towns, empty roads. E-assisted, so the hills don\'t win.',
+    longDesc: 'Lupaia\'s estate sits at 500 metres, surrounded by the rolling clay hills of the Crete Senesi — one of Tuscany\'s least-visited landscapes. A local guide leads the route on e-assisted bikes: down from the estate, through the Val d\'Orcia road toward Montefollonico, and often into Montepulciano for coffee before returning. The electric assistance means the climbs are manageable even if you haven\'t ridden in years. Duration is approximately 3–4 hours depending on pace. Helmets, water, and a small repair kit provided. Maximum 6 guests per group.',
+    img: px('1684187'), fallbackImg: px('248547'),
+    times: ['8:30 am', '9:00 am'], best: 'Morning'
+  },
+  {
+    id: 'ebike-fullday', cat: 'Activities & Excursions', emoji: '🚴',
+    title: 'Full-Day E-bike Rental · Self-Guided',
+    duration: 'Full day', price: 150, perPerson: true, perCouple: false,
+    desc: 'Take an e-bike for the whole day and ride wherever the map takes you. Montepulciano, Pienza, Monticchiello — all within reach.',
+    longDesc: 'Lupaia\'s e-bikes are available for full-day self-guided rental. The team prepares a suggested route map the evening before, personalised to your interests and fitness level — with notes on coffee stops, viewpoints, and places to eat. Most guests ride to Montepulciano (approximately 12 km), explore the town, find lunch, and return via a different route. More ambitious riders reach Pienza or Monticchiello. The bikes hold a full charge for 60–70 km of mixed terrain. A local SIM with data is provided for maps. Helmets and a small toolkit included.',
+    img: px('248547'), fallbackImg: px('1684187'),
+    times: ['8:00 am', '8:30 am', '9:00 am'], best: 'Full day'
+  },
+  {
+    id: 'mtb-rental', cat: 'Activities & Excursions', emoji: '🚵',
+    title: 'Mountain Bike Rental · Full Day',
+    duration: 'Full day', price: 0, perPerson: false, perCouple: false,
+    desc: 'Classic mountain bikes — available to all guests at no charge. Gravel tracks, farm lanes, and the ridge behind the estate.',
+    longDesc: 'Lupaia keeps a small fleet of well-maintained mountain bikes for all guests. They\'re available any day, at no charge — simply ask the team the evening before and they\'ll have them ready. The estate sits at the top of a network of gravel tracks and farm lanes: the ridge behind the property offers a 4 km loop with views of the valley in both directions. Maps and a route suggestion are available at reception. Helmets provided.',
+    img: px('1571939'), fallbackImg: px('1684187'),
+    times: ['7:00 am', '8:00 am', '9:00 am', '3:00 pm'], best: 'Anytime'
+  },
+  {
+    id: 'winery-ricci', cat: 'Activities & Excursions', emoji: '🍇',
+    title: 'Winery Visit · Cantina De\' Ricci, Montepulciano',
+    duration: '2 hours', price: 35, perPerson: true, perCouple: false,
+    desc: 'One of Montepulciano\'s oldest wine estates — the cellar dates to 1337. A private guided visit and tasting of Nobile di Montepulciano.',
+    longDesc: 'Founded in 1337, Cantina De\' Ricci sits directly beneath the streets of Montepulciano — its cellar carved into the volcanic tufa on which the entire town is built. A private guide leads you through the underground tunnels past enormous Slavonian oak barrels, explaining the history of Vino Nobile and the vineyard\'s approach to the Prugnolo Gentile grape. The visit finishes in the tasting room: three or four wines, local cheese, and a view of the valley through an arched window. Easily combined with an e-bike ride to town. Bookings arranged by the Lupaia team.',
+    img: px('5947009'), fallbackImg: px('2912735'),
+    times: ['10:00 am', '11:00 am', '3:00 pm', '4:00 pm'], best: 'Afternoon'
+  },
+  {
+    id: 'winery-ripi', cat: 'Activities & Excursions', emoji: '🍇',
+    title: 'Winery Visit · Podere le Ripi, Montalcino',
+    duration: '2.5 hours', price: 55, perPerson: true, perCouple: false,
+    desc: 'A biodynamic estate on the southern slopes of Montalcino, where some of Italy\'s most compelling Brunello is made. A more intimate visit.',
+    longDesc: 'Podere le Ripi is a small, biodynamic estate on the southern slopes of Montalcino, run by Francesco Illy with extraordinary care and conviction. The wines — particularly the Amore Brunello — are among the most sought-after in the region. A private visit takes you through the vineyard (vine by vine in season), the cellar, and the barrel room, followed by a seated tasting of four wines including the Brunello and their remarkable white. The estate receives very few visitors and the experience feels entirely personal. A 45-minute drive from Lupaia. Private transport from the estate can be arranged.',
+    img: px('1797655'), fallbackImg: px('2832039'),
+    times: ['10:00 am', '11:00 am', '3:00 pm'], best: 'Morning or afternoon'
+  },
+  {
+    id: 'daytrip-pienza', cat: 'Activities & Excursions', emoji: '🏛️',
+    title: 'Day Trip · Pienza & Val d\'Orcia',
+    duration: 'Full day', price: 250, perPerson: false, perCouple: false,
+    desc: 'The perfect Tuscan day: Pienza\'s pecorino market, Val d\'Orcia cypress avenues, Bagno Vignoni\'s thermal square, and a long lunch somewhere in between.',
+    longDesc: 'Your private driver collects you after breakfast and heads south into the Val d\'Orcia — one of Italy\'s most cinematic landscapes. First stop is Pienza: the Renaissance hilltop town built entirely on papal commission in the 15th century, and home to the best pecorino in Tuscany. After shopping the market and exploring the cathedral and piazza, the route continues to the cypress avenues of the Orcia valley floor, then to Bagno Vignoni — an extraordinary medieval village built around a thermal pool. Lunch is at a trusted local trattoria (recommendation provided by the team). Return to Lupaia by late afternoon. Price is per vehicle, up to 4 passengers.',
+    img: px('2901209'), fallbackImg: px('1460375'),
+    times: ['9:00 am', '9:30 am'], best: 'Full day'
+  },
+  {
+    id: 'daytrip-siena', cat: 'Activities & Excursions', emoji: '🏰',
+    title: 'Day Trip · Siena',
+    duration: 'Full day', price: 300, perPerson: false, perCouple: false,
+    desc: 'The Piazza del Campo, the Duomo, the contrade, the Pinacoteca — and then the best ribollita of your life somewhere in the shadow of a medieval tower.',
+    longDesc: 'Forty minutes from Lupaia, Siena is the most complete medieval city in Europe — and the least changed. Your private driver deposits you at the city gates and the day is yours. The Piazza del Campo alone justifies the trip: one of the great public spaces in the world, built on a perfect scallop of sloping brick. The Duomo is extraordinary. The narrow streets of the contrade — the neighbourhoods whose bitter rivalry still erupts twice a year at the Palio — are alive with local life. Lunch is at one of three small restaurants the Lupaia team trusts. Return at your preferred time. Price is per vehicle, up to 4 passengers.',
+    img: px('1460375'), fallbackImg: px('2901209'),
+    times: ['9:00 am', '9:30 am', '10:00 am'], best: 'Full day'
+  },
+  {
+    id: 'daytrip-florence', cat: 'Activities & Excursions', emoji: '🎨',
+    title: 'Day Trip · Florence',
+    duration: 'Full day', price: 450, perPerson: false, perCouple: false,
+    desc: 'The Uffizi, the Duomo, the Oltrarno — or just the leather market, a long lunch, and a Negroni on the Lungarno at dusk.',
+    longDesc: 'Florence is 90 minutes from Lupaia by private car — a city worth the journey. The team can arrange a private morning access slot at the Uffizi (subject to availability) or skip it entirely for a slower day in the Oltrarno neighbourhood: the artisan workshops, the Boboli gardens, a long lunch at a proper Florentine trattoria. Or both: Uffizi before lunch, Oltrarno after. Your driver waits or finds parking and is available for the return whenever you\'re ready. One of the best day trips possible from the estate. Price is per vehicle, up to 4 passengers.',
+    img: px('1839919'), fallbackImg: px('290386'),
+    times: ['8:00 am', '8:30 am', '9:00 am'], best: 'Full day'
+  },
+
+  // ── ON-PROPERTY ──
+  {
+    id: 'poolside-lunch', cat: 'On-Property', emoji: '🏊',
+    title: 'Poolside Lunch & Wine Service',
+    duration: 'Leisurely', price: 40, perPerson: true, perCouple: false,
+    desc: 'Lunch served at the infinity pool — cold cuts, bruschetta, estate olive oil, a chilled white from the cellar. The day disappears.',
+    longDesc: 'The Lupaia infinity pool is one of the estate\'s great pleasures: 30 metres long, heated, perched on the hillside with a view stretching across the Sienese hills to Monte Amiata. Poolside lunch is a full service — the team brings out a wooden board of local salumi, hand-cut bruschetta with estate olive oil and sea salt, a seasonal salad, and a chilled bottle from the cellar. Dessert if you want it, coffee always. There\'s no rush. Price is per person; wine is included.',
+    img: px('261102'), fallbackImg: px('1287460'),
+    times: ['12:30 pm', '1:00 pm', '1:30 pm'], best: 'Midday'
+  },
+  {
+    id: 'negroni-pool', cat: 'On-Property', emoji: '🍹',
+    title: 'Negroni by the Infinity Pool',
+    duration: 'Sunset', price: 18, perPerson: true, perCouple: false,
+    desc: 'A Negroni at the pool edge as the sun drops behind Monte Amiata. No arrangement needed — just ask any member of the team.',
+    longDesc: 'The simplest pleasure at Lupaia: a well-made Negroni at the edge of the infinity pool as the sun goes down. No booking required — just catch any team member\'s eye. The cocktails are made with local gin, estate-infused Campari, and a Carpano Antica vermouth. Served on a small tray with a single olive and a sliver of orange. Priced per drink. Order two.',
+    img: px('3407777'), fallbackImg: px('1089931'),
+    times: ['6:30 pm', '7:00 pm', '7:30 pm'], best: 'Sunset'
+  },
+  {
+    id: 'amaro-games', cat: 'On-Property', emoji: '🎲',
+    title: 'Amaro & Board Games Evening',
+    duration: 'Evening', price: 0, perPerson: false, perCouple: false,
+    desc: 'The fireplace lounge, a selection of Italian amari, backgammon, cards, and conversation. No charge. Just one of the best evenings you\'ll have.',
+    longDesc: 'On evenings when there\'s nothing planned — or even when there is — the Lupaia lounge becomes the best room in Tuscany. A fire in the stone fireplace, a shelf of Italian amari (Montenegro, Averna, Del Capo, and a couple of strange locals), a worn backgammon board, a deck of cards, and a guest book that goes back decades. Heidi or Christopher often join for part of the evening. There\'s no programme, no cost, and no rush. The best thing to do after dinner on any night of your stay.',
+    img: px('3280908'), fallbackImg: px('942316'),
+    times: ['8:30 pm', '9:00 pm', '9:30 pm'], best: 'After dinner'
+  },
+  {
+    id: 'picnic', cat: 'On-Property', emoji: '🧺',
+    title: 'Picnic Basket for the Grounds',
+    duration: 'Afternoon', price: 45, perPerson: false, perCouple: true,
+    desc: 'A proper wicker basket — bread, cheese, salumi, fruit, estate olive oil, and a bottle of something cold. For the hammock, the field, or wherever.',
+    longDesc: 'Ask the team by 9 am and a picnic basket will be ready by noon: a proper wicker hamper with a cloth, linen napkins, and a full spread — a small sourdough loaf, a wedge of fresh and aged pecorino, cured meats from the local macelleria, seasonal fruit, estate olive oil with salt and pepper, and a chilled bottle chosen by the team. Take it to the hammock garden, the olive grove, the field behind the estate, or anywhere on the grounds. An excellent option for a quiet afternoon between more active days. Price is per couple / basket.',
+    img: px('1640777'), fallbackImg: px('1484516'),
+    times: ['12:00 pm', '12:30 pm', '1:00 pm'], best: 'Afternoon'
+  },
+];
+
+const CATEGORIES = ['All', 'Spa & Wellness', 'Wine & Food', 'Activities & Excursions', 'On-Property'];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentGuest = null;
+let activeDay = 0;
+let activeCatFilter = 'All';
+let plan = {};
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function getDayLabels() {
+  if (!currentGuest) return [];
+  const labels = [];
+  const d = new Date(currentGuest.arrival + 'T00:00:00');
+  for (let i = 0; i < currentGuest.nights; i++) {
+    const dd = new Date(d); dd.setDate(d.getDate() + i);
+    const mon = dd.toLocaleDateString('en-GB', { month: 'short' });
+    const day = dd.getDate();
+    labels.push({ short: `Day ${i + 1}`, full: `Day ${i + 1} — ${mon} ${day}`, date: dd });
+  }
+  return labels;
+}
+
+function getActivity(actId) {
+  return ACTIVITIES.find(a => a.id === actId);
+}
+
+function calcItemPrice(item) {
+  if (item.isIncluded) return 0;
+  const act = getActivity(item.actId);
+  if (!act) return 0;
+  if (act.price === 0) return 0;
+  return act.perPerson ? act.price * (item.guests || 1) : act.price;
+}
+
+function calcTotals() {
+  let addonTotal = 0;
+  for (const dayItems of Object.values(plan)) {
+    for (const item of dayItems) addonTotal += calcItemPrice(item);
+  }
+  return { addonTotal };
+}
+
+function countAddons() {
+  let n = 0;
+  for (const dayItems of Object.values(plan)) {
+    for (const item of dayItems) if (!item.isIncluded && calcItemPrice(item) > 0) n++;
+  }
+  return n;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function imgError(el) {
+  const fb = el.getAttribute('data-fallback');
+  if (fb && el.src !== fb) { el.src = fb; }
+}
+
+function formatEUR(n) {
+  return '€' + n.toLocaleString('de-DE');
+}
+
+// ═══════════════════════════════════════════════
+// WELCOME SCREEN
+// ═══════════════════════════════════════════════
+function initWelcome() {
+  const wrap = document.getElementById('welcome-cards');
+  wrap.innerHTML = GUESTS.map((g, i) => `
+    <div class="guest-card-select" onclick="loadGuest(${i})">
+      <div class="gc-label">Reservation</div>
+      <div class="gc-name">${g.name}</div>
+      <div class="gc-detail">${g.detail}</div>
+      <div class="gc-package">${g.pkg ? '✦ ' + g.pkg.name : 'Room only'}</div>
+    </div>
+  `).join('');
+}
+
+function loadGuest(idx) {
+  currentGuest = GUESTS[idx];
+  plan = {};
+
+  // Pre-load suggested itinerary
+  if (currentGuest.pkg) {
+    currentGuest.pkg.includes.forEach(inc => {
+      const dayIdx = inc.suggestedDay;
+      if (!plan[dayIdx]) plan[dayIdx] = [];
+      const guestCount = inc.guestCount !== undefined ? inc.guestCount : currentGuest.defaultGuests;
+      plan[dayIdx].push({
+        actId: inc.actId,
+        time: null,
+        guests: guestCount,
+        isIncluded: inc.included || false,
+        note: inc.note
+      });
+    });
+  }
+
+  // Dismiss welcome
+  const ws = document.getElementById('welcome-screen');
+  ws.classList.add('exit');
+  setTimeout(() => { ws.style.display = 'none'; }, 650);
+
+  document.getElementById('app').style.display = 'block';
+
+  // Fill nav
+  document.getElementById('nav-name').textContent = currentGuest.name;
+  document.getElementById('nav-detail').textContent = currentGuest.detail;
+
+  // Package hero
+  if (currentGuest.pkg) {
+    const ph = document.getElementById('package-hero');
+    ph.style.display = 'block';
+    document.getElementById('ph-title').textContent = currentGuest.pkg.name;
+    document.getElementById('ph-desc').textContent = currentGuest.pkg.desc;
+    document.getElementById('ph-includes').innerHTML =
+      `<span class="ph-item highlight">Full breakfast each morning</span>
+       <span class="ph-item highlight">Infinity pool & heated jacuzzi</span>
+       <span class="ph-item">Mountain bikes</span>
+       <span class="ph-item">WhatsApp team — Roberta, Christine, Gabriella</span>
+       <span class="ph-item">Estate grounds, hammocks, library</span>
+       <span class="ph-item">Amaro & fireplace lounge</span>
+       <span class="ph-item">Organic olive oil from the estate</span>`;
+  }
+
+  activeDay = 0;
+  renderDayTabs();
+  renderItinerary();
+  renderCatalog();
+}
+
+// ═══════════════════════════════════════════════
+// DAY TABS
+// ═══════════════════════════════════════════════
+function renderDayTabs() {
+  const labels = getDayLabels();
+  document.getElementById('dayTabs').innerHTML = labels.map((l, i) => `
+    <button class="day-tab${i === activeDay ? ' active' : ''}" onclick="switchDay(${i})">${l.full}</button>
+  `).join('');
+}
+
+function switchDay(i) {
+  activeDay = i;
+  renderDayTabs();
+  renderItinerary();
+}
+
+// ═══════════════════════════════════════════════
+// ITINERARY
+// ═══════════════════════════════════════════════
+function renderItinerary() {
+  const items = plan[activeDay] || [];
+  const container = document.getElementById('itineraryBody');
+
+  if (items.length === 0) {
+    container.innerHTML = `<div class="itinerary-empty">Nothing planned yet — browse below to build this day.</div>`;
+    return;
+  }
+
+  container.innerHTML = items.map((item, i) => {
+    const act = getActivity(item.actId);
+    if (!act) return '';
+    const price = calcItemPrice(item);
+    const priceStr = item.isIncluded || act.price === 0
+      ? '<span class="itin-price free">Complimentary</span>'
+      : `<span class="itin-price">${formatEUR(price)}</span>`;
+    const badge = item.isIncluded || act.price === 0
+      ? `<span class="itin-badge inc">Complimentary</span>`
+      : `<span class="itin-badge addon">Add-on</span>`;
+    const timeBtn = item.time
+      ? `<button class="itin-time-btn" onclick="changeTime(${activeDay},${i})">${item.time}</button>`
+      : `<button class="itin-time-btn" onclick="changeTime(${activeDay},${i})">Set a time</button>`;
+    const noteStr = item.note ? ` · ${item.note}` : '';
+    const guestCtrl = (!item.isIncluded && act.perPerson && act.price > 0) ? `
+      <div class="itin-guests-ctrl">
+        <button onclick="adjustGuests(${activeDay},${i},-1)">−</button>
+        <span>${item.guests || 1} guest${(item.guests||1)>1?'s':''}</span>
+        <button onclick="adjustGuests(${activeDay},${i},1)">+</button>
+      </div>` : '';
+    const removeBtn = item.isIncluded ? '' : `<button class="itin-remove" onclick="removeItem(${activeDay},${i})" title="Remove">×</button>`;
+
+    return `
+      <div class="itin-item${item.isIncluded || act.price === 0 ? ' included' : ''}" data-day="${activeDay}" data-idx="${i}"
+           draggable="true" ondragstart="dragStart(event,${i})" ondragover="dragOver(event,${i})" ondrop="dragDrop(event,${i})" ondragleave="dragLeave(event)">
+        <img class="itin-img" src="${act.img}" data-fallback="${act.fallbackImg || act.img}" onerror="imgError(this)" alt="${act.title}">
+        <div class="itin-info">
+          <div class="itin-title">${act.title}</div>
+          <div class="itin-meta">${act.duration}${noteStr} · ${timeBtn}</div>
+          ${badge}
+          ${guestCtrl}
+        </div>
+        ${priceStr}
+        ${removeBtn}
+      </div>`;
+  }).join('');
+
+  updateFolioBtn();
+}
+
+function removeItem(dayIdx, itemIdx) {
+  plan[dayIdx].splice(itemIdx, 1);
+  renderItinerary();
+  showToast('Experience removed');
+}
+
+function adjustGuests(dayIdx, itemIdx, delta) {
+  const item = plan[dayIdx][itemIdx];
+  item.guests = Math.max(1, (item.guests || 1) + delta);
+  renderItinerary();
+}
+
+function changeTime(dayIdx, itemIdx) {
+  const item = plan[dayIdx][itemIdx];
+  const act = getActivity(item.actId);
+  if (!act || !act.times) return;
+  openDetail(act.id, dayIdx, itemIdx);
+}
+
+function updateFolioBtn() {
+  const btn = document.getElementById('folio-btn');
+  if (!btn) return;
+  const { addonTotal } = calcTotals();
+  if (addonTotal > 0) {
+    btn.textContent = `View Folio · ${formatEUR(addonTotal)} →`;
+    btn.classList.add('has-items');
+  } else {
+    btn.textContent = 'View Folio →';
+    btn.classList.remove('has-items');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// DRAG AND DROP
+// ═══════════════════════════════════════════════
+let dragSrcIdx = null;
+function dragStart(e, idx) { dragSrcIdx = idx; e.currentTarget.classList.add('dragging'); }
+function dragOver(e, idx) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function dragDrop(e, idx) {
+  e.currentTarget.classList.remove('drag-over');
+  e.currentTarget.classList.remove('dragging');
+  if (dragSrcIdx === null || dragSrcIdx === idx) { dragSrcIdx = null; return; }
+  const items = plan[activeDay] || [];
+  const moved = items.splice(dragSrcIdx, 1)[0];
+  items.splice(idx, 0, moved);
+  plan[activeDay] = items;
+  dragSrcIdx = null;
+  renderItinerary();
+}
+
+// ═══════════════════════════════════════════════
+// CATALOG
+// ═══════════════════════════════════════════════
+function renderCatalog() {
+  document.getElementById('catFilters').innerHTML = CATEGORIES.map(c => `
+    <button class="cat-filter${activeCatFilter === c ? ' active' : ''}" onclick="setCatFilter('${c}')">${c}</button>
+  `).join('');
+
+  const filtered = activeCatFilter === 'All' ? ACTIVITIES : ACTIVITIES.filter(a => a.cat === activeCatFilter);
+  document.getElementById('activityGrid').innerHTML = filtered.map(act => {
+    const isFree = act.price === 0;
+    const priceLabel = isFree
+      ? '<span class="ac-price free">Complimentary</span>'
+      : `<span class="ac-price">${formatEUR(act.price)}${act.perPerson ? ' /person' : (act.perCouple ? ' /couple' : '')}</span>`;
+    return `
+      <div class="activity-card${isFree ? ' complimentary' : ''}" onclick="openDetail('${act.id}')">
+        <div class="ac-img-wrap">
+          <img src="${act.img}" data-fallback="${act.fallbackImg || act.img}" onerror="imgError(this)" alt="${act.title}" loading="lazy">
+          <div class="ac-badge-float${isFree ? ' inc' : ''}">${act.cat}</div>
+          <div class="ac-emoji">${act.emoji}</div>
+        </div>
+        <div class="ac-body">
+          <div class="ac-title">${act.title}</div>
+          <div class="ac-desc">${act.desc}</div>
+          <div class="ac-footer">
+            <span class="ac-meta">${act.duration} · ${act.best}</span>
+            ${priceLabel}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function setCatFilter(cat) {
+  activeCatFilter = cat;
+  renderCatalog();
+}
+
+// ═══════════════════════════════════════════════
+// DETAIL MODAL
+// ═══════════════════════════════════════════════
+let modalState = { selectedDay: null, selectedTime: null, guests: 1, editIdx: null };
+
+function openDetail(actId, editDayIdx, editItemIdx) {
+  const act = ACTIVITIES.find(a => a.id === actId);
+  if (!act) return;
+
+  modalState.selectedDay = activeDay;
+  modalState.selectedTime = null;
+  modalState.guests = currentGuest ? currentGuest.defaultGuests : 1;
+  modalState.editIdx = (editItemIdx !== undefined) ? editItemIdx : null;
+  modalState.actId = actId;
+
+  if (modalState.editIdx !== null) {
+    const item = plan[editDayIdx][editItemIdx];
+    modalState.selectedDay = editDayIdx;
+    modalState.selectedTime = item.time;
+    modalState.guests = item.guests || 1;
+  }
+
+  const labels = getDayLabels();
+  const alreadyOnDay = (plan[activeDay] || []).some(item => item.actId === actId);
+  const isEditing = modalState.editIdx !== null;
+
+  const timeBtns = act.times.map(t => `
+    <button class="time-opt${modalState.selectedTime === t ? ' active' : ''}" onclick="selectTime('${t}')">${t}</button>
+  `).join('');
+
+  const dayBtns = labels.map((l, i) => `
+    <button class="modal-date-btn${modalState.selectedDay === i ? ' active' : ''}" onclick="selectDay(${i})">${l.date.toLocaleDateString('en-GB',{month:'short'})} ${l.date.getDate()}</button>
+  `).join('');
+
+  const guestLine = act.perPerson && act.price > 0 ? `
+    <div class="modal-section-label">Number of guests</div>
+    <div class="modal-guests">
+      <label>Guests</label>
+      <div class="guest-stepper">
+        <button onclick="adjustModalGuests(-1)">−</button>
+        <span id="modal-guest-count">${modalState.guests}</span>
+        <button onclick="adjustModalGuests(1)">+</button>
+      </div>
+    </div>` : '';
+
+  const priceNote = act.price === 0
+    ? `<p style="font-size:13px;color:var(--olive);margin-bottom:20px;">✓ Complimentary — included for all guests</p>`
+    : `<p style="font-size:13px;color:var(--gold);font-weight:500;margin-bottom:20px;">${formatEUR(act.price)}${act.perPerson ? ' per person' : (act.perCouple ? ' per couple' : ' per booking')}</p>`;
+
+  let addBtnText = isEditing ? 'Update time' : (alreadyOnDay ? 'Already on this day' : `Add to Day ${activeDay + 1}`);
+  let addBtnDisabled = (!isEditing && alreadyOnDay) ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : '';
+
+  document.getElementById('detail-box').innerHTML = `
+    <img class="modal-img" src="${act.img}" data-fallback="${act.fallbackImg || act.img}" onerror="imgError(this)" alt="${act.title}">
+    <div class="modal-content">
+      <div class="modal-badge">${act.cat} · ${act.duration} · Best: ${act.best}</div>
+      <div class="modal-title">${act.title}</div>
+      <div class="modal-meta">${act.emoji} ${act.duration}</div>
+      <div class="modal-desc">${act.longDesc}</div>
+      ${priceNote}
+      <div class="modal-section-label">Choose a day</div>
+      <div class="modal-date-picker">${dayBtns}</div>
+      <div class="modal-section-label">Preferred time</div>
+      <div class="modal-time-picker">${timeBtns}</div>
+      ${guestLine}
+      <div class="modal-actions">
+        <button class="btn-add-itin${act.price === 0 ? ' included-act' : ''}" onclick="addToItinerary('${actId}')" ${addBtnDisabled}>${addBtnText}</button>
+        <button class="btn-close-modal" onclick="closeDetail()">Close</button>
+      </div>
+    </div>`;
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function closeDetail() { document.getElementById('detail-modal').classList.remove('open'); }
+
+function selectTime(t) {
+  modalState.selectedTime = t;
+  document.querySelectorAll('.time-opt').forEach(el => {
+    el.classList.toggle('active', el.textContent === t);
+  });
+}
+
+function selectDay(i) {
+  modalState.selectedDay = i;
+  document.querySelectorAll('.modal-date-btn').forEach((el, idx) => {
+    el.classList.toggle('active', idx === i);
+  });
+  const actId = modalState.actId;
+  const alreadyOnDay = (plan[i] || []).some(item => item.actId === actId);
+  const btn = document.querySelector('.btn-add-itin');
+  if (btn) {
+    if (alreadyOnDay && modalState.editIdx === null) {
+      btn.disabled = true; btn.style.opacity = '0.5'; btn.textContent = 'Already on this day';
+    } else {
+      btn.disabled = false; btn.style.opacity = '1'; btn.textContent = `Add to Day ${i + 1}`;
+    }
+  }
+}
+
+function adjustModalGuests(delta) {
+  modalState.guests = Math.max(1, modalState.guests + delta);
+  const el = document.getElementById('modal-guest-count');
+  if (el) el.textContent = modalState.guests;
+}
+
+function addToItinerary(actId) {
+  const act = ACTIVITIES.find(a => a.id === actId);
+  if (!act) return;
+  const day = modalState.selectedDay;
+  if (!plan[day]) plan[day] = [];
+
+  if (modalState.editIdx !== null) {
+    plan[day][modalState.editIdx].time = modalState.selectedTime;
+    plan[day][modalState.editIdx].guests = modalState.guests;
+    showToast('Updated ✓');
+  } else {
+    plan[day].push({ actId, time: modalState.selectedTime, guests: modalState.guests, isIncluded: false });
+    showToast(`${act.title} added to Day ${day + 1} ✓`);
+  }
+
+  closeDetail();
+  if (day === activeDay) {
+    renderItinerary();
+  }
+  updateFolioBtn();
+}
+
+// ═══════════════════════════════════════════════
+// FOLIO MODAL
+// ═══════════════════════════════════════════════
+function openFolio() {
+  const labels = getDayLabels();
+  const { addonTotal } = calcTotals();
+
+  let rows = '';
+  let hasContent = false;
+
+  labels.forEach((label, dayIdx) => {
+    const items = plan[dayIdx] || [];
+    if (items.length === 0) return;
+    hasContent = true;
+    rows += `<div class="folio-day-header">${label.short}<span class="folio-day-date">${label.date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long'})}</span></div>`;
+    items.forEach(item => {
+      const act = getActivity(item.actId);
+      if (!act) return;
+      const price = calcItemPrice(item);
+      const isFree = item.isIncluded || act.price === 0;
+      const priceStr = isFree
+        ? '<span class="folio-item-price free">Complimentary</span>'
+        : `<span class="folio-item-price">${formatEUR(price)}</span>`;
+      const detail = [item.time, (act.perPerson && item.guests > 1) ? `${item.guests} guests` : ''].filter(Boolean).join(' · ');
+      rows += `
+        <div class="folio-item">
+          <img class="folio-item-img" src="${act.img}" data-fallback="${act.fallbackImg||act.img}" onerror="imgError(this)" alt="${act.title}">
+          <div class="folio-item-info">
+            <div class="folio-item-name">${act.title}</div>
+            <div class="folio-item-detail">${detail || act.duration}</div>
+          </div>
+          ${priceStr}
+        </div>`;
+    });
+  });
+
+  if (!hasContent) {
+    rows = `<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;">Your itinerary is empty — add some experiences below.</div>`;
+  }
+
+  document.getElementById('folio-box').innerHTML = `
+    <div class="folio-header">
+      <div class="folio-title">Your Itinerary</div>
+      <button class="folio-close" onclick="closeFolio()">×</button>
+    </div>
+    <div class="folio-body">
+      ${rows}
+      <div class="folio-totals">
+        <div class="folio-total-row"><span>Breakfast, pool, bikes & estate access</span><span style="color:var(--olive)">Included</span></div>
+        ${addonTotal > 0 ? `<div class="folio-total-row"><span>Experiences & add-ons</span><span>${formatEUR(addonTotal)}</span></div>` : ''}
+        <div class="folio-total-row grand"><span>Total additional charges</span><span>${addonTotal > 0 ? formatEUR(addonTotal) : 'Nil'}</span></div>
+      </div>
+    </div>
+    <div class="folio-footer">
+      <button class="btn-folio-edit" onclick="closeFolio()">Continue editing</button>
+      <button class="btn-folio-send" onclick="sendFolio()">Send to the team →</button>
+    </div>`;
+
+  document.getElementById('folio-modal').classList.add('open');
+}
+
+function closeFolio() { document.getElementById('folio-modal').classList.remove('open'); }
+
+function sendFolio() {
+  const ref = 'LUP-' + Math.floor(1000 + Math.random() * 9000);
+  document.getElementById('folio-box').innerHTML = `
+    <div class="success-state">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Sent to the team</div>
+      <p class="success-msg">Roberta, Christine, or Gabriella will be in touch via WhatsApp to confirm everything — usually within a few hours. They'll arrange any timing, transport, and details directly with you.</p>
+      <div class="success-ref">Reference: ${ref}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+initWelcome();
+</script>
+</body>
+</html>

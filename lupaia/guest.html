@@ -402,6 +402,8 @@ body {
 .folio-item-detail { font-size: 11px; color: var(--muted); }
 .folio-item-price { font-size: 13px; font-weight: 500; white-space: nowrap; }
 .folio-item-price.free { color: var(--olive); }
+.folio-item-remove { background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 4px 6px; margin-left: 6px; opacity: 0.5; transition: opacity .15s, color .15s; flex-shrink: 0; line-height: 1; }
+.folio-item-remove:hover { opacity: 1; color: var(--danger, #8B3A3A); }
 .folio-totals { padding: 16px 0; margin-top: 8px; border-top: 2px solid var(--ink); }
 .folio-total-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; color: var(--muted); }
 .folio-total-row.grand { font-size: 16px; font-weight: 500; color: var(--ink); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
@@ -1384,7 +1386,7 @@ function openFolio() {
     if (items.length === 0) return;
     hasContent = true;
     rows += `<div class="folio-day-header">${label.short}<span class="folio-day-date">${label.date.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long'})}</span></div>`;
-    items.forEach(item => {
+    items.forEach((item, itemIdx) => {
       const act = getActivity(item.actId);
       if (!act) return;
       const price = calcItemPrice(item);
@@ -1401,6 +1403,7 @@ function openFolio() {
             <div class="folio-item-detail">${detail || act.duration}</div>
           </div>
           ${priceStr}
+          <button class="folio-item-remove" onclick="removeFolioItem(${dayIdx},${itemIdx});" title="Remove">×</button>
         </div>`;
     });
   });
@@ -1431,6 +1434,14 @@ function openFolio() {
 }
 
 function closeFolio() { document.getElementById('folio-modal').classList.remove('open'); }
+
+function removeFolioItem(dayIdx, itemIdx) {
+  if (plan[dayIdx]) {
+    plan[dayIdx].splice(itemIdx, 1);
+    renderItinerary();
+    openFolio(); // re-render folio with item removed
+  }
+}
 
 function sendFolio() {
   const ref = 'LUP-' + Math.floor(1000 + Math.random() * 9000);

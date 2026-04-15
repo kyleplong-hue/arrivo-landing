@@ -936,15 +936,6 @@ const ACTIVITIES = [
     img: 'https://aeiwuefm.cdn.imgeng.in/assets/uploads/lupaia-1/lupaia-569.jpg', fallbackImg: 'https://aeiwuefm.cdn.imgeng.in/assets/uploads/entrance.jpg',
     times: ['9:00 am', '10:00 am', '4:00 pm'], best: 'Morning or late afternoon'
   },
-  {
-    id: 'free-concierge', cat: 'Included & Free', emoji: '📱',
-    title: 'WhatsApp Concierge',
-    duration: 'Anytime', price: 0, perPerson: false, perCouple: false, included: true,
-    desc: 'Message Roberta, Christine, or Gabriella directly on WhatsApp — wherever you are. Restaurant bookings, local tips, transport, anything.',
-    longDesc: 'Lupaia\'s WhatsApp concierge is available to all guests throughout your stay. Message the team from Montepulciano to ask where to find the best gelato. Message from the pool to order a panino and chilled wine. They can arrange restaurant reservations, organise transport, recommend the right winery for your taste, or help with anything else that comes up. It\'s the simplest and most useful service at Lupaia.',
-    img: 'https://aeiwuefm.cdn.imgeng.in/assets/uploads/lupaia-1/lupaia-24.jpg', fallbackImg: 'https://aeiwuefm.cdn.imgeng.in/assets/uploads/lupaia-1/lupaia-41.jpg',
-    times: ['8:00 am', '10:00 am', '2:00 pm', '6:00 pm'], best: 'Anytime'
-  },
 ];
 
 const CATEGORIES = ['All', 'Included & Free', 'Spa & Wellness', 'Wine & Food', 'Activities & Excursions', 'On-Property'];
@@ -954,7 +945,7 @@ const CATEGORIES = ['All', 'Included & Free', 'Spa & Wellness', 'Wine & Food', '
 // ═══════════════════════════════════════════════
 let currentGuest = null;
 let activeDay = 0;
-let activeCatFilter = 'All';
+let activeCatFilter = 'Included & Free';
 let plan = {};
 
 // ═══════════════════════════════════════════════
